@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronRight, ArrowRight } from 'lucide-react';
 
-export default function LatestProducts({ products }: { products: any[] }) {
+export default function LatestProducts({ products, session }: { products: any[], session?: any }) {
     if (!products || products.length === 0) return null;
 
     // We'll use the first 5 products for this special layout
@@ -24,9 +24,10 @@ export default function LatestProducts({ products }: { products: any[] }) {
                         </p>
                     </div>
                     <Link
-                        href="/category/men" // Fallback to a major category
+                        href="/"
                         className="group flex items-center gap-2 text-sm font-black uppercase tracking-widest text-gray-900 hover:text-orange-600 transition-colors"
                     >
+
                         Explore All New <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                     </Link>
                 </div>

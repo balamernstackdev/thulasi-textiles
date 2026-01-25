@@ -23,7 +23,7 @@ interface ProductInteractionProps {
 
 const ALL_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
-export default function ProductInteraction({ product, isWishlisted }: ProductInteractionProps) {
+export default function ProductInteraction({ product, isWishlisted, session }: { product: any; isWishlisted: boolean; session?: any }) {
     const router = useRouter();
     const addItem = useCartStore((state) => state.addItem);
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(
@@ -45,6 +45,10 @@ export default function ProductInteraction({ product, isWishlisted }: ProductInt
     }, [images.length]);
 
     const handleBuyNow = () => {
+        if (!session) {
+            router.push('/login');
+            return;
+        }
         if (isOutOfStock) return;
 
         addItem({
@@ -272,7 +276,7 @@ export default function ProductInteraction({ product, isWishlisted }: ProductInt
                         </div>
 
                         <div className="space-y-4">
-                            <AddToCartButton product={product} selectedVariant={selectedVariant} quantity={quantity} />
+                            <AddToCartButton product={product} selectedVariant={selectedVariant} quantity={quantity} session={session} />
 
                             <button
                                 onClick={handleBuyNow}

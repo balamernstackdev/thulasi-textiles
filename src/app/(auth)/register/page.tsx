@@ -97,7 +97,7 @@ export default function RegisterPage() {
                 >
                     {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : (
                         <>
-                            Create Collection Account
+                            Create Account
                             <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
                         </>
                     )}
@@ -105,7 +105,7 @@ export default function RegisterPage() {
             </form>
 
             <p className="text-center font-bold text-gray-400">
-                Already part of the family? <Link href="/login" className="text-orange-600 hover:text-black transition-colors underline decoration-thickness-2">Secure Entry</Link>
+                Already have an account?  <Link href="/login" className="text-orange-600 hover:text-black transition-colors underline decoration-thickness-2">Login</Link>
             </p>
         </div>
     );

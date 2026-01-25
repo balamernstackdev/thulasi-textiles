@@ -17,24 +17,24 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
     return (
         <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
             {/* Top Bar */}
-            <div className="bg-black text-[9px] font-black text-center py-2 px-4 text-white uppercase tracking-[0.3em]">
+            <div className="bg-black text-[8px] md:text-[9px] font-black text-center py-2.5 px-4 text-white uppercase tracking-[0.2em] md:tracking-[0.3em] leading-tight">
                 Discover Handcrafted Heritage | Free Shipping on Orders Over ₹2999
             </div>
 
-            <div className="max-w-[1700px] mx-auto px-6">
+            <div className="max-w-[1700px] mx-auto px-4 md:px-6">
                 {/* Top Row: Logo, Search, Actions */}
-                <div className="flex items-center justify-between py-5 gap-8">
+                <div className="flex items-center justify-between py-4 lg:py-5 gap-4 md:gap-8">
 
                     {/* Logo & Mobile Menu Button */}
-                    <div className="flex items-center gap-6 shrink-0">
+                    <div className="flex items-center gap-3 md:gap-6 shrink-0">
                         <button
-                            className="lg:hidden p-2 -ml-2 text-gray-900 bg-gray-50 rounded-xl"
+                            className="lg:hidden p-2 -ml-2 text-gray-900 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
                             onClick={() => setIsMenuOpen(true)}
                         >
-                            <Menu className="w-6 h-6" />
+                            <Menu className="w-5 h-5 md:w-6 md:h-6" />
                         </button>
-                        <Link href="/" className="flex flex-col items-center gap-2 group transition-all">
-                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg overflow-hidden p-1.5 ring-4 ring-gray-50 animate-pulse [animation-duration:4s]">
+                        <Link href="/" className="flex flex-col items-center gap-1.5 group transition-all">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-lg overflow-hidden p-1.5 ring-4 ring-gray-50 group-hover:ring-orange-50 transition-all">
                                 <Image
                                     src="/logo.png"
                                     alt="Thulasi Textiles Logo"
@@ -43,11 +43,11 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                                     className="object-contain"
                                 />
                             </div>
-                            <div className="flex flex-col leading-none text-center">
-                                <span className="text-sm font-black tracking-tighter uppercase italic">
+                            <div className="flex flex-col leading-none text-center hidden xs:flex">
+                                <span className="text-[10px] md:text-sm font-black tracking-tighter uppercase italic">
                                     <span className="text-gray-400">Thulasi</span> <span className="text-orange-600">Textiles</span>
                                 </span>
-                                <span className="text-[7px] font-black text-orange-600 tracking-[0.3em] uppercase mt-0.5 whitespace-nowrap">Women's World</span>
+                                <span className="text-[6px] md:text-[7px] font-black text-orange-600 tracking-[0.2em] md:tracking-[0.3em] uppercase mt-0.5 whitespace-nowrap">Women's World</span>
                             </div>
                         </Link>
                     </div>

@@ -57,7 +57,7 @@ export default function LoginForm() {
                     <div className="flex items-center gap-4 py-4">
                         <div className="p-4 bg-white/10 backdrop-blur-md rounded-2xl flex flex-col gap-1 items-center">
                             <ShieldCheck className="w-8 h-8 text-orange-500" />
-                            <span className="text-[10px] font-black text-white uppercase tracking-widest">Secure Entry</span>
+                            <span className="text-[10px] font-black text-white uppercase tracking-widest">Login</span>
                         </div>
                         <div className="text-white/60 text-xs font-bold leading-tight">
                             Your data is encrypted <br /> with industry standard <br /> security protocols.

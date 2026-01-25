@@ -1,4 +1,5 @@
 import { getProductBySlug, getProducts } from '@/lib/actions/product';
+import { getSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 // import ProductCard from '@/components/shop/ProductCard';
@@ -32,12 +33,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     }
 
     // Parallel fetching for remaining data
-    const [wishStatus, relatedProductsResult] = await Promise.all([
+    const [wishStatus, relatedProductsResult, session] = await Promise.all([
         checkWishstatus(product.id),
         getProducts({
             categorySlug: product.category.slug,
             limit: 5
-        })
+        }),
+        getSession()
     ]);
 
     const isWishlisted = wishStatus.isWishlisted;
@@ -223,7 +225,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                             <ProductCarousel
                                 products={relatedProducts.filter((p: any) => p.id !== product.id)}
                                 title="Products related to this item"
+                                session={session}
                             />
+
                         </div>
                     )}
                 </div>

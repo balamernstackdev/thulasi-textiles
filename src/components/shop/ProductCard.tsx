@@ -13,7 +13,7 @@ interface ProductWithData extends Product {
     category: Category;
 }
 
-export default function ProductCard({ product }: { product: ProductWithData }) {
+export default function ProductCard({ product, session }: { product: ProductWithData, session?: any }) {
     const [currentIdx, setCurrentIdx] = useState(0);
     const [isHovering, setIsHovering] = useState(false);
 
@@ -131,6 +131,13 @@ export default function ProductCard({ product }: { product: ProductWithData }) {
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+
+                    if (!session) {
+                        toast.error('Please login to add items to cart');
+                        window.location.href = '/login';
+                        return;
+                    }
+
                     addItem({
                         id: product.id,
                         productId: product.id,

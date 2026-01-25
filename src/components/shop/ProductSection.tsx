@@ -18,6 +18,7 @@ interface ProductSectionProps {
     products: ProductWithData[];
     viewAllLink?: string;
     bgVariant?: 'white' | 'gray';
+    session?: any;
 }
 
 export default function ProductSection({
@@ -25,7 +26,8 @@ export default function ProductSection({
     subtitle,
     products,
     viewAllLink,
-    bgVariant = 'white'
+    bgVariant = 'white',
+    session
 }: ProductSectionProps) {
     if (!products || products.length === 0) return null;
 
@@ -49,7 +51,7 @@ export default function ProductSection({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {products.map((product) => (
-                        <ProductCard key={product.id} product={product as any} />
+                        <ProductCard key={product.id} product={product as any} session={session} />
                     ))}
                 </div>
             </div>

@@ -7,6 +7,7 @@ import Pagination from '@/components/shared/Pagination';
 import Link from 'next/link';
 import { ChevronRight, Filter, ChevronDown } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import { getSession } from '@/lib/auth';
 
 export default async function CategoryPage({
     params,
@@ -20,7 +21,10 @@ export default async function CategoryPage({
     const page = parseInt(sParams.page || '1');
     const pageSize = 10;
 
-    const { data: category } = await getCategoryBySlug(slug);
+    const [{ data: category }, session] = await Promise.all([
+        getCategoryBySlug(slug),
+        getSession()
+    ]);
 
     if (!category) {
         notFound();
@@ -150,7 +154,7 @@ export default async function CategoryPage({
                             <>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                     {products.map((product: any) => (
-                                        <ProductCard key={product.id} product={product} />
+                                        <ProductCard key={product.id} product={product} session={session} />
                                     ))}
                                 </div>
                                 {pagination && (

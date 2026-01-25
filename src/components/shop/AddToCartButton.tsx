@@ -8,12 +8,18 @@ interface AddToCartButtonProps {
     product: any;
 }
 
-export default function AddToCartButton({ product, selectedVariant, quantity = 1 }: { product: any; selectedVariant?: any; quantity?: number }) {
+export default function AddToCartButton({ product, selectedVariant, quantity = 1, session }: { product: any; selectedVariant?: any; quantity?: number; session?: any }) {
     const addItem = useCartStore((state) => state.addItem);
 
     const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : product.variants.every((v: any) => v.stock <= 0);
 
     const handleAddToCart = () => {
+        if (!session) {
+            toast.error('Please login to add items to cart');
+            window.location.href = '/login';
+            return;
+        }
+
         if (isOutOfStock) {
             toast.error('This variant is currently out of stock');
             return;

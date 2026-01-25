@@ -79,7 +79,7 @@ export default function LoginPage() {
                 >
                     {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : (
                         <>
-                            Secure Entry
+                            Login
                             <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
                         </>
                     )}

@@ -6,6 +6,7 @@ import QuadCard from '@/components/shop/QuadCard';
 import { getBanners } from '@/lib/actions/banner';
 import { getProducts } from '@/lib/actions/product';
 import { getCategoriesTree } from '@/lib/actions/category';
+import { getSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,14 +29,16 @@ export default async function ShopHome() {
     { data: featuredProducts },
     { data: bestSellers },
     { data: offerProducts },
-    { data: categoriesTree }
+    { data: categoriesTree },
+    session
   ] = await Promise.all([
     getBanners({ isActive: true, pageSize: 50 }),
     getProducts({ limit: 5 }),
     getProducts({ isFeatured: true, limit: 4 }),
     getProducts({ isBestSeller: true, limit: 4 }),
     getProducts({ isOffer: true, limit: 4 }),
-    getCategoriesTree()
+    getCategoriesTree(),
+    getSession()
   ]);
 
   const typedBanners = (allBanners || []) as unknown as BannerItem[];
@@ -54,7 +57,7 @@ export default async function ShopHome() {
       {/* Advanced Latest Product Listing */}
       {latestProducts && latestProducts.length > 0 && (
         <div className="bg-white py-12">
-          <LatestProducts products={latestProducts} />
+          <LatestProducts products={latestProducts} session={session} />
         </div>
       )}
 
@@ -64,6 +67,8 @@ export default async function ShopHome() {
         subtitle="Handpicked premium pieces for your wardrobe"
         products={featuredProducts || []}
         bgVariant="white"
+        viewAllLink="/category/featured"
+        session={session}
       />
 
       {/* Best Sellers Section with its own Banner */}
@@ -73,6 +78,8 @@ export default async function ShopHome() {
         subtitle="Most loved and trending styles right now"
         products={bestSellers || []}
         bgVariant="gray"
+        viewAllLink="/category/best-sellers"
+        session={session}
       />
 
       {/* Special Offers Section with its own Banner */}
@@ -82,7 +89,10 @@ export default async function ShopHome() {
         subtitle="Limited time seasonal discounts"
         products={offerProducts || []}
         bgVariant="white"
+        viewAllLink="/category/offers"
+        session={session}
       />
+
 
       {/* Newsletter / Footer Promo */}
       <section className="bg-orange-600 py-24 mt-12 overflow-hidden relative">

@@ -7,9 +7,10 @@ import ProductCard from './ProductCard';
 interface ProductCarouselProps {
     products: any[];
     title?: string;
+    session?: any;
 }
 
-export default function ProductCarousel({ products, title }: ProductCarouselProps) {
+export default function ProductCarousel({ products, title, session }: ProductCarouselProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(true);
@@ -100,7 +101,7 @@ export default function ProductCarousel({ products, title }: ProductCarouselProp
                         key={product.id}
                         className="min-w-[180px] md:min-w-[210px] lg:min-w-[230px] snap-start"
                     >
-                        <ProductCard product={product} />
+                        <ProductCard product={product} session={session} />
                     </div>
                 ))}
             </div>
