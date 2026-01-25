@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import ProductForm from '@/components/admin/ProductForm';
 import { getCategoriesTree } from '@/lib/actions/category';
 
+export const dynamic = 'force-dynamic';
+
+
 export default async function NewProductPage() {
     const { data: categories } = await getCategoriesTree();
 
