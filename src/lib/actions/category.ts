@@ -1,0 +1,150 @@
+'use server';
+
+import prisma from '@/lib/prisma';
+import { unstable_cache } from 'next/cache';
+
+export const getCategoriesTree = unstable_cache(
+    async () => {
+        try {
+            const categories = await prisma.category.findMany({
+                where: { parentId: null },
+                include: {
+                    children: true,
+                },
+                orderBy: { name: 'asc' }
+            });
+            return { success: true, data: categories };
+        } catch (error) {
+            return { success: false, error: 'Failed to load categories' };
+        }
+    },
+    ['categories-tree'],
+    { tags: ['categories'], revalidate: 3600 }
+);
+export async function getCategoryBySlug(slug: string) {
+    try {
+        const category = await prisma.category.findUnique({
+            where: { slug },
+            include: {
+                children: true,
+                parent: {
+                    include: {
+                        children: true
+                    }
+                },
+            }
+        });
+        return { success: true, data: category };
+    } catch (error) {
+        console.error('Error fetching category:', error);
+        return { success: false, error: 'Failed to load category' };
+    }
+}
+export async function getCategories(options: {
+    page?: number,
+    pageSize?: number
+} = {}) {
+    try {
+        const { page = 1, pageSize = 10 } = options;
+        const skip = (page - 1) * pageSize;
+
+        const [categories, total] = await Promise.all([
+            prisma.category.findMany({
+                include: {
+                    parent: true,
+                },
+                skip,
+                take: pageSize,
+                orderBy: { name: 'asc' }
+            }),
+            prisma.category.count()
+        ]);
+
+        return {
+            success: true,
+            data: categories,
+            pagination: {
+                total,
+                page,
+                pageSize,
+                totalPages: Math.ceil(total / pageSize)
+            }
+        };
+    } catch (error) {
+        return { success: false, error: 'Failed to load categories' };
+    }
+}
+
+export async function getCategoryById(id: string) {
+    try {
+        const category = await prisma.category.findUnique({
+            where: { id },
+            include: {
+                parent: true
+            }
+        });
+        return { success: true, data: category };
+    } catch (error) {
+        return { success: false, error: 'Failed to load category' };
+    }
+}
+
+export async function createCategory(formData: FormData) {
+    try {
+        const name = formData.get('name') as string;
+        const slug = formData.get('slug') as string;
+        const description = formData.get('description') as string;
+        const image = formData.get('image') as string;
+        const parentId = formData.get('parentId') as string || null;
+
+        const category = await prisma.category.create({
+            data: {
+                name,
+                slug,
+                description,
+                image,
+                parentId: parentId === 'none' ? null : parentId,
+            }
+        });
+
+        return { success: true, data: category };
+    } catch (error) {
+        return { success: false, error: 'Failed to create category' };
+    }
+}
+
+export async function updateCategory(id: string, formData: FormData) {
+    try {
+        const name = formData.get('name') as string;
+        const slug = formData.get('slug') as string;
+        const description = formData.get('description') as string;
+        const image = formData.get('image') as string;
+        const parentId = formData.get('parentId') as string || null;
+
+        const category = await prisma.category.update({
+            where: { id },
+            data: {
+                name,
+                slug,
+                description,
+                image,
+                parentId: parentId === 'none' ? null : parentId,
+            }
+        });
+
+        return { success: true, data: category };
+    } catch (error) {
+        return { success: false, error: 'Failed to update category' };
+    }
+}
+
+export async function deleteCategory(id: string) {
+    try {
+        await prisma.category.delete({
+            where: { id }
+        });
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: 'Failed to delete category' };
+    }
+}

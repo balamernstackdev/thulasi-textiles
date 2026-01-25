@@ -1,15 +1,30 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Amazon Color Utils */
+  --color-amazon-dark: #131921;
+  --color-amazon-light: #232f3e;
+  --color-amazon-orange: #febd69;
+  --color-amazon-blue: #007185;
+
+  /* Admin Resort Theme */
+  --color-admin-sidebar: #1e293b;
+  /* Dark Slate similar to reference */
+  --color-admin-sidebar-active: #2dd4bf;
+  /* Teal/Green accent */
+  --color-admin-bg: #f3f4f6;
+  --color-orange-600: #ea580c;
+
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +38,38 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Optimized Custom Scrollbar --- */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+  border: 3px solid #f8fafc;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+/* Force hardware acceleration for smooth scrolling feel */
+.gpu {
+  transform: translateZ(0);
+  will-change: transform;
 }

@@ -1,0 +1,94 @@
+'use server';
+
+import prismadb from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
+
+export async function getBanners(options: {
+    page?: number,
+    pageSize?: number,
+    isActive?: boolean
+} = {}) {
+    try {
+        const { page = 1, pageSize = 10, isActive } = options;
+        const skip = (page - 1) * pageSize;
+
+        let where: any = {};
+        if (isActive !== undefined) {
+            where.isActive = isActive;
+        }
+
+        const [banners, total] = await Promise.all([
+            prismadb.banner.findMany({
+                where,
+                skip,
+                take: pageSize,
+                orderBy: { order: 'asc' }
+            }),
+            prismadb.banner.count({ where })
+        ]);
+
+        return {
+            success: true,
+            data: banners,
+            pagination: {
+                total,
+                page,
+                pageSize,
+                totalPages: Math.ceil(total / pageSize)
+            }
+        };
+    } catch (error) {
+        console.error('Failed to fetch banners:', error);
+        return { success: false, error: 'Failed to fetch banners' };
+    }
+}
+
+export async function createBanner(formData: FormData) {
+    const imageUrl = formData.get('imageUrl') as string;
+    const title = formData.get('title') as string;
+    const subtitle = formData.get('subtitle') as string;
+    const buttonText = formData.get('buttonText') as string;
+    const link = formData.get('link') as string;
+    const type = formData.get('type') as any; // BannerType
+    const isActive = formData.get('isActive') === 'true';
+    const order = parseInt(formData.get('order') as string) || 0;
+
+    if (!imageUrl) {
+        return { success: false, error: 'Image URL is required' };
+    }
+
+    try {
+        await prismadb.banner.create({
+            data: {
+                imageUrl,
+                title: title || null,
+                subtitle: subtitle || null,
+                buttonText: buttonText || "Shop Now",
+                link: link || null,
+                type: type || 'HOME_MAIN',
+                isActive,
+                order
+            }
+        });
+        revalidatePath('/');
+        revalidatePath('/admin/banners');
+        return { success: true };
+    } catch (error) {
+        console.error('Failed to create banner:', error);
+        return { success: false, error: 'Failed to create banner' };
+    }
+}
+
+export async function deleteBanner(id: string) {
+    try {
+        await prismadb.banner.delete({
+            where: { id }
+        });
+        revalidatePath('/');
+        revalidatePath('/admin/banners');
+        return { success: true };
+    } catch (error) {
+        console.error('Failed to delete banner:', error);
+        return { success: false, error: 'Failed to delete banner' };
+    }
+}

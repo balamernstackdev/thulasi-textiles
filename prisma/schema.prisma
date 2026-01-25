@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  name      String?
+  role      Role       @default(CUSTOMER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  addresses Address[]
+  orders    Order[]
+  wishlist  Wishlist[]
+}
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  name      String
+  street    String
+  city      String
+  state     String
+  zip       String
+  country   String
+  isDefault Boolean @default(false)
+  user      User    @relation(fields: [userId], references: [id])
+  orders    Order[]
+
+  @@index([userId], map: "Address_userId_fkey")
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  image       String?
+  parentId    String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children    Category[] @relation("SubCategories")
+  products    Product[]
+
+  @@index([parentId], map: "Category_parentId_fkey")
+}
+
+model Product {
+  id               String           @id @default(cuid())
+  name             String
+  slug             String           @unique
+  description      String           @db.Text
+  categoryId       String
+  isFeatured       Boolean          @default(false)
+  isBestSeller     Boolean          @default(false)
+  isActive         Boolean          @default(true)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  basePrice        Decimal          @default(0.00) @db.Decimal(10, 2)
+  isOffer          Boolean          @default(false)
+  artisanImage     String?
+  artisanStory     String?          @db.Text
+  careInstructions String?          @db.Text
+  fabric           String?
+  occasion         String?
+  origin           String?
+  weave            String?
+  metaDescription  String?          @db.Text
+  metaTitle        String?
+  category         Category         @relation(fields: [categoryId], references: [id])
+  images           ProductImage[]
+  variants         ProductVariant[]
+  wishlistedBy     Wishlist[]
+
+  @@index([categoryId], map: "Product_categoryId_fkey")
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  url       String
+  altText   String?
+  isPrimary Boolean @default(false)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId], map: "ProductImage_productId_fkey")
+}
+
+model ProductVariant {
+  id         String      @id @default(cuid())
+  sku        String      @unique
+  size       String?
+  color      String?
+  material   String?
+  price      Decimal     @db.Decimal(10, 2)
+  stock      Int         @default(0)
+  discount   Decimal?    @default(0.00) @db.Decimal(5, 2)
+  productId  String
+  orderItems OrderItem[]
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, size, color, material])
+}
+
+model Order {
+  id            String        @id @default(cuid())
+  userId        String?
+  addressId     String
+  status        OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+  total         Decimal       @db.Decimal(10, 2)
+  paymentId     String?
+  orderId       String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  address       Address       @relation(fields: [addressId], references: [id])
+  user          User?         @relation(fields: [userId], references: [id])
+  items         OrderItem[]
+
+  @@index([addressId], map: "Order_addressId_fkey")
+  @@index([userId], map: "Order_userId_fkey")
+}
+
+model OrderItem {
+  id        String         @id @default(cuid())
+  orderId   String
+  variantId String
+  quantity  Int
+  price     Decimal        @db.Decimal(10, 2)
+  order     Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+
+  @@index([orderId], map: "OrderItem_orderId_fkey")
+  @@index([variantId], map: "OrderItem_variantId_fkey")
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([productId], map: "Wishlist_productId_fkey")
+}
+
+model Banner {
+  id         String     @id @default(cuid())
+  imageUrl   String
+  link       String?
+  isActive   Boolean    @default(true)
+  order      Int        @default(0)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  buttonText String?    @default("Shop Now")
+  subtitle   String?
+  title      String?
+  type       BannerType @default(HOME_MAIN)
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum BannerType {
+  HOME_MAIN
+  OFFER_SECTION
+  BEST_SELLER_SECTION
+}
