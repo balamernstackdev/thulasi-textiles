@@ -56,16 +56,23 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
 
                     {/* Center: Search Bar */}
                     <div className="hidden lg:flex flex-1 justify-center px-10">
-                        <div className="relative flex items-center w-full group max-w-4xl">
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            const query = (e.currentTarget.elements.namedItem('q') as HTMLInputElement).value;
+                            if (query.trim()) {
+                                router.push(`/search?q=${encodeURIComponent(query)}`);
+                            }
+                        }} className="relative flex items-center w-full group max-w-4xl">
                             <input
                                 type="text"
+                                name="q"
                                 placeholder="Search Thulasi Textiles..."
                                 className="w-full bg-white text-gray-900 border border-gray-300 rounded-sm py-2.5 pl-4 pr-16 text-sm focus:outline-none focus:border-orange-600 transition-all font-medium placeholder:text-gray-400 shadow-sm"
                             />
-                            <button className="absolute right-0 top-0 bottom-0 bg-[#febd69] hover:bg-[#f3a847] text-black px-5 rounded-r-sm transition-all flex items-center justify-center">
+                            <button type="submit" className="absolute right-0 top-0 bottom-0 bg-[#febd69] hover:bg-[#f3a847] text-black px-5 rounded-r-sm transition-all flex items-center justify-center">
                                 <Search className="w-6 h-6" />
                             </button>
-                        </div>
+                        </form>
                     </div>
 
                     {/* Right Actions */}

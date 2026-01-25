@@ -93,6 +93,10 @@ export async function getProducts(options: {
     isFeatured?: boolean,
     isBestSeller?: boolean,
     isOffer?: boolean,
+    search?: string,
+    minPrice?: number,
+    maxPrice?: number,
+    sort?: string,
     page?: number,
     pageSize?: number,
     limit?: number
@@ -115,8 +119,26 @@ export async function getProducts(options: {
                     };
                 }
 
+                if (options.search) {
+                    where.OR = [
+                        { name: { contains: options.search } },
+                        { description: { contains: options.search } }
+                    ];
+                }
+
+                if (options.minPrice || options.maxPrice) {
+                    where.basePrice = {};
+                    if (options.minPrice) where.basePrice.gte = options.minPrice;
+                    if (options.maxPrice) where.basePrice.lte = options.maxPrice;
+                }
+
                 where.isActive = true;
                 const skip = ((options.page || 1) - 1) * (options.pageSize || 10);
+
+                let orderBy: any = { createdAt: 'desc' };
+                if (options.sort === 'price_asc') orderBy = { basePrice: 'asc' };
+                else if (options.sort === 'price_desc') orderBy = { basePrice: 'desc' };
+                else if (options.sort === 'newest') orderBy = { createdAt: 'desc' };
 
                 const [products, total] = await Promise.all([
                     prismadb.product.findMany({
@@ -127,7 +149,7 @@ export async function getProducts(options: {
                         },
                         take: options.limit || options.pageSize || 10,
                         skip: options.limit ? 0 : skip,
-                        orderBy: { createdAt: 'desc' }
+                        orderBy
                     }),
                     prismadb.product.count({ where })
                 ]);

@@ -1,8 +1,6 @@
 import Banner from '@/components/shop/Banner';
 import ProductSection from '@/components/shop/ProductSection';
 import LatestProducts from '@/components/shop/LatestProducts';
-import GatewayGrid from '@/components/shop/GatewayGrid';
-import QuadCard from '@/components/shop/QuadCard';
 import { getBanners } from '@/lib/actions/banner';
 import { getProducts } from '@/lib/actions/product';
 import { getCategoriesTree } from '@/lib/actions/category';
@@ -22,42 +20,43 @@ interface BannerItem {
   order: number;
 }
 
-interface QuadItem {
-  title: string;
-  imageUrl: string;
-  link: string;
-}
 
 export default async function ShopHome() {
-  const [
-    { data: allBanners },
-    { data: latestProducts },
-    { data: featuredProducts },
-    { data: bestSellers },
-    { data: offerProducts },
-    { data: categoriesTree },
-    session
-  ] = await Promise.all([
-    getBanners({ isActive: true, pageSize: 50 }),
-    getProducts({ limit: 5 }),
-    getProducts({ isFeatured: true, limit: 4 }),
-    getProducts({ isBestSeller: true, limit: 4 }),
-    getProducts({ isOffer: true, limit: 4 }),
-    getCategoriesTree(),
-    getSession()
-  ]);
+  // 1. Fetch Categories first to determine what sections to show
+  const { data: categories } = await getCategoriesTree();
+  const topCategories = (categories || []).slice(0, 4); // Display top 4 categories
 
-  const typedBanners = (allBanners || []) as unknown as BannerItem[];
+  // 2. Prepare promises for all data
+  const dataPromises = [
+    getBanners({ isActive: true, pageSize: 50 }),           // 0: Banners
+    getProducts({ limit: 8 }),                              // 1: Latest (fallback)
+    getProducts({ isFeatured: true, limit: 5 }),            // 2: Featured
+    getProducts({ isBestSeller: true, limit: 5 }),          // 3: Best Sellers
+    getProducts({ isOffer: true, limit: 5 }),               // 4: Offers
+    getSession(),                                           // 5: Session
+    ...topCategories.map(cat => getProducts({ categorySlug: cat.slug, limit: 5 })) // 6+: Category Products
+  ];
+
+  const results = await Promise.all(dataPromises);
+
+  // 3. Extract Data
+  const allBanners = (results[0] as any).data || [];
+  const latestProducts = (results[1] as any).data || [];
+  const featuredProducts = (results[2] as any).data || [];
+  const bestSellers = (results[3] as any).data || [];
+  const offerProducts = (results[4] as any).data || [];
+  const session = results[5] as any;
+
+  // Extract Category Products
+  const categorySections = topCategories.map((cat, index) => ({
+    category: cat,
+    products: (results[6 + index] as any).data || []
+  }));
+
+  const typedBanners = allBanners as BannerItem[];
   const mainBanners = typedBanners.filter(b => b.type === 'HOME_MAIN');
   const offerBanners = typedBanners.filter(b => b.type === 'OFFER_SECTION');
   const bestSellerBanners = typedBanners.filter(b => b.type === 'BEST_SELLER_SECTION');
-
-  // Fallback Logic: Populate sections with latest products if specific listings are empty
-  const displayFeatured = (featuredProducts && featuredProducts.length > 0) ? featuredProducts : (latestProducts || []).slice(0, 4);
-  const displayBestSellers = (bestSellers && bestSellers.length > 0) ? bestSellers : (latestProducts || []).slice(0, 4);
-  const displayOffers = (offerProducts && offerProducts.length > 0) ? offerProducts : (latestProducts || []).slice(0, 4);
-  const displayLatest = latestProducts || [];
-
 
   return (
     <div className="flex flex-col min-h-screen pb-10 bg-[#F2F2F2]">
@@ -66,85 +65,51 @@ export default async function ShopHome() {
         <Banner banners={mainBanners} type="main" />
       </div>
 
-      {/* Category Gateway Grid (Amazon Style) */}
-      <GatewayGrid>
-        <QuadCard
-          title="Silk Masterpieces"
-          items={displayFeatured.slice(0, 4).map((p: any) => ({
-            title: p.name,
-            imageUrl: p.images?.[0]?.url || '/placeholder.png',
-            link: `/product/${p.slug}`
-          })) as QuadItem[]}
-          footerLink={{ text: "See all silk", href: "/collections/featured" }}
-        />
-        <QuadCard
-          title="Daily Elegance"
-          items={displayLatest.slice(0, 4).map((p: any) => ({
-            title: p.name,
-            imageUrl: p.images?.[0]?.url || '/placeholder.png',
-            link: `/product/${p.slug}`
-          })) as QuadItem[]}
-          footerLink={{ text: "Shop cotton", href: "/collections/new-arrivals" }}
-        />
-        <QuadCard
-          title="New Arrivals"
-          items={displayBestSellers.slice(0, 4).map((p: any) => ({
-            title: p.name,
-            imageUrl: p.images?.[0]?.url || '/placeholder.png',
-            link: `/product/${p.slug}`
-          })) as QuadItem[]}
-          footerLink={{ text: "Explore new", href: "/collections/best-sellers" }}
-        />
-        <QuadCard
-          title="Trending Now"
-          items={displayOffers.slice(0, 4).map((p: any) => ({
-            title: p.name,
-            imageUrl: p.images?.[0]?.url || '/placeholder.png',
-            link: `/product/${p.slug}`
-          })) as QuadItem[]}
-          footerLink={{ text: "View offers", href: "/collections/offers" }}
-        />
-      </GatewayGrid>
 
-      {/* Advanced Latest Product Listing */}
-      {latestProducts && latestProducts.length > 0 && (
+      {/* 1. Latest Products (Global) */}
+      {latestProducts.length > 0 && (
         <div className="bg-white py-12">
+          {/* <h2 className="text-2xl font-black text-gray-900 uppercase italic tracking-tighter mb-8 px-6 max-w-[1700px] mx-auto">Fresh Drops</h2> */}
           <LatestProducts products={latestProducts} session={session} />
         </div>
       )}
 
-      {/* Featured Products */}
-      <ProductSection
-        title="Heritage Masterpieces"
-        subtitle="Handpicked premium pieces for your wardrobe"
-        products={displayFeatured}
-        bgVariant="white"
-        viewAllLink="/collections/featured"
-        session={session}
-      />
+      {/* 2. Dynamic Category Sections */}
+      {categorySections.map(({ category, products }, index) => {
+        if (!products || products.length === 0) return null;
 
-      {/* Best Sellers Section with its own Banner */}
-      {bestSellerBanners.length > 0 && <Banner banners={bestSellerBanners} type="section" />}
-      <ProductSection
-        title="Crowd Favorites"
-        subtitle="Most loved and trending styles right now"
-        products={displayBestSellers}
-        bgVariant="gray"
-        viewAllLink="/collections/best-sellers"
-        session={session}
-      />
+        // Alternate background variations
+        const isGray = index % 2 === 0;
 
-      {/* Special Offers Section with its own Banner */}
-      {offerBanners.length > 0 && <Banner banners={offerBanners} type="section" />}
-      <ProductSection
-        title="Flash Deals"
-        subtitle="Limited time seasonal discounts"
-        products={displayOffers}
-        bgVariant="white"
-        viewAllLink="/collections/offers"
-        session={session}
-      />
+        return (
+          <div key={category.id}>
+            {/* Inject Banners in between sections */}
+            {index === 1 && bestSellerBanners.length > 0 && <Banner banners={bestSellerBanners} type="section" />}
+            {index === 2 && offerBanners.length > 0 && <Banner banners={offerBanners} type="section" />}
 
+            <ProductSection
+              title={category.name}
+              subtitle={`Explore our exclusive collection of ${category.name}`}
+              products={products}
+              bgVariant={isGray ? "gray" : "white"}
+              viewAllLink={`/category/${category.slug}`}
+              session={session}
+            />
+          </div>
+        );
+      })}
+
+      {/* 3. Featured / Offers (If distinct from categories) */}
+      {offerProducts.length > 0 && (
+        <ProductSection
+          title="Limited Time Offers"
+          subtitle="Grab these deals before they are gone"
+          products={offerProducts}
+          bgVariant="white"
+          viewAllLink="/collections/offers"
+          session={session}
+        />
+      )}
 
       {/* Newsletter / Footer Promo */}
       <section className="bg-orange-600 py-24 mt-12 overflow-hidden relative">
