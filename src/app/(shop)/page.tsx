@@ -52,6 +52,12 @@ export default async function ShopHome() {
   const offerBanners = typedBanners.filter(b => b.type === 'OFFER_SECTION');
   const bestSellerBanners = typedBanners.filter(b => b.type === 'BEST_SELLER_SECTION');
 
+  // Fallback Logic: Populate sections with latest products if specific listings are empty
+  const displayFeatured = (featuredProducts && featuredProducts.length > 0) ? featuredProducts : (latestProducts || []).slice(0, 4);
+  const displayBestSellers = (bestSellers && bestSellers.length > 0) ? bestSellers : (latestProducts || []).slice(0, 4);
+  const displayOffers = (offerProducts && offerProducts.length > 0) ? offerProducts : (latestProducts || []).slice(0, 4);
+  const displayLatest = latestProducts || [];
+
 
   return (
     <div className="flex flex-col min-h-screen pb-10 bg-[#F2F2F2]">
@@ -64,7 +70,7 @@ export default async function ShopHome() {
       <GatewayGrid>
         <QuadCard
           title="Silk Masterpieces"
-          items={(featuredProducts || []).slice(0, 4).map((p: any) => ({
+          items={displayFeatured.slice(0, 4).map((p: any) => ({
             title: p.name,
             imageUrl: p.images?.[0]?.url || '/placeholder.png',
             link: `/product/${p.slug}`
@@ -73,7 +79,7 @@ export default async function ShopHome() {
         />
         <QuadCard
           title="Daily Elegance"
-          items={(latestProducts || []).slice(0, 4).map((p: any) => ({
+          items={displayLatest.slice(0, 4).map((p: any) => ({
             title: p.name,
             imageUrl: p.images?.[0]?.url || '/placeholder.png',
             link: `/product/${p.slug}`
@@ -82,7 +88,7 @@ export default async function ShopHome() {
         />
         <QuadCard
           title="New Arrivals"
-          items={(bestSellers || []).slice(0, 4).map((p: any) => ({
+          items={displayBestSellers.slice(0, 4).map((p: any) => ({
             title: p.name,
             imageUrl: p.images?.[0]?.url || '/placeholder.png',
             link: `/product/${p.slug}`
@@ -91,7 +97,7 @@ export default async function ShopHome() {
         />
         <QuadCard
           title="Trending Now"
-          items={(offerProducts || []).slice(0, 4).map((p: any) => ({
+          items={displayOffers.slice(0, 4).map((p: any) => ({
             title: p.name,
             imageUrl: p.images?.[0]?.url || '/placeholder.png',
             link: `/product/${p.slug}`
@@ -111,7 +117,7 @@ export default async function ShopHome() {
       <ProductSection
         title="Heritage Masterpieces"
         subtitle="Handpicked premium pieces for your wardrobe"
-        products={featuredProducts || []}
+        products={displayFeatured}
         bgVariant="white"
         viewAllLink="/category/featured"
         session={session}
@@ -122,7 +128,7 @@ export default async function ShopHome() {
       <ProductSection
         title="Crowd Favorites"
         subtitle="Most loved and trending styles right now"
-        products={bestSellers || []}
+        products={displayBestSellers}
         bgVariant="gray"
         viewAllLink="/category/best-sellers"
         session={session}
@@ -133,7 +139,7 @@ export default async function ShopHome() {
       <ProductSection
         title="Flash Deals"
         subtitle="Limited time seasonal discounts"
-        products={offerProducts || []}
+        products={displayOffers}
         bgVariant="white"
         viewAllLink="/category/offers"
         session={session}

@@ -42,7 +42,7 @@ export default async function CategoryPage({
     return (
         <div className="bg-gray-50 min-h-screen">
             {/* Breadcrumbs - Standardized Offset for Header Alignment */}
-            <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-[160px] z-40 transition-all duration-300">
+            <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-[160px] z-40 transition-all duration-300 hidden lg:block">
                 <div className="max-w-[1700px] mx-auto px-4 lg:px-6 py-5">
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
                         <Link href="/" className="hover:text-orange-600 transition-colors">Home</Link>

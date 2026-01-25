@@ -38,11 +38,11 @@ export default function Footer({ categories }: { categories: any[] }) {
                         <div className="space-y-4">
                             <div className="flex items-start gap-3 text-sm text-gray-400">
                                 <MapPin className="w-5 h-5 text-orange-500 shrink-0" />
-                                <span>123 Textile Plaza, Fashion Street,<br />Salem, Tamil Nadu - 636001</span>
+                                <span>4/7 V. O. C STREET, PASUMPON NAGAR,<br />PALAGANATHAM, Madurai</span>
                             </div>
                             <div className="flex items-center gap-3 text-sm text-gray-400">
                                 <Phone className="w-5 h-5 text-orange-500 shrink-0" />
-                                <span>+91 98765 43210</span>
+                                <span>+91 97905 07173</span>
                             </div>
                             <div className="flex items-center gap-3 text-sm text-gray-400">
                                 <Mail className="w-5 h-5 text-orange-500 shrink-0" />

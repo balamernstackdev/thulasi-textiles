@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Search, ShoppingCart, Menu, User, MapPin, X, ChevronRight, ChevronDown } from 'lucide-react';
 import { Category } from '@prisma/client';
@@ -10,6 +11,7 @@ import UserMenu from './UserMenu';
 type CategoryWithChildren = Category & { children: Category[] };
 
 export default function Navbar({ categories, session }: { categories: CategoryWithChildren[], session?: any }) {
+    const router = useRouter();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeMobileCategory, setActiveMobileCategory] = useState<string | null>(null);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -43,7 +45,7 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                                     className="object-contain"
                                 />
                             </div>
-                            <div className="flex flex-col leading-none text-center hidden xs:flex">
+                            <div className="flex flex-col leading-none text-center">
                                 <span className="text-[10px] md:text-sm font-black tracking-tighter uppercase italic">
                                     <span className="text-gray-400">Thulasi</span> <span className="text-orange-600">Textiles</span>
                                 </span>
@@ -150,34 +152,55 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                             <div>
                                 <h3 className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em] mb-6">Collections</h3>
                                 <div className="space-y-2">
-                                    {categories.map((cat) => (
-                                        <div key={cat.id} className="space-y-1">
-                                            <div
-                                                className="flex justify-between items-center py-4 px-2 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors"
-                                                onClick={() => setActiveMobileCategory(activeMobileCategory === cat.id ? null : cat.id)}
-                                            >
-                                                <Link href={`/category/${cat.slug}`} className="text-gray-900 font-bold flex-1" onClick={(e) => e.stopPropagation()}>
-                                                    {cat.name}
-                                                </Link>
-                                                <ChevronDown className={`w-4 h-4 text-gray-300 transition-transform ${activeMobileCategory === cat.id ? 'rotate-180' : ''}`} />
-                                            </div>
+                                    {categories.map((cat) => {
+                                        const hasChildren = cat.children && cat.children.length > 0;
+                                        const isOpen = activeMobileCategory === cat.id;
 
-                                            {activeMobileCategory === cat.id && (
-                                                <div className="ml-4 space-y-1 animate-in fade-in slide-in-from-top-2">
-                                                    {cat.children && cat.children.map((sub: Category) => (
+                                        return (
+                                            <div key={cat.id} className="space-y-1">
+                                                <div
+                                                    className={`flex justify-between items-center py-4 px-3 rounded-2xl cursor-pointer transition-all ${isOpen ? 'bg-orange-50 border border-orange-100' : 'hover:bg-gray-50'}`}
+                                                    onClick={() => {
+                                                        if (hasChildren) {
+                                                            setActiveMobileCategory(isOpen ? null : cat.id);
+                                                        } else {
+                                                            setIsMenuOpen(false);
+                                                            router.push(`/category/${cat.slug}`);
+                                                        }
+                                                    }}
+                                                >
+                                                    <span className={`font-bold transition-colors ${isOpen ? 'text-orange-600' : 'text-gray-900'}`}>
+                                                        {cat.name}
+                                                    </span>
+                                                    {hasChildren && (
+                                                        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180 text-orange-600' : 'text-gray-300'}`} />
+                                                    )}
+                                                </div>
+
+                                                {hasChildren && isOpen && (
+                                                    <div className="ml-4 pl-4 border-l border-orange-100 space-y-1 animate-in fade-in slide-in-from-top-2 duration-300">
                                                         <Link
-                                                            key={sub.id}
-                                                            href={`/category/${sub.slug}`}
-                                                            className="block py-3 px-4 text-sm text-gray-500 font-bold hover:text-orange-600 transition-colors"
+                                                            href={`/category/${cat.slug}`}
+                                                            className="block py-3 px-4 text-xs text-orange-600 font-black uppercase tracking-widest hover:bg-orange-50 rounded-xl transition-all"
                                                             onClick={() => setIsMenuOpen(false)}
                                                         >
-                                                            {sub.name}
+                                                            View All {cat.name}
                                                         </Link>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                                        {cat.children.map((sub: Category) => (
+                                                            <Link
+                                                                key={sub.id}
+                                                                href={`/category/${sub.slug}`}
+                                                                className="block py-3 px-4 text-sm text-gray-500 font-bold hover:text-orange-600 transition-colors"
+                                                                onClick={() => setIsMenuOpen(false)}
+                                                            >
+                                                                {sub.name}
+                                                            </Link>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>

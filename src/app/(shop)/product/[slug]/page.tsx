@@ -73,7 +73,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     return (
         <div className="bg-white min-h-screen">
             {/* Breadcrumbs - Now Sticky with Balanced Offset */}
-            <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-[60px] lg:top-[160px] z-40 transition-all duration-300">
+            <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-[60px] lg:top-[160px] z-40 transition-all duration-300 hidden lg:block">
                 <div className="max-w-[1700px] mx-auto px-6 py-1">
                     <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
                         <Link href="/" className="hover:text-orange-600 transition-colors">Home</Link>

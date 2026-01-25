@@ -76,10 +76,10 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[4fr_4fr_3.5fr] gap-x-6 xl:gap-x-8 gap-y-6 mb-8 items-start">
             {/* COLUMN 1: AMAZON-STYLE GALLERY */}
-            <div className="flex flex-col-reverse lg:flex-row gap-4 items-start">
-                {/* Vertical Thumbnail Strip (Desktop) / Horizontal (Mobile) */}
+            <div className="flex flex-col-reverse lg:flex-row gap-4 items-start lg:sticky lg:top-[230px]">
+                {/* Vertical Thumbnail Strip - Desktop Only */}
                 {images.length > 1 && (
-                    <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-[600px] py-1 shrink-0 self-start">
+                    <div className="hidden lg:flex lg:flex-col gap-3 overflow-y-auto lg:max-h-[600px] py-1 shrink-0">
                         {images.map((img: any, idx: number) => {
                             const isPrimary = idx === currentIdx;
                             return (
@@ -107,7 +107,7 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
 
                 {/* Primary Image View */}
                 <div
-                    className="relative flex-1 aspect-square rounded-sm overflow-hidden bg-white border border-gray-100 shadow-sm group cursor-zoom-in p-1"
+                    className="relative flex-1 w-full aspect-[4/5] lg:aspect-square rounded-sm overflow-hidden bg-white border border-gray-100 shadow-sm group cursor-zoom-in p-1"
                     onMouseEnter={() => setIsAutoPlaying(false)}
                     onMouseLeave={() => setIsAutoPlaying(true)}
                 >
@@ -129,6 +129,22 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                             </span>
                         </div>
                     )}
+
+                    {/* Mobile Dots Indicator */}
+                    {images.length > 1 && (
+                        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 lg:hidden z-20">
+                            {images.map((_: any, idx: number) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => {
+                                        setCurrentIdx(idx);
+                                        setIsAutoPlaying(false);
+                                    }}
+                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentIdx ? 'bg-orange-600 w-4' : 'bg-gray-300'}`}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -144,6 +160,13 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                     <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-1 leading-tight tracking-tight">
                         {product.name}
                     </h1>
+
+                    {/* Mobile Price Display */}
+                    <div className="lg:hidden flex items-baseline gap-2 mb-2">
+                        <span className="text-2xl font-bold text-gray-900">₹{currentPrice.toLocaleString()}</span>
+                        <span className="text-sm text-gray-400 line-through">₹{originalPrice.toLocaleString()}</span>
+                        <span className="text-sm text-[#007600] font-bold">-{Math.round((1 - currentPrice / originalPrice) * 100)}%</span>
+                    </div>
 
                     <div className="flex flex-wrap items-center gap-3 mb-2">
                         <div className="flex items-center gap-1 text-[#FFA41C]">
