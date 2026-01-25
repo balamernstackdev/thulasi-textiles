@@ -6,8 +6,16 @@ import { ShoppingBag, DollarSign, Package, Clock } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
-  const productCount = await prismadb.product.count();
-  const categoryCount = await prismadb.category.count();
+  let productCount = 0;
+  let categoryCount = 0;
+
+  try {
+    productCount = await prismadb.product.count();
+    categoryCount = await prismadb.category.count();
+  } catch (error) {
+    console.error('Failed to fetch dashboard stats:', error);
+  }
+
   // Placeholder for orders until we have the model fully populated
   const orderCount = 0;
   const revenue = 0;

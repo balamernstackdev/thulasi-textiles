@@ -100,52 +100,67 @@ export async function getProducts(options: {
     const key = JSON.stringify(options);
     return unstable_cache(
         async () => {
-            let where: any = {};
-            if (options.isFeatured) where.isFeatured = true;
-            if (options.isBestSeller) where.isBestSeller = true;
-            if (options.isOffer) where.isOffer = true;
+            try {
+                let where: any = {};
+                if (options.isFeatured) where.isFeatured = true;
+                if (options.isBestSeller) where.isBestSeller = true;
+                if (options.isOffer) where.isOffer = true;
 
-            if (options.categorySlug) {
-                where.category = {
-                    OR: [
-                        { slug: options.categorySlug },
-                        { parent: { slug: options.categorySlug } }
-                    ]
+                if (options.categorySlug) {
+                    where.category = {
+                        OR: [
+                            { slug: options.categorySlug },
+                            { parent: { slug: options.categorySlug } }
+                        ]
+                    };
+                }
+
+                where.isActive = true;
+                const skip = ((options.page || 1) - 1) * (options.pageSize || 10);
+
+                const [products, total] = await Promise.all([
+                    prismadb.product.findMany({
+                        where,
+                        include: {
+                            images: { take: 1 },
+                            category: true,
+                        },
+                        take: options.limit || options.pageSize || 10,
+                        skip: options.limit ? 0 : skip,
+                        orderBy: { createdAt: 'desc' }
+                    }),
+                    prismadb.product.count({ where })
+                ]);
+
+                const serializedProducts = products.map(p => ({
+                    ...p,
+                    basePrice: Number(p.basePrice),
+                }));
+
+                return {
+                    success: true,
+                    data: serializedProducts,
+                    pagination: {
+                        total,
+                        page: options.page || 1,
+                        pageSize: options.pageSize || 10,
+                        totalPages: Math.ceil(total / (options.pageSize || 10))
+                    }
+                };
+            } catch (error) {
+                console.error('Failed to get products:', error);
+                return {
+                    success: false,
+                    data: [],
+                    pagination: {
+                        total: 0,
+                        page: options.page || 1,
+                        pageSize: options.pageSize || 10,
+                        totalPages: 0
+                    },
+                    error: 'Failed to fetch products'
                 };
             }
-
-            where.isActive = true;
-            const skip = ((options.page || 1) - 1) * (options.pageSize || 10);
-
-            const [products, total] = await Promise.all([
-                prismadb.product.findMany({
-                    where,
-                    include: {
-                        images: { take: 1 },
-                        category: true,
-                    },
-                    take: options.limit || options.pageSize || 10,
-                    skip: options.limit ? 0 : skip,
-                    orderBy: { createdAt: 'desc' }
-                }),
-                prismadb.product.count({ where })
-            ]);
-
-            const serializedProducts = products.map(p => ({
-                ...p,
-                basePrice: Number(p.basePrice),
-            }));
-
-            return {
-                success: true,
-                data: serializedProducts,
-                pagination: {
-                    total,
-                    page: options.page || 1,
-                    pageSize: options.pageSize || 10,
-                    totalPages: Math.ceil(total / (options.pageSize || 10))
-                }
-            };
         },
         ['products-list', key],
         { tags: ['products'], revalidate: 3600 }
