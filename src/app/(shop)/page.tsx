@@ -7,6 +7,8 @@ import { getBanners } from '@/lib/actions/banner';
 import { getProducts } from '@/lib/actions/product';
 import { getCategoriesTree } from '@/lib/actions/category';
 
+export const dynamic = 'force-dynamic';
+
 interface BannerItem {
   id: string;
   imageUrl: string;

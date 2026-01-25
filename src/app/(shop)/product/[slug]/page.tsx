@@ -1,4 +1,6 @@
 import { getProductBySlug, getProducts } from '@/lib/actions/product';
+
+export const dynamic = 'force-dynamic';
 // import ProductCard from '@/components/shop/ProductCard';
 import Link from 'next/link';
 import { ChevronRight, ShieldCheck, Truck, RotateCcw, Star, ArrowRight, Sparkles, Scissors, MapPin, CheckCircle2, AlertCircle } from 'lucide-react';

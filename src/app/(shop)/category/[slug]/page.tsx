@@ -1,5 +1,7 @@
 import { getCategoryBySlug } from '@/lib/actions/category';
 import { getProducts } from '@/lib/actions/product';
+
+export const dynamic = 'force-dynamic';
 import ProductCard from '@/components/shop/ProductCard';
 import Pagination from '@/components/shared/Pagination';
 import Link from 'next/link';

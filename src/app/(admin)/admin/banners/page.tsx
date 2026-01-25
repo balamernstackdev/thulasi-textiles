@@ -3,6 +3,8 @@ import { getBanners, createBanner, deleteBanner } from '@/lib/actions/banner';
 import { revalidatePath } from 'next/cache';
 import { Plus, Trash2, Link2 } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 import Pagination from '@/components/shared/Pagination';
 import BannerForm from '@/components/admin/BannerForm';
 

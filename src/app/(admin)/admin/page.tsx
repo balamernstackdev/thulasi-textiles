@@ -3,6 +3,8 @@ import prismadb from '@/lib/prisma';
 import { Card, CardContent } from '@/components/ui/card';
 import { ShoppingBag, DollarSign, Package, Clock } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   const productCount = await prismadb.product.count();
   const categoryCount = await prismadb.category.count();

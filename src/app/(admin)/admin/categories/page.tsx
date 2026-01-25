@@ -4,6 +4,8 @@ import { Plus, Edit2, Trash2, Package } from 'lucide-react';
 import { getCategories } from '@/lib/actions/category';
 import Pagination from '@/components/shared/Pagination';
 
+export const dynamic = 'force-dynamic';
+
 export default async function CategoriesPage({
     searchParams
 }: {

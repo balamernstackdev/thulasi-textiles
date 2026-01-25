@@ -1,6 +1,8 @@
 import { ShoppingBag } from 'lucide-react';
 import Pagination from '@/components/shared/Pagination';
 
+export const dynamic = 'force-dynamic';
+
 export default async function OrdersPage({
     searchParams
 }: {

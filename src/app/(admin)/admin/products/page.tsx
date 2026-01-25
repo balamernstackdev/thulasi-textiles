@@ -5,6 +5,8 @@ import { getProducts } from '@/lib/actions/product';
 import Pagination from '@/components/shared/Pagination';
 import DeleteProductButton from '@/components/admin/DeleteProductButton';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProductsPage({
     searchParams
 }: {
