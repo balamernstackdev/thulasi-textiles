@@ -148,7 +148,7 @@ export async function getProducts(options: {
                     }
                 };
             } catch (error) {
-                console.error('Failed to get products:', error);
+                console.error('[DATABASE_ERROR] Failed to get products:', error);
                 return {
                     success: false,
                     data: [],

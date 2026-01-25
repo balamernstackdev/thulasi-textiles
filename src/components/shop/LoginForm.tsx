@@ -99,6 +99,7 @@ export default function LoginForm() {
                                 <input
                                     type="email"
                                     required
+                                    autoComplete="email"
                                     className="w-full bg-gray-50 border-2 border-transparent focus:border-orange-500/20 focus:bg-white rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-gray-900 outline-none transition-all shadow-sm focus:ring-4 focus:ring-orange-500/5 placeholder:text-gray-400"
                                     placeholder="name@email.com"
                                 />
@@ -115,6 +116,7 @@ export default function LoginForm() {
                                 <input
                                     type="password"
                                     required
+                                    autoComplete="current-password"
                                     className="w-full bg-gray-50 border-2 border-transparent focus:border-orange-500/20 focus:bg-white rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-gray-900 outline-none transition-all shadow-sm focus:ring-4 focus:ring-orange-500/5 placeholder:text-gray-400"
                                     placeholder="••••••••"
                                 />

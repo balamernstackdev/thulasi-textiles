@@ -13,8 +13,10 @@ export const getCategoriesTree = unstable_cache(
                 },
                 orderBy: { name: 'asc' }
             });
+            console.log(`[DATABASE_SUCCESS] Loaded ${categories.length} root categories.`);
             return { success: true, data: categories };
         } catch (error) {
+            console.error('[DATABASE_ERROR] Failed to load categories tree:', error);
             return { success: false, error: 'Failed to load categories' };
         }
     },

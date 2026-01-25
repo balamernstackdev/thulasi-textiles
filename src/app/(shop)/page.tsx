@@ -22,6 +22,12 @@ interface BannerItem {
   order: number;
 }
 
+interface QuadItem {
+  title: string;
+  imageUrl: string;
+  link: string;
+}
+
 export default async function ShopHome() {
   const [
     { data: allBanners },
@@ -53,6 +59,46 @@ export default async function ShopHome() {
       <div className="relative z-10">
         <Banner banners={mainBanners} type="main" />
       </div>
+
+      {/* Category Gateway Grid (Amazon Style) */}
+      <GatewayGrid>
+        <QuadCard
+          title="Silk Masterpieces"
+          items={(featuredProducts || []).slice(0, 4).map((p: any) => ({
+            title: p.name,
+            imageUrl: p.images?.[0]?.url || '/placeholder.png',
+            link: `/product/${p.slug}`
+          })) as QuadItem[]}
+          footerLink={{ text: "See all silk", href: "/category/silk-sarees" }}
+        />
+        <QuadCard
+          title="Daily Elegance"
+          items={(latestProducts || []).slice(0, 4).map((p: any) => ({
+            title: p.name,
+            imageUrl: p.images?.[0]?.url || '/placeholder.png',
+            link: `/product/${p.slug}`
+          })) as QuadItem[]}
+          footerLink={{ text: "Shop cotton", href: "/category/cotton-sarees" }}
+        />
+        <QuadCard
+          title="New Arrivals"
+          items={(bestSellers || []).slice(0, 4).map((p: any) => ({
+            title: p.name,
+            imageUrl: p.images?.[0]?.url || '/placeholder.png',
+            link: `/product/${p.slug}`
+          })) as QuadItem[]}
+          footerLink={{ text: "Explore new", href: "/category/new-arrivals" }}
+        />
+        <QuadCard
+          title="Trending Now"
+          items={(offerProducts || []).slice(0, 4).map((p: any) => ({
+            title: p.name,
+            imageUrl: p.images?.[0]?.url || '/placeholder.png',
+            link: `/product/${p.slug}`
+          })) as QuadItem[]}
+          footerLink={{ text: "View offers", href: "/category/offers" }}
+        />
+      </GatewayGrid>
 
       {/* Advanced Latest Product Listing */}
       {latestProducts && latestProducts.length > 0 && (
