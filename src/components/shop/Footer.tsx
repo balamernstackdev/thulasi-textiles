@@ -73,9 +73,11 @@ export default function Footer({ categories }: { categories: any[] }) {
                     <div>
                         <h4 className="text-lg font-bold mb-6 border-b border-gray-700 pb-2 inline-block">Customer Care</h4>
                         <ul className="space-y-3">
-                            <li><Link href="/profile" className="text-gray-400 hover:text-orange-500 text-sm">My Account</Link></li>
+                            <li><Link href="/collections/new-arrivals" className="text-gray-400 hover:text-orange-500 text-sm">New Arrivals</Link></li>
+                            <li><Link href="/collections/best-sellers" className="text-gray-400 hover:text-orange-500 text-sm">Best Sellers</Link></li>
+                            <li><Link href="/collections/offers" className="text-gray-400 hover:text-orange-500 text-sm">Special Offers</Link></li>
+                            <li className="pt-2"><Link href="/profile" className="text-gray-400 hover:text-orange-500 text-sm">My Account</Link></li>
                             <li><Link href="/orders" className="text-gray-400 hover:text-orange-500 text-sm">Order Tracking</Link></li>
-                            {/* <li><Link href="/signup" className="text-gray-400 hover:text-orange-500 text-sm">Join Membership</Link></li> */}
                             <li><Link href="/privacy-policy" className="text-gray-400 hover:text-orange-500 text-sm">Privacy Policy</Link></li>
                             <li><Link href="/terms-and-conditions" className="text-gray-400 hover:text-orange-500 text-sm">Terms & Conditions</Link></li>
                         </ul>

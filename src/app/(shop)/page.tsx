@@ -75,7 +75,7 @@ export default async function ShopHome() {
             imageUrl: p.images?.[0]?.url || '/placeholder.png',
             link: `/product/${p.slug}`
           })) as QuadItem[]}
-          footerLink={{ text: "See all silk", href: "/category/silk-sarees" }}
+          footerLink={{ text: "See all silk", href: "/collections/featured" }}
         />
         <QuadCard
           title="Daily Elegance"
@@ -84,7 +84,7 @@ export default async function ShopHome() {
             imageUrl: p.images?.[0]?.url || '/placeholder.png',
             link: `/product/${p.slug}`
           })) as QuadItem[]}
-          footerLink={{ text: "Shop cotton", href: "/category/cotton-sarees" }}
+          footerLink={{ text: "Shop cotton", href: "/collections/new-arrivals" }}
         />
         <QuadCard
           title="New Arrivals"
@@ -93,7 +93,7 @@ export default async function ShopHome() {
             imageUrl: p.images?.[0]?.url || '/placeholder.png',
             link: `/product/${p.slug}`
           })) as QuadItem[]}
-          footerLink={{ text: "Explore new", href: "/category/new-arrivals" }}
+          footerLink={{ text: "Explore new", href: "/collections/best-sellers" }}
         />
         <QuadCard
           title="Trending Now"
@@ -102,7 +102,7 @@ export default async function ShopHome() {
             imageUrl: p.images?.[0]?.url || '/placeholder.png',
             link: `/product/${p.slug}`
           })) as QuadItem[]}
-          footerLink={{ text: "View offers", href: "/category/offers" }}
+          footerLink={{ text: "View offers", href: "/collections/offers" }}
         />
       </GatewayGrid>
 
@@ -119,7 +119,7 @@ export default async function ShopHome() {
         subtitle="Handpicked premium pieces for your wardrobe"
         products={displayFeatured}
         bgVariant="white"
-        viewAllLink="/category/featured"
+        viewAllLink="/collections/featured"
         session={session}
       />
 
@@ -130,7 +130,7 @@ export default async function ShopHome() {
         subtitle="Most loved and trending styles right now"
         products={displayBestSellers}
         bgVariant="gray"
-        viewAllLink="/category/best-sellers"
+        viewAllLink="/collections/best-sellers"
         session={session}
       />
 
@@ -141,7 +141,7 @@ export default async function ShopHome() {
         subtitle="Limited time seasonal discounts"
         products={displayOffers}
         bgVariant="white"
-        viewAllLink="/category/offers"
+        viewAllLink="/collections/offers"
         session={session}
       />
 
