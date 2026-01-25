@@ -111,7 +111,7 @@ export default function Footer({ categories }: { categories: any[] }) {
                         &copy; {new Date().getFullYear()} <span className="text-gray-300 font-bold">Thulasi Textiles</span>. All rights reserved.
                     </p>
                     <div className="flex items-center gap-6">
-                        <Image src="https://images.unsplash.com/photo-1557821552-17105176677c?auto=format&fit=crop&w=100&q=80" alt="Payment Methods" width={150} height={30} className="grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all cursor-not-allowed" />
+                        {/* Removed confused placeholder image */}
                     </div>
                 </div>
             </div>
