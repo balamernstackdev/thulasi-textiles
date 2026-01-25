@@ -25,40 +25,66 @@ export default function BannerForm() {
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-            <div className="flex items-center gap-2 mb-6">
-                <Plus className="w-5 h-5 text-orange-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Create Dynamic Banner</h2>
+        <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8 md:p-10 mb-8">
+            <div className="flex items-center gap-4 mb-10">
+                <div className="w-12 h-12 bg-orange-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-100">
+                    <Plus className="w-6 h-6" />
+                </div>
+                <div>
+                    <h2 className="text-2xl font-black text-gray-900 uppercase italic tracking-tighter">New Banner</h2>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1">Global Promotions & Placement</p>
+                </div>
             </div>
 
-            <form action={clientAction} className="space-y-5">
+            <form action={clientAction} className="space-y-8">
                 <input type="hidden" name="imageUrl" value={imageUrl} />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                    {/* Left Column: Image & Type */}
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="type" className="block text-sm font-bold text-gray-700 mb-2">
-                                Placement Location <span className="text-red-500">*</span>
+                {/* Section 1: Placement & Weight */}
+                <section className="bg-gray-50/50 rounded-[2rem] p-6 border border-gray-100">
+                    <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-blue-500" /> Campaign Settings
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                            <label htmlFor="type" className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">
+                                Placement Zone
                             </label>
                             <select
                                 name="type"
                                 id="type"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none text-gray-900 bg-white font-medium"
+                                className="w-full h-14 bg-white border-2 border-gray-100 rounded-xl px-5 text-sm font-bold text-gray-900 outline-none focus:border-orange-600 transition-all cursor-pointer"
                             >
                                 <option value="HOME_MAIN">Main Home Slider (1920x600px)</option>
                                 <option value="BEST_SELLER_SECTION">Best Sellers Section (1920x400px)</option>
                                 <option value="OFFER_SECTION">Offers Section (1920x400px)</option>
                             </select>
                         </div>
+                        <div className="space-y-3">
+                            <label htmlFor="order" className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Display Priority (Weight)</label>
+                            <input
+                                id="order"
+                                type="number"
+                                name="order"
+                                defaultValue={0}
+                                className="w-full h-14 bg-white rounded-xl border-2 border-gray-100 px-5 focus:border-orange-600 outline-none transition-all font-black text-gray-900"
+                            />
+                        </div>
+                    </div>
+                </section>
 
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">
-                                Banner Image <span className="text-red-500">*</span>
+                {/* Section 2: Creative Content */}
+                <section className="bg-gray-50/50 rounded-[2rem] p-6 border border-gray-100">
+                    <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-purple-500" /> Visual & Copy
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* Image Uploader - Takes 1 column */}
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">
+                                Banner Image
                             </label>
-
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                                 <CldUploadWidget
                                     signatureEndpoint="/api/cloudinary/sign"
                                     uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'our-products'}
@@ -72,19 +98,18 @@ export default function BannerForm() {
                                         <Button
                                             type="button"
                                             onClick={() => open()}
-                                            variant="outline"
-                                            className="w-full border-2 border-dashed border-gray-300 py-8 h-auto flex flex-col gap-2 hover:border-orange-500 hover:bg-orange-50 transition-all"
+                                            className="w-full bg-white hover:bg-gray-50 text-gray-900 border-2 border-dashed border-gray-200 hover:border-orange-500 px-6 py-12 h-auto rounded-2xl font-black uppercase tracking-widest transition-all group shadow-sm active:scale-95"
                                         >
-                                            <Upload className="w-6 h-6 text-gray-400 group-hover:text-orange-500" />
-                                            <span className="text-sm font-bold text-gray-500">
-                                                {imageUrl ? 'Change Image' : 'Upload Banner Image'}
-                                            </span>
+                                            <div className="flex flex-col items-center gap-2">
+                                                <Upload className="w-8 h-8 text-gray-300 group-hover:text-orange-500 transition-colors" />
+                                                <span className="text-xs">{imageUrl ? 'Replace Image' : 'Upload Asset'}</span>
+                                            </div>
                                         </Button>
                                     )}
                                 </CldUploadWidget>
 
                                 {imageUrl && (
-                                    <div className="relative group aspect-[21/9] rounded-xl overflow-hidden border border-gray-200">
+                                    <div className="relative group aspect-video rounded-xl overflow-hidden border border-gray-200 shadow-lg">
                                         <img src={imageUrl} alt="Banner Preview" className="w-full h-full object-cover" />
                                         <button
                                             type="button"
@@ -93,106 +118,103 @@ export default function BannerForm() {
                                         >
                                             <X className="w-4 h-4" />
                                         </button>
-                                        <div className="absolute bottom-2 left-2 bg-green-500 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase flex items-center gap-1 shadow-md">
-                                            <Check className="w-3 h-3" /> Ready
-                                        </div>
                                     </div>
                                 )}
                             </div>
                         </div>
-                    </div>
 
-                    {/* Right Column: Content */}
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="title" className="block text-sm font-bold text-gray-700 mb-2">Banner Title (Optional)</label>
-                            <input
-                                id="title"
-                                type="text"
-                                name="title"
-                                placeholder="e.g. FESTIVE COLLECTION"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none text-gray-900"
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="subtitle" className="block text-sm font-bold text-gray-700 mb-2">Subtitle (Optional)</label>
-                            <input
-                                id="subtitle"
-                                type="text"
-                                name="subtitle"
-                                placeholder="e.g. Up to 50% OFF on all items"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none text-gray-900"
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label htmlFor="buttonText" className="block text-sm font-bold text-gray-700 mb-2">Button Text</label>
+                        {/* Text Content - Takes 2 columns */}
+                        <div className="md:col-span-2 space-y-6">
+                            <div className="space-y-3">
+                                <label htmlFor="title" className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Headline Text</label>
                                 <input
-                                    id="buttonText"
+                                    id="title"
                                     type="text"
-                                    name="buttonText"
-                                    defaultValue="Shop Now"
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none text-gray-900"
+                                    name="title"
+                                    placeholder="e.g. FESTIVE COLLECTION"
+                                    className="w-full h-14 rounded-xl border-2 border-gray-100 bg-white px-5 focus:border-orange-600 outline-none transition-all font-bold text-gray-900 placeholder:text-gray-300"
                                 />
                             </div>
-                            <div>
-                                <label htmlFor="order" className="block text-sm font-bold text-gray-700 mb-2">Display Order</label>
+                            <div className="space-y-3">
+                                <label htmlFor="subtitle" className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Subtitle / Sales Hook</label>
                                 <input
-                                    id="order"
-                                    type="number"
-                                    name="order"
-                                    defaultValue={0}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none text-gray-900"
+                                    id="subtitle"
+                                    type="text"
+                                    name="subtitle"
+                                    placeholder="e.g. Up to 50% OFF on all items"
+                                    className="w-full h-14 rounded-xl border-2 border-gray-100 bg-white px-5 focus:border-orange-600 outline-none transition-all font-bold text-gray-900 placeholder:text-gray-300"
                                 />
                             </div>
                         </div>
                     </div>
+                </section>
 
-                    {/* Full Width Row: Link & Active */}
-                    <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                        <div className="md:col-span-2">
-                            <label htmlFor="link" className="block text-sm font-bold text-gray-700 mb-2">Target Link</label>
+                {/* Section 3: Action */}
+                <section className="bg-gray-50/50 rounded-[2rem] p-6 border border-gray-100">
+                    <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500" /> Action & Routing
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        <div className="space-y-3">
+                            <label htmlFor="buttonText" className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">CTA Button Label</label>
+                            <input
+                                id="buttonText"
+                                type="text"
+                                name="buttonText"
+                                defaultValue="Shop Now"
+                                className="w-full h-14 rounded-xl border-2 border-gray-100 bg-white px-5 focus:border-orange-600 outline-none transition-all font-black text-center text-gray-900"
+                            />
+                        </div>
+                        <div className="space-y-3">
+                            <label htmlFor="link" className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Destination URL</label>
                             <div className="relative">
-                                <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                                 <input
                                     id="link"
                                     type="text"
                                     name="link"
                                     placeholder="/category/women"
-                                    className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none text-gray-900"
+                                    className="w-full h-14 rounded-xl border-2 border-gray-100 bg-white pl-12 pr-5 focus:border-orange-600 outline-none transition-all font-bold text-gray-900"
                                 />
                             </div>
                         </div>
-                        <label className="flex items-center justify-center gap-3 cursor-pointer bg-gray-50 border border-gray-200 rounded-lg h-[46px] hover:border-orange-500 transition-all group">
+                    </div>
+                </section>
+
+                {/* Submit Row */}
+                <div className="flex items-center justify-between gap-6 pt-4 border-t border-gray-100">
+                    <label className="flex items-center gap-4 cursor-pointer group">
+                        <div className="relative flex items-center">
                             <input
                                 type="checkbox"
                                 name="isActive"
                                 value="true"
                                 defaultChecked
-                                className="w-5 h-5 text-orange-600 border-gray-300 rounded focus:ring-orange-500 cursor-pointer"
+                                className="peer h-6 w-11 cursor-pointer appearance-none rounded-full bg-gray-200 transition-all checked:bg-emerald-500 hover:bg-gray-300"
                             />
-                            <span className="text-sm font-black text-gray-700 uppercase tracking-widest group-hover:text-orange-600 transition-colors">Active</span>
-                        </label>
-                    </div>
-                </div>
+                            <span className="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-all peer-checked:left-6 shadow-sm"></span>
+                        </div>
+                        <span className="text-xs font-black text-gray-400 uppercase tracking-widest group-hover:text-emerald-600 transition-colors">Visible on Store</span>
+                    </label>
 
-                <button
-                    type="submit"
-                    disabled={!imageUrl || isSubmitting}
-                    className={`px-8 py-3 rounded-lg font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 min-w-[220px] ${!imageUrl || isSubmitting
-                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                        : 'bg-orange-600 hover:bg-orange-700 text-white'
-                        }`}
-                >
-                    {isSubmitting ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                        <>
-                            <Plus className="w-5 h-5" />
-                            Create Banner
-                        </>
-                    )}
-                </button>
+                    <button
+                        type="submit"
+                        disabled={!imageUrl || isSubmitting}
+                        className={`px-10 h-14 rounded-xl font-black uppercase tracking-widest transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3 min-w-[240px] border-none ${!imageUrl || isSubmitting
+                            ? 'bg-gray-100 text-gray-300 cursor-not-allowed shadow-none'
+                            : 'bg-black hover:bg-orange-600 text-white'
+                            }`}
+                    >
+                        {isSubmitting ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <>
+                                <Plus className="w-5 h-5" />
+                                Launch Promotion
+                            </>
+                        )}
+                    </button>
+                </div>
             </form>
         </div>
     );

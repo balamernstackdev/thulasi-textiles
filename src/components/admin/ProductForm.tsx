@@ -516,42 +516,44 @@ export default function ProductForm({ categories, product }: { categories: any[]
                 </div>
 
                 {variants.length > 0 && (
-                    <div className="border-2 border-gray-50 rounded-[2rem] overflow-hidden shadow-sm">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-50/50 text-gray-400 font-black uppercase text-[10px] tracking-widest">
-                                <tr>
-                                    <th className="px-6 py-4">SKU</th>
-                                    <th className="px-6 py-4">Attributes</th>
-                                    <th className="px-6 py-4">Price</th>
-                                    <th className="px-6 py-4 text-center">In Stock</th>
-                                    <th className="px-6 py-4 text-right"></th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {variants.map((v, idx) => (
-                                    <tr key={idx} className="hover:bg-gray-50/30 transition-colors">
-                                        <td className="px-6 py-5 font-black text-gray-900">{v.sku}</td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex gap-2">
-                                                {v.size && <span className="bg-white border text-[10px] font-black px-2 py-0.5 rounded-md text-gray-600">{v.size}</span>}
-                                                {v.color && <span className="bg-white border text-[10px] font-black px-2 py-0.5 rounded-md text-gray-600">{v.color}</span>}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5 font-black text-orange-600">₹{v.price.toLocaleString()}</td>
-                                        <td className="px-6 py-5 font-bold text-center">
-                                            <span className={`${v.stock > 0 ? 'text-green-600' : 'text-red-600'} bg-gray-50 px-3 py-1 rounded-full text-xs`}>
-                                                {v.stock} units
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-5 text-right">
-                                            <button type="button" onClick={() => removeVariant(idx)} className="text-gray-300 hover:text-red-600 transition-colors">
-                                                <Trash2 className="w-5 h-5" />
-                                            </button>
-                                        </td>
+                    <div className="border border-gray-100 rounded-[2rem] overflow-hidden shadow-sm">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left min-w-[600px]">
+                                <thead className="bg-gray-50/50 text-gray-400 font-black uppercase text-[10px] tracking-widest">
+                                    <tr>
+                                        <th className="px-6 py-4">SKU</th>
+                                        <th className="px-6 py-4">Attributes</th>
+                                        <th className="px-6 py-4">Price</th>
+                                        <th className="px-6 py-4 text-center">In Stock</th>
+                                        <th className="px-6 py-4 text-right"></th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {variants.map((v, idx) => (
+                                        <tr key={idx} className="hover:bg-gray-50/30 transition-colors">
+                                            <td className="px-6 py-5 font-black text-gray-900">{v.sku}</td>
+                                            <td className="px-6 py-5">
+                                                <div className="flex gap-2">
+                                                    {v.size && <span className="bg-white border text-[10px] font-black px-2 py-0.5 rounded-md text-gray-600">{v.size}</span>}
+                                                    {v.color && <span className="bg-white border text-[10px] font-black px-2 py-0.5 rounded-md text-gray-600">{v.color}</span>}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-5 font-black text-orange-600">₹{v.price.toLocaleString()}</td>
+                                            <td className="px-6 py-5 font-bold text-center">
+                                                <span className={`${v.stock > 0 ? 'text-green-600' : 'text-red-600'} bg-gray-50 px-3 py-1 rounded-full text-xs`}>
+                                                    {v.stock} units
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-5 text-right">
+                                                <button type="button" onClick={() => removeVariant(idx)} className="text-gray-300 hover:text-red-600 transition-colors">
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
             </div>
