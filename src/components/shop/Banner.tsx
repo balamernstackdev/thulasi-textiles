@@ -45,9 +45,14 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
     const isSection = type === 'section';
 
     return (
-        <div className={`relative w-full overflow-hidden ${isSection ? 'my-12' : 'bg-white pb-6 pt-4'}`}>
-            <div className="max-w-[1700px] mx-auto px-6">
-                <div className={`relative w-full overflow-hidden rounded-[2.5rem] shadow-lg group/banner ${isSection ? 'aspect-[21/6] md:aspect-[32/8] lg:h-[300px]' : 'aspect-[21/9] md:aspect-[32/10] lg:h-[500px]'}`}>
+        <div className={`relative w-full overflow-hidden ${isSection ? 'my-12 px-4 lg:px-6' : 'bg-white'}`}>
+            <div className={`${isSection ? 'max-w-[1700px] mx-auto' : 'w-full'}`}>
+                <div className={`relative w-full overflow-hidden group/banner transition-all duration-500
+                    ${isSection
+                        ? 'rounded-[2.5rem] shadow-lg aspect-[21/6] md:aspect-[32/8] lg:h-[300px]'
+                        : 'aspect-[4/5] md:aspect-[21/9] lg:h-[600px] rounded-none md:rounded-[2.5rem] md:shadow-lg md:max-w-[1700px] md:mx-auto'
+                    }`}
+                >
                     {banners.map((banner, index) => (
                         <div
                             key={banner.id}
@@ -68,7 +73,7 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
                                 {banner.title && (
                                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-20">
                                         <div className={`transition-all duration-1000 transform delay-300 ${index === currentIndex ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-                                            <h1 className={`${isSection ? 'text-xl md:text-3xl' : 'text-2xl md:text-5xl lg:text-7xl'} font-black text-white mb-4 drop-shadow-2xl tracking-tighter uppercase italic`}>
+                                            <h1 className={`${isSection ? 'text-xl md:text-3xl' : 'text-3xl md:text-5xl lg:text-7xl'} font-black text-white mb-4 drop-shadow-2xl tracking-tighter uppercase italic leading-tight`}>
                                                 {banner.title}
                                             </h1>
                                             {banner.subtitle && (
@@ -94,22 +99,22 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
                         <>
                             <button
                                 onClick={prevSlide}
-                                className="absolute left-6 top-1/2 -translate-y-1/2 z-30 opacity-0 group-hover/banner:opacity-100 bg-white/20 hover:bg-white/40 p-4 rounded-full backdrop-blur-md transition-all border border-white/30"
+                                className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-30 opacity-0 md:group-hover/banner:opacity-100 bg-white/20 hover:bg-white/40 p-3 md:p-4 rounded-full backdrop-blur-md transition-all border border-white/30"
                             >
-                                <ChevronLeft className="w-6 h-6 text-white" />
+                                <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
                             </button>
                             <button
                                 onClick={nextSlide}
-                                className="absolute right-6 top-1/2 -translate-y-1/2 z-30 opacity-0 group-hover/banner:opacity-100 bg-white/20 hover:bg-white/40 p-4 rounded-full backdrop-blur-md transition-all border border-white/30"
+                                className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-30 opacity-0 md:group-hover/banner:opacity-100 bg-white/20 hover:bg-white/40 p-3 md:p-4 rounded-full backdrop-blur-md transition-all border border-white/30"
                             >
-                                <ChevronRight className="w-6 h-6 text-white" />
+                                <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
                             </button>
                         </>
                     )}
 
                     {/* Progress Indicators */}
                     {banners.length > 1 && (
-                        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex space-x-3">
+                        <div className="absolute bottom-12 md:bottom-10 left-1/2 -translate-x-1/2 z-30 flex space-x-3">
                             {banners.map((_, index) => (
                                 <button
                                     key={index}
@@ -122,9 +127,9 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
                     )}
                 </div>
 
-                {/* Bottom Gradient for Smooth Transition to Hero */}
+                {/* Bottom Gradient for Smooth Transition to Content */}
                 {!isSection && (
-                    <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-gray-100 to-transparent z-20" />
+                    <div className="absolute bottom-0 inset-x-0 h-48 md:h-64 bg-gradient-to-t from-[#F2F2F2] via-[#F2F2F2]/40 to-transparent z-20 pointer-events-none" />
                 )}
             </div>
         </div>

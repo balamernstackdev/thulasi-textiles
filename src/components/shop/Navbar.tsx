@@ -28,20 +28,20 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                 <div className="flex items-center justify-between py-4 lg:py-5 gap-4 md:gap-8">
 
                     {/* Logo & Mobile Menu Button */}
-                    <div className="flex items-center gap-3 md:gap-6 shrink-0">
+                    <div className="flex items-center gap-2 md:gap-6 shrink-0">
                         <button
-                            className="lg:hidden p-2 -ml-2 text-gray-900 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                            className="lg:hidden p-1.5 -ml-1 text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                             onClick={() => setIsMenuOpen(true)}
                         >
-                            <Menu className="w-5 h-5 md:w-6 md:h-6" />
+                            <Menu className="w-5 h-5" />
                         </button>
-                        <Link href="/" className="flex flex-col items-center gap-1.5 group transition-all">
-                            <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-lg overflow-hidden p-1.5 ring-4 ring-gray-50 group-hover:ring-orange-50 transition-all">
+                        <Link href="/" className="flex flex-col items-center gap-1 group transition-all">
+                            <div className="w-8 h-8 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-md overflow-hidden p-1 ring-2 ring-gray-50 group-hover:ring-orange-50 transition-all">
                                 <Image
                                     src="/logo.png"
                                     alt="Thulasi Textiles Logo"
-                                    width={40}
-                                    height={40}
+                                    width={32}
+                                    height={32}
                                     className="object-contain"
                                 />
                             </div>

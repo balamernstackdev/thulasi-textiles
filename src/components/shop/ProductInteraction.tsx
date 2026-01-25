@@ -45,10 +45,6 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
     }, [images.length]);
 
     const handleBuyNow = () => {
-        if (!session) {
-            router.push('/login');
-            return;
-        }
         if (isOutOfStock) return;
 
         addItem({

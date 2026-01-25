@@ -12,9 +12,9 @@ export default function UserMenu({ session }: { session: any }) {
 
     if (!session) {
         return (
-            <div className="flex items-center gap-2 md:gap-4 shrink-0">
-                <Link href="/cart" className="relative p-2 hover:bg-gray-50 rounded-xl transition-colors">
-                    <ShoppingBag className="w-6 h-6 text-gray-700" />
+            <div className="flex items-center gap-1 sm:gap-4 shrink-0">
+                <Link href="/cart" className="relative p-1.5 sm:p-2 hover:bg-gray-50 rounded-lg sm:rounded-xl transition-colors">
+                    <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
                 </Link>
                 <Link
                     href="/login"
@@ -24,7 +24,7 @@ export default function UserMenu({ session }: { session: any }) {
                 </Link>
                 <Link
                     href="/register"
-                    className="bg-black hover:bg-orange-600 text-white px-7 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95"
+                    className="bg-black hover:bg-orange-600 text-white px-4 sm:px-7 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] transition-all shadow-xl active:scale-95 whitespace-nowrap"
                 >
                     Register
                 </Link>
@@ -41,31 +41,31 @@ export default function UserMenu({ session }: { session: any }) {
     };
 
     return (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 sm:gap-3">
             {/* Cart Icon */}
-            <Link href="/cart" className="relative p-2 hover:bg-gray-50 rounded-xl transition-colors group">
-                <ShoppingBag className="w-6 h-6 text-gray-700 group-hover:text-orange-600 transition-colors" />
+            <Link href="/cart" className="relative p-1.5 sm:p-2 hover:bg-gray-50 rounded-lg sm:rounded-xl transition-colors group">
+                <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-orange-600 transition-colors" />
             </Link>
 
-            {/* Wishlist Icon */}
-            <Link href="/wishlist" className="relative p-2 hover:bg-gray-50 rounded-xl transition-colors group">
-                <Heart className="w-6 h-6 text-gray-700 group-hover:text-orange-600 transition-colors" />
+            {/* Wishlist Icon - Hidden on very small screens */}
+            <Link href="/wishlist" className="relative p-1.5 sm:p-2 hover:bg-gray-50 rounded-lg sm:rounded-xl transition-colors group hidden xxs:block">
+                <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-orange-600 transition-colors" />
             </Link>
 
             {/* User Dropdown */}
             <div className="relative">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="flex items-center gap-3 px-4 py-2 bg-gray-50 hover:bg-white border border-gray-100 rounded-2xl transition-all group"
+                    className="flex items-center gap-1 sm:gap-3 px-2 sm:px-4 py-1.5 sm:py-2 bg-gray-50 hover:bg-white border border-gray-100 rounded-xl sm:rounded-2xl transition-all group"
                 >
-                    <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-black text-xs">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-black text-[10px] sm:text-xs shrink-0">
                         {user.name?.[0].toUpperCase()}
                     </div>
                     <div className="text-left hidden md:block">
                         <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest leading-none">{user.name}</p>
                         <p className="text-[8px] font-bold text-gray-400 leading-none mt-1">Member</p>
                     </div>
-                    <ChevronDown className={`w-4 h-4 text-gray-300 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 text-gray-300 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {isOpen && (

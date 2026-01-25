@@ -54,10 +54,10 @@ export default function ProfileClient({
         <div className="min-h-screen py-12 bg-gray-50">
             <div className="max-w-[1700px] mx-auto px-4 lg:px-6">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 md:mb-12">
                     <div>
-                        <h1 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic mb-2">My Profile</h1>
-                        <p className="text-gray-500 font-bold">Manage your account and view orders</p>
+                        <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tighter uppercase italic mb-1">My Profile</h1>
+                        <p className="text-xs sm:text-sm text-gray-500 font-bold">Manage your account and orders</p>
                     </div>
                     <button
                         onClick={handleLogout}
@@ -72,8 +72,8 @@ export default function ProfileClient({
                     {/* Left: Sidebar */}
                     <div className="lg:col-span-1">
                         {/* Navigation Menu */}
-                        <div className="bg-white rounded-[2.5rem] p-8 shadow-lg h-full flex flex-col">
-                            <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6 px-2">Account Menu</h3>
+                        <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 shadow-lg h-full flex flex-col">
+                            <h3 className="text-[10px] sm:text-sm font-black text-gray-400 uppercase tracking-widest mb-4 sm:mb-6 px-2">Account Menu</h3>
                             <div className="space-y-3 flex-1">
                                 {menuItems.map((item) => (
                                     <button
@@ -87,11 +87,11 @@ export default function ProfileClient({
                                             : 'bg-white border-transparent hover:border-gray-100 hover:bg-white hover:shadow-lg'
                                             }`}
                                     >
-                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 ${activeTab === item.id
+                                        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-colors duration-300 ${activeTab === item.id
                                             ? 'bg-white/20 text-white'
                                             : 'bg-gray-50 text-gray-400 group-hover:bg-orange-600 group-hover:text-white'
                                             }`}>
-                                            <item.icon className="w-5 h-5" />
+                                            <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                                         </div>
                                         <div className="flex-1">
                                             <h4 className={`font-black text-sm transition-colors ${activeTab === item.id ? 'text-white' : 'text-gray-900 group-hover:text-orange-600'
@@ -100,8 +100,8 @@ export default function ProfileClient({
                                                 }`}>{item.description}</p>
                                         </div>
                                         {activeTab === item.id && (
-                                            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                                                <ChevronRight className="w-4 h-4 text-white" />
+                                            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/20 flex items-center justify-center">
+                                                <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                                             </div>
                                         )}
                                     </button>
@@ -116,9 +116,9 @@ export default function ProfileClient({
                         {activeTab === 'overview' && (
                             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 {/* Recent Orders Preview (Showing 5) */}
-                                <div className="bg-white rounded-[2.5rem] p-8 shadow-xl">
-                                    <div className="flex items-center justify-between mb-8">
-                                        <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight italic">Recent Orders</h3>
+                                <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 shadow-xl">
+                                    <div className="flex items-center justify-between mb-6 sm:mb-8">
+                                        <h3 className="text-lg sm:text-xl font-black text-gray-900 uppercase tracking-tight italic">Recent Orders</h3>
                                         <button onClick={() => setActiveTab('orders')} className="text-xs font-black text-orange-600 uppercase tracking-widest hover:underline">
                                             View All
                                         </button>
@@ -127,11 +127,11 @@ export default function ProfileClient({
                                     {initialOrders.length > 0 ? (
                                         <div className="space-y-4">
                                             {initialOrders.slice(0, 5).map((order) => (
-                                                <div key={order.id} className="border border-gray-100 rounded-3xl p-6 hover:shadow-md transition-all">
+                                                <div key={order.id} className="border border-gray-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 hover:shadow-md transition-all">
                                                     <div className="flex items-center justify-between mb-4">
                                                         <div>
-                                                            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Order #{order.id.slice(0, 8)}</span>
-                                                            <p className="text-sm font-bold text-gray-900 mt-1">
+                                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Order #{order.id.slice(0, 8)}</span>
+                                                            <p className="text-xs sm:text-sm font-bold text-gray-900 mt-1">
                                                                 {new Date(order.createdAt).toLocaleDateString()}
                                                             </p>
                                                         </div>
@@ -177,7 +177,7 @@ export default function ProfileClient({
                         {/* ADDRESSES TAB */}
                         {activeTab === 'addresses' && (
                             <div className="animate-in fade-in zoom-in-95 duration-300">
-                                <div className="bg-white rounded-[2.5rem] p-8 shadow-xl min-h-[600px]">
+                                <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 shadow-xl min-h-[500px] md:min-h-[600px]">
                                     <AddressesClient addresses={initialAddresses} />
                                 </div>
                             </div>
@@ -186,7 +186,7 @@ export default function ProfileClient({
                         {/* WISHLIST TAB */}
                         {activeTab === 'wishlist' && (
                             <div className="animate-in fade-in zoom-in-95 duration-300">
-                                <div className="bg-white rounded-[2.5rem] p-8 shadow-xl min-h-[600px]">
+                                <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 shadow-xl min-h-[500px] md:min-h-[600px]">
                                     <WishlistClient wishlist={initialWishlist} />
                                 </div>
                             </div>
@@ -195,8 +195,8 @@ export default function ProfileClient({
                         {/* ORDERS TAB (Paginated) */}
                         {activeTab === 'orders' && (
                             <div className="animate-in fade-in zoom-in-95 duration-300">
-                                <div className="bg-white rounded-[2.5rem] p-8 shadow-xl min-h-[600px]">
-                                    <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tight italic mb-8">All Orders</h3>
+                                <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 shadow-xl min-h-[500px] md:min-h-[600px]">
+                                    <h3 className="text-xl sm:text-2xl font-black text-gray-900 uppercase tracking-tight italic mb-6 sm:mb-8">All Orders</h3>
 
                                     <div className="space-y-4">
                                         {paginatedOrders.map((order) => (
@@ -266,7 +266,7 @@ export default function ProfileClient({
                         {/* SETTINGS TAB (Placeholder) */}
                         {activeTab === 'settings' && (
                             <div className="animate-in fade-in zoom-in-95 duration-300">
-                                <div className="bg-white rounded-[2.5rem] p-8 shadow-xl flex items-center justify-center min-h-[600px]">
+                                <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 shadow-xl flex items-center justify-center min-h-[500px] md:min-h-[600px]">
                                     <div className="text-center">
                                         <Settings className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                                         <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight italic mb-2">Account Settings</h3>

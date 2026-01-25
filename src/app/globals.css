@@ -19,7 +19,7 @@
   /* Teal/Green accent */
   --color-admin-bg: #f3f4f6;
   --color-orange-600: #ea580c;
-
+  --breakpoint-xxs: 375px;
 }
 
 :root {

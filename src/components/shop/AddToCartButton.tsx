@@ -14,12 +14,6 @@ export default function AddToCartButton({ product, selectedVariant, quantity = 1
     const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : product.variants.every((v: any) => v.stock <= 0);
 
     const handleAddToCart = () => {
-        if (!session) {
-            toast.error('Please login to add items to cart');
-            window.location.href = '/login';
-            return;
-        }
-
         if (isOutOfStock) {
             toast.error('This variant is currently out of stock');
             return;
