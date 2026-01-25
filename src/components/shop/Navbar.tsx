@@ -166,6 +166,7 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                                                         } else {
                                                             setIsMenuOpen(false);
                                                             router.push(`/category/${cat.slug}`);
+                                                            window.scrollTo(0, 0);
                                                         }
                                                     }}
                                                 >
@@ -182,7 +183,10 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                                                         <Link
                                                             href={`/category/${cat.slug}`}
                                                             className="block py-3 px-4 text-xs text-orange-600 font-black uppercase tracking-widest hover:bg-orange-50 rounded-xl transition-all"
-                                                            onClick={() => setIsMenuOpen(false)}
+                                                            onClick={() => {
+                                                                setIsMenuOpen(false);
+                                                                window.scrollTo(0, 0);
+                                                            }}
                                                         >
                                                             View All {cat.name}
                                                         </Link>

@@ -42,7 +42,7 @@ export default async function CategoryPage({
     return (
         <div className="bg-gray-50 min-h-screen">
             {/* Breadcrumbs - Standardized Offset for Header Alignment */}
-            <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-[160px] z-40 transition-all duration-300 hidden lg:block">
+            <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-[110px] md:top-[120px] lg:top-[160px] z-40 transition-all duration-300 hidden lg:block">
                 <div className="max-w-[1700px] mx-auto px-4 lg:px-6 py-5">
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
                         <Link href="/" className="hover:text-orange-600 transition-colors">Home</Link>
@@ -138,12 +138,12 @@ export default async function CategoryPage({
                             </div>
 
                             <div className="flex items-center gap-3 self-end md:self-auto">
-                                <button className="lg:hidden flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium">
-                                    <Filter className="w-4 h-4" /> Filters
+                                <button className="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-bold text-gray-900 bg-white shadow-sm active:bg-gray-50 transition-colors">
+                                    <Filter className="w-4 h-4 text-orange-600" /> Filters
                                 </button>
                                 <div className="relative group">
-                                    <button className="flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium">
-                                        Sort by: Newest <ChevronDown className="w-4 h-4" />
+                                    <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-bold text-gray-900 bg-white shadow-sm active:bg-gray-50 transition-colors">
+                                        Sort by: <span className="text-orange-600">Newest</span> <ChevronDown className="w-4 h-4 text-gray-400" />
                                     </button>
                                 </div>
                             </div>
