@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Search, ShoppingCart, Menu, User, MapPin, X, ChevronRight, ChevronDown } from 'lucide-react';
+import { Search, ShoppingCart, Menu, User, MapPin, X, ChevronRight, ChevronDown, Package } from 'lucide-react';
 import { Category } from '@prisma/client';
 import UserMenu from './UserMenu';
 
@@ -143,9 +143,27 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                                     </Link>
                                 </div>
                             ) : (
-                                <div className="p-5 bg-orange-50 rounded-3xl space-y-2">
-                                    <p className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Signed In As</p>
-                                    <p className="text-lg font-black text-gray-900 truncate">{session.user.name}</p>
+                                <div className="space-y-4">
+                                    <div className="p-5 bg-orange-50 rounded-3xl space-y-2">
+                                        <p className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Signed In As</p>
+                                        <p className="text-lg font-black text-gray-900 truncate">{session.user.name}</p>
+                                    </div>
+                                    <Link
+                                        href="/orders"
+                                        className="flex items-center justify-between p-5 bg-white border border-gray-100 rounded-3xl group active:scale-95 transition-all shadow-sm"
+                                        onClick={() => setIsMenuOpen(false)}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-black rounded-2xl flex items-center justify-center text-white">
+                                                <Package className="w-5 h-5" />
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">My Archives</p>
+                                                <p className="font-black text-gray-900 uppercase italic">My Orders</p>
+                                            </div>
+                                        </div>
+                                        <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-orange-600 transition-colors" />
+                                    </Link>
                                 </div>
                             )}
 

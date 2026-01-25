@@ -14,6 +14,8 @@ type Order = {
     items: any[];
 };
 
+const STATUSES = ['ALL', 'PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+
 export default function OrdersClient({ orders }: { orders: Order[] }) {
     const [filter, setFilter] = useState('ALL');
 
@@ -50,99 +52,133 @@ export default function OrdersClient({ orders }: { orders: Order[] }) {
     }
 
     return (
-        <div className="min-h-screen py-12 px-4 lg:px-8 bg-gray-50">
-            <div className="max-w-6xl mx-auto">
-                <div className="mb-12">
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tighter uppercase italic mb-2">My Orders</h1>
-                    <p className="text-gray-500 font-bold">{orders.length} {orders.length === 1 ? 'order' : 'orders'} total</p>
+        <div className="min-h-screen py-8 md:py-16 px-4 lg:px-8 bg-gray-50/50">
+            <div className="max-w-5xl mx-auto">
+                {/* Modern Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                    <div className="space-y-3">
+                        <h1 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tighter uppercase leading-none italic">
+                            My <span className="text-orange-600">Orders</span>
+                        </h1>
+                        <p className="text-xs font-black text-gray-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse" />
+                            {orders.length} {orders.length === 1 ? 'Legacy Piece' : 'Heritage Collection'}
+                        </p>
+                    </div>
                 </div>
 
-                {/* Filter Tabs */}
-                <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-                    {['ALL', 'PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'].map((status) => (
-                        <button
-                            key={status}
-                            onClick={() => setFilter(status)}
-                            className={`px-6 py-3 rounded-full font-black text-sm uppercase tracking-wide whitespace-nowrap transition-all ${filter === status
-                                    ? 'bg-orange-600 text-white shadow-lg'
-                                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                                }`}
-                        >
-                            {status.replace('_', ' ')}
-                        </button>
-                    ))}
+                {/* Refined Filter Container */}
+                <div className="sticky top-20 z-20 -mx-4 px-4 bg-gray-50/80 backdrop-blur-md py-4 border-b border-gray-100 mb-10 overflow-hidden">
+                    <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+                        {STATUSES.map((status) => (
+                            <button
+                                key={status}
+                                onClick={() => setFilter(status)}
+                                className={`px-8 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all duration-300 whitespace-nowrap border-2 ${filter === status
+                                    ? 'bg-black border-black text-white shadow-[0_10px_20px_-10px_rgba(0,0,0,0.5)] scale-105'
+                                    : 'bg-white border-white text-gray-400 hover:border-gray-200 hover:text-gray-900 shadow-sm'
+                                    }`}
+                            >
+                                {status.replace('_', ' ')}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                {/* Orders List */}
-                <div className="space-y-6">
+                {/* Modern Orders List */}
+                <div className="space-y-8">
                     {filteredOrders.map((order) => {
                         const config = statusConfig[order.status as keyof typeof statusConfig];
                         const StatusIcon = config.icon;
-                        const firstItem = order.items[0];
 
                         return (
-                            <div key={order.id} className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all">
-                                <div className="flex flex-col md:flex-row gap-6">
-                                    {/* Order Info */}
-                                    <div className="flex-1 space-y-4">
-                                        <div className="flex items-start justify-between">
-                                            <div>
-                                                <div className="flex items-center gap-3 mb-2">
-                                                    <h3 className="text-lg font-black text-gray-900">Order #{order.id.slice(0, 8).toUpperCase()}</h3>
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-black uppercase flex items-center gap-1 ${config.color}`}>
-                                                        <StatusIcon className="w-3 h-3" />
-                                                        {config.label}
-                                                    </span>
-                                                </div>
-                                                <p className="text-sm text-gray-500 font-medium">
-                                                    Placed on {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                                                        day: 'numeric',
-                                                        month: 'long',
-                                                        year: 'numeric'
-                                                    })}
-                                                </p>
-                                            </div>
-                                            <Link
-                                                href={`/orders/${order.id}`}
-                                                className="p-2 hover:bg-gray-50 rounded-xl transition-colors"
-                                            >
-                                                <Eye className="w-5 h-5 text-gray-400" />
-                                            </Link>
-                                        </div>
+                            <div key={order.id} className="group bg-white rounded-[2.5rem] p-6 md:p-8 shadow-xl shadow-gray-200/40 border border-gray-50 transition-all duration-500 hover:shadow-2xl hover:shadow-orange-200/20 hover:-translate-y-1 overflow-hidden relative">
+                                <div className="absolute top-0 right-0 w-48 h-48 bg-gray-50/50 rounded-full translate-x-12 -translate-y-12 blur-3xl group-hover:bg-orange-50/50 transition-colors" />
 
-                                        {/* Items Preview */}
-                                        <div className="flex gap-3 overflow-x-auto pb-2">
+                                <div className="relative space-y-8">
+                                    {/* Card Header */}
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                        <div className="space-y-1">
+                                            <div className="flex items-center gap-3">
+                                                <h3 className="text-xl font-black text-gray-900 uppercase italic tracking-tight leading-none group-hover:text-orange-600 transition-colors">
+                                                    #{order.id.slice(0, 8).toUpperCase()}
+                                                </h3>
+                                                <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2 border shadow-sm ${config.color.replace('bg-', 'border-').replace('text-', 'bg-').split(' ')[0] + '/10'} ${config.color}`}>
+                                                    <StatusIcon className="w-3 h-3" />
+                                                    {config.label}
+                                                </span>
+                                            </div>
+                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-2">
+                                                <Clock className="w-3 h-3" />
+                                                Placed {new Date(order.createdAt).toLocaleDateString('en-IN', {
+                                                    day: 'numeric',
+                                                    month: 'long',
+                                                    year: 'numeric'
+                                                })}
+                                            </p>
+                                        </div>
+                                        <Link
+                                            href={`/orders/${order.id}`}
+                                            className="hidden sm:flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-orange-600 transition-all group/link"
+                                        >
+                                            View Snapshot
+                                            <Eye className="w-4 h-4 group-hover/link:scale-110" />
+                                        </Link>
+                                    </div>
+
+                                    {/* Items Preview - Modern Layout */}
+                                    <div className="flex items-center gap-6 group/items">
+                                        <div className="flex -space-x-4 md:-space-x-6 overflow-hidden">
                                             {order.items.slice(0, 3).map((item: any, idx: number) => (
-                                                <div key={idx} className="shrink-0">
-                                                    <div className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden relative">
-                                                        {item.variant?.product?.images?.[0] && (
-                                                            <Image
-                                                                src={item.variant.product.images[0].url}
-                                                                alt={item.variant.product.name}
-                                                                fill
-                                                                className="object-cover"
-                                                            />
-                                                        )}
-                                                    </div>
+                                                <div
+                                                    key={idx}
+                                                    className="relative w-24 h-32 md:w-32 md:h-40 rounded-2xl md:rounded-3xl border-4 border-white shadow-xl bg-gray-100 overflow-hidden hover:z-10 hover:scale-110 hover:-translate-y-2 transition-all duration-500 first:ml-0"
+                                                    style={{ transitionDelay: `${idx * 100}ms` }}
+                                                >
+                                                    {item.variant?.product?.images?.[0] && (
+                                                        <Image
+                                                            src={item.variant.product.images[0].url}
+                                                            alt={item.variant.product.name}
+                                                            fill
+                                                            className="object-cover"
+                                                        />
+                                                    )}
                                                 </div>
                                             ))}
                                             {order.items.length > 3 && (
-                                                <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center">
-                                                    <span className="text-xs font-black text-gray-400">+{order.items.length - 3}</span>
+                                                <div className="relative w-24 h-32 md:w-32 md:h-40 rounded-2xl md:rounded-3xl border-4 border-white shadow-xl bg-black text-white flex flex-col items-center justify-center hover:z-10 hover:scale-110 transition-all duration-500">
+                                                    <span className="text-xl md:text-2xl font-black">+{order.items.length - 3}</span>
+                                                    <span className="text-[8px] font-black uppercase tracking-widest">More</span>
                                                 </div>
                                             )}
                                         </div>
 
-                                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                                            <div>
-                                                <p className="text-xs text-gray-500 font-bold uppercase tracking-wide">Total Amount</p>
-                                                <p className="text-2xl font-black text-gray-900">₹{order.total.toLocaleString('en-IN')}</p>
-                                            </div>
+                                        <div className="hidden lg:block space-y-1">
+                                            <p className="text-sm font-black text-gray-900 line-clamp-1 italic uppercase">
+                                                {order.items[0]?.variant?.product?.name}
+                                            </p>
+                                            {order.items.length > 1 && (
+                                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">
+                                                    & {order.items.length - 1} other pieces
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Footer Section - Optimized for Mobile */}
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between pt-8 border-t border-dashed border-gray-100 gap-6">
+                                        <div className="space-y-1">
+                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Vault Total</span>
+                                            <p className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter leading-none italic">
+                                                ₹{order.total.toLocaleString('en-IN')}
+                                            </p>
+                                        </div>
+                                        <div className="flex w-full sm:w-auto gap-3">
                                             <Link
                                                 href={`/orders/${order.id}`}
-                                                className="bg-black text-white px-6 py-3 rounded-full text-sm font-black uppercase tracking-wide hover:bg-orange-600 transition-all shadow-lg"
+                                                className="flex-1 sm:flex-none bg-orange-600 text-white px-10 py-5 rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-200 active:scale-95 text-center"
                                             >
-                                                View Details
+                                                View Order details
                                             </Link>
                                         </div>
                                     </div>
@@ -152,10 +188,16 @@ export default function OrdersClient({ orders }: { orders: Order[] }) {
                     })}
                 </div>
 
+                {/* Empty State */}
                 {filteredOrders.length === 0 && (
-                    <div className="text-center py-20">
-                        <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500 font-bold">No orders found with this status</p>
+                    <div className="text-center py-32 space-y-6">
+                        <div className="w-24 h-24 mx-auto bg-gray-100 rounded-[2rem] flex items-center justify-center border-2 border-dashed border-gray-200 group-hover:border-orange-200 transition-colors">
+                            <Package className="w-10 h-10 text-gray-300" />
+                        </div>
+                        <div className="space-y-2">
+                            <p className="text-xl font-black text-gray-900 uppercase tracking-tight italic">No archives found</p>
+                            <p className="text-sm text-gray-400 font-medium max-w-xs mx-auto">There are no orders matching the refined status criteria in your vault.</p>
+                        </div>
                     </div>
                 )}
             </div>
