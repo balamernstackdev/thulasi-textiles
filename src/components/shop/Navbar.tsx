@@ -195,7 +195,10 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                                                                 key={sub.id}
                                                                 href={`/category/${sub.slug}`}
                                                                 className="block py-3 px-4 text-sm text-gray-500 font-bold hover:text-orange-600 transition-colors"
-                                                                onClick={() => setIsMenuOpen(false)}
+                                                                onClick={() => {
+                                                                    setIsMenuOpen(false);
+                                                                    window.scrollTo(0, 0);
+                                                                }}
                                                             >
                                                                 {sub.name}
                                                             </Link>

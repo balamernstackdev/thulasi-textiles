@@ -89,24 +89,24 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
         <div className="min-h-screen py-12 px-4 lg:px-8 bg-gray-50">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="mb-12">
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tighter uppercase italic mb-8">Checkout</h1>
+                <div className="mb-6 md:mb-12">
+                    <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase italic mb-6 md:mb-8 text-center md:text-left">Checkout</h1>
 
                     {/* Progress Steps */}
-                    <div className="flex items-center justify-center gap-4">
+                    <div className="flex items-center justify-center w-full max-w-sm mx-auto md:max-w-none">
                         {steps.map((s, idx) => (
-                            <div key={s.num} className="flex items-center">
+                            <div key={s.num} className="flex items-center flex-1 last:flex-none">
                                 <div className="flex flex-col items-center">
-                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black transition-all ${step >= s.num ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-400'
+                                    <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-black transition-all ${step >= s.num ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-400'
                                         }`}>
-                                        {step > s.num ? <Check className="w-6 h-6" /> : <s.icon className="w-6 h-6" />}
+                                        {step > s.num ? <Check className="w-5 h-5 md:w-6 md:h-6" /> : <s.icon className="w-5 h-5 md:w-6 md:h-6" />}
                                     </div>
-                                    <span className={`text-xs font-black mt-2 ${step >= s.num ? 'text-orange-600' : 'text-gray-400'}`}>
+                                    <span className={`text-[10px] md:text-xs font-black mt-2 ${step >= s.num ? 'text-orange-600' : 'text-gray-400'}`}>
                                         {s.title}
                                     </span>
                                 </div>
                                 {idx < steps.length - 1 && (
-                                    <div className={`w-24 h-1 mx-4 ${step > s.num ? 'bg-orange-600' : 'bg-gray-200'}`} />
+                                    <div className={`flex-1 h-1 mx-2 md:mx-4 ${step > s.num ? 'bg-orange-600' : 'bg-gray-200'}`} />
                                 )}
                             </div>
                         ))}
@@ -240,10 +240,10 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                                     </label>
                                 </div>
 
-                                <div className="flex gap-4 mt-6">
+                                <div className="flex flex-col-reverse sm:flex-row gap-4 mt-6">
                                     <button
                                         onClick={() => setStep(1)}
-                                        className="px-8 py-4 border-2 border-gray-300 rounded-full font-black hover:bg-gray-50 transition-colors"
+                                        className="w-full sm:w-auto px-8 py-4 border-2 border-gray-300 rounded-full font-black hover:bg-gray-50 transition-colors"
                                     >
                                         Back
                                     </button>
@@ -279,10 +279,10 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                                     </div>
                                 </div>
 
-                                <div className="flex gap-4">
+                                <div className="flex flex-col-reverse sm:flex-row gap-4">
                                     <button
                                         onClick={() => setStep(2)}
-                                        className="px-8 py-4 border-2 border-gray-300 rounded-full font-black hover:bg-gray-50 transition-colors"
+                                        className="w-full sm:w-auto px-8 py-4 border-2 border-gray-300 rounded-full font-black hover:bg-gray-50 transition-colors"
                                     >
                                         Back
                                     </button>
