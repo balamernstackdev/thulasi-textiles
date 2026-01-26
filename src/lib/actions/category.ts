@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma';
-import { unstable_cache } from 'next/cache';
+import { unstable_cache, revalidateTag, revalidatePath } from 'next/cache';
 
 export const getCategoriesTree = unstable_cache(
     async () => {
@@ -109,6 +109,10 @@ export async function createCategory(formData: FormData) {
             }
         });
 
+        revalidateTag('categories');
+        revalidatePath('/', 'layout');
+        revalidatePath('/admin/categories', 'page');
+
         return { success: true, data: category };
     } catch (error) {
         return { success: false, error: 'Failed to create category' };
@@ -134,6 +138,10 @@ export async function updateCategory(id: string, formData: FormData) {
             }
         });
 
+        revalidateTag('categories');
+        revalidatePath('/', 'layout');
+        revalidatePath('/admin/categories', 'page');
+
         return { success: true, data: category };
     } catch (error) {
         return { success: false, error: 'Failed to update category' };
@@ -145,6 +153,11 @@ export async function deleteCategory(id: string) {
         await prisma.category.delete({
             where: { id }
         });
+
+        revalidateTag('categories');
+        revalidatePath('/', 'layout');
+        revalidatePath('/admin/categories', 'page');
+
         return { success: true };
     } catch (error) {
         return { success: false, error: 'Failed to delete category' };
