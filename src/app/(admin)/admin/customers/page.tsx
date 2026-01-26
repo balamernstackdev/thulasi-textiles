@@ -12,8 +12,8 @@ export default async function CustomersPage({
     const params = await searchParams;
     const page = parseInt(params.page || '1');
     const result = await getCustomers({ page });
-    const customers = result.success ? result.data : [];
-    const pagination = result.pagination;
+    const customers = (result.success && result.data) ? result.data : [];
+    const pagination = result.success ? result.pagination : null;
 
     return (
         <div className="p-4 md:p-8 space-y-6">
