@@ -10,11 +10,12 @@ export const dynamic = 'force-dynamic';
 export default async function OrdersPage({
     searchParams
 }: {
-    searchParams: Promise<{ page?: string }>
+    searchParams: Promise<{ page?: string, status?: string }>
 }) {
     const params = await searchParams;
     const page = parseInt(params.page || '1');
-    const result = await getAdminOrders({ page });
+    const status = params.status || 'ALL';
+    const result = await getAdminOrders({ page, status });
     const orders = result.success ? result.data : [];
     const pagination = result.pagination;
 

@@ -12,14 +12,11 @@ export async function getCustomers(options: {
 
         const [customers, total] = await Promise.all([
             prismadb.user.findMany({
-                where: { role: 'CUSTOMER' },
                 skip,
                 take: pageSize,
                 orderBy: { createdAt: 'desc' },
             }),
-            prismadb.user.count({
-                where: { role: 'CUSTOMER' }
-            })
+            prismadb.user.count()
         ]);
 
         return {

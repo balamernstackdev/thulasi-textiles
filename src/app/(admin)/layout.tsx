@@ -23,6 +23,11 @@ export default function AdminLayout({
 }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const pathname = usePathname();
+    const isInvoicePage = pathname.endsWith('/invoice');
+
+    if (isInvoicePage) {
+        return <div className="min-h-screen bg-white bg-white/100">{children}</div>;
+    }
 
     const navItems = [
         { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, color: 'text-teal-400' },

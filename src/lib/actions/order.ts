@@ -248,7 +248,8 @@ export async function getDashboardStats() {
             productCount,
             categoryCount,
             recentOrders,
-            pendingOrdersCount
+            pendingOrdersCount,
+            lowStockProducts
         ] = await Promise.all([
             prismadb.order.count(),
             prismadb.order.aggregate({
@@ -256,7 +257,12 @@ export async function getDashboardStats() {
                     total: true
                 },
                 where: {
-                    paymentStatus: 'PAID'
+                    status: {
+                        notIn: ['CANCELLED']
+                    },
+                    paymentStatus: {
+                        notIn: ['FAILED']
+                    }
                 }
             }),
             prismadb.product.count(),
@@ -268,6 +274,27 @@ export async function getDashboardStats() {
             }),
             prismadb.order.count({
                 where: { status: 'PENDING' }
+            }),
+            prismadb.product.findMany({
+                where: {
+                    variants: {
+                        some: {
+                            stock: {
+                                lte: 5
+                            }
+                        }
+                    }
+                },
+                include: {
+                    variants: {
+                        where: {
+                            stock: {
+                                lte: 5
+                            }
+                        }
+                    }
+                },
+                take: 5
             })
         ]);
 
@@ -282,7 +309,11 @@ export async function getDashboardStats() {
                     ...o,
                     total: Number(o.total)
                 })),
-                pendingOrdersCount
+                pendingOrdersCount,
+                lowStockProducts: lowStockProducts.map(p => ({
+                    ...p,
+                    basePrice: Number(p.basePrice)
+                }))
             }
         };
     } catch (error) {
@@ -371,5 +402,24 @@ export async function updateOrderStatus(orderId: string, status: string) {
     } catch (error) {
         console.error('Update order status error:', error);
         return { success: false, error: 'Failed to update order status' };
+    }
+}
+
+export async function updateUserRole(userId: string, role: 'ADMIN' | 'CUSTOMER') {
+    const session = await getSession();
+    if (!session || session.user.role !== 'ADMIN') {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    try {
+        await prismadb.user.update({
+            where: { id: userId },
+            data: { role }
+        });
+        revalidatePath('/admin/customers');
+        return { success: true };
+    } catch (error) {
+        console.error('Update user role error:', error);
+        return { success: false, error: 'Failed to update user role' };
     }
 }
