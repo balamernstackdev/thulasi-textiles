@@ -83,7 +83,7 @@ export default function ProductCard({ product, session, priority = false }: { pr
                 </div>
 
                 <div className="flex flex-col flex-1 px-1 sm:px-0">
-                    <h3 className="text-[11px] md:text-sm font-medium text-gray-900 mb-1 line-clamp-2 leading-tight group-hover:text-[#C45500] transition-colors">
+                    <h3 className="text-xs md:text-sm font-medium text-gray-900 mb-1 line-clamp-2 leading-tight group-hover:text-[#C45500] transition-colors">
                         {product.name}
                     </h3>
 

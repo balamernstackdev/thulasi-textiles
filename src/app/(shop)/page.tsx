@@ -121,7 +121,7 @@ export default async function ShopHome() {
       {/* Announcement Bar moved to Navbar/Layout */}
 
       {/* Main Home Banners - High Priority */}
-      <div className="relative z-10 max-w-[1700px] mx-auto px-4 lg:px-6 w-full mt-4 lg:mt-6">
+      <div className="relative z-10 w-full">
         <Banner banners={mainBanners} type="section" />
       </div>
 

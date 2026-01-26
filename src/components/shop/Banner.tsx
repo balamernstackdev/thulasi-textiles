@@ -43,11 +43,11 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
     const isSection = type === 'section';
 
     return (
-        <div className={`relative w-full overflow-hidden ${isSection ? 'my-12 px-4 lg:px-6' : 'bg-white'}`}>
+        <div className={`relative w-full overflow-hidden ${isSection ? 'my-0 md:my-12 px-0 md:px-4 lg:px-6' : 'bg-white'}`}>
             <div className={`${isSection ? 'max-w-[1700px] mx-auto' : 'w-full'}`}>
                 <div className={`relative w-full overflow-hidden group/banner transition-all duration-500
                     ${isSection
-                        ? 'rounded-[2.5rem] shadow-lg aspect-[21/9] md:aspect-[32/8] lg:h-[350px]'
+                        ? 'rounded-none md:rounded-[2.5rem] shadow-none md:shadow-lg h-[400px] md:h-auto md:aspect-[32/8] lg:h-[450px]'
                         : 'h-[300px] md:h-[400px] lg:h-[500px] w-full'
                     }`}
                 >

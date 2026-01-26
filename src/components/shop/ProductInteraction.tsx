@@ -255,11 +255,11 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
 
             {/* COLUMN 3: BUY BOX */}
             <div>
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 space-y-8">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-8 space-y-8">
                     <div className="space-y-4">
                         <div className="flex items-baseline gap-3">
-                            <span className="text-4xl font-bold text-gray-900 tracking-tight">₹{currentPrice.toLocaleString()}</span>
-                            <span className="text-lg text-gray-400 line-through font-medium">₹{originalPrice.toLocaleString()}</span>
+                            <span className="text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">₹{currentPrice.toLocaleString()}</span>
+                            <span className="text-base lg:text-lg text-gray-400 line-through font-medium">₹{originalPrice.toLocaleString()}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <span className="bg-rose-50 text-rose-600 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest border border-rose-100 shadow-sm shadow-rose-500/5">
@@ -272,7 +272,7 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                     </div>
 
                     <div className="space-y-5 py-6 border-y border-gray-100">
-                        <div className="flex items-center justify-between text-lg">
+                        <div className="flex items-center justify-between text-sm lg:text-lg">
                             <span className="text-gray-900 font-black uppercase tracking-tighter italic">Stock Status:</span>
                             {selectedVariant && selectedVariant.stock > 0 ? (
                                 <span className="text-emerald-600 font-extrabold px-3 py-1 bg-emerald-50 rounded-lg border border-emerald-100 shadow-sm">In Stock.</span>
@@ -283,7 +283,7 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
 
                         {selectedVariant && selectedVariant.stock > 0 && (
                             <div className="bg-orange-50/50 p-4 rounded-2xl border border-orange-100/50">
-                                <p className="text-[#B12704] text-sm font-black uppercase tracking-tight">
+                                <p className="text-[#B12704] text-xs lg:text-sm font-black uppercase tracking-tight">
                                     <AlertCircle className="w-4 h-4 inline-block mr-2 -mt-1" />
                                     Only {selectedVariant.stock} left in stock - order soon.
                                 </p>

@@ -36,13 +36,13 @@ export default function ProductSection({
             <div className="max-w-[1700px] mx-auto px-6">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                     <div>
-                        <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2 uppercase">{title}</h2>
-                        {subtitle && <p className="text-gray-500 font-medium">{subtitle}</p>}
+                        <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight mb-2 uppercase">{title}</h2>
+                        {subtitle && <p className="text-sm md:text-base text-gray-500 font-medium">{subtitle}</p>}
                     </div>
                     {viewAllLink && (
                         <Link
                             href={viewAllLink}
-                            className="inline-flex items-center gap-2 text-orange-600 font-black text-sm uppercase tracking-widest hover:translate-x-1 transition-transform"
+                            className="inline-flex items-center gap-2 text-orange-600 font-black text-xs md:text-sm uppercase tracking-widest hover:translate-x-1 transition-transform"
                         >
                             View All Collection →
                         </Link>

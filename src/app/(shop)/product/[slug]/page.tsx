@@ -217,7 +217,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                     <section className="mt-24 pt-16 border-t border-gray-100">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12">
                             <div>
-                                <h2 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Customer Reviews</h2>
+                                <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Customer Reviews</h2>
                                 <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-[0.2em] font-black">Authentication feedback from our community</p>
                             </div>
                         </div>

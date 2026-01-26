@@ -36,7 +36,7 @@ export default function TrustBar() {
                                 {benefit.icon}
                             </div>
                             <div>
-                                <h3 className="text-sm font-black uppercase tracking-widest italic">{benefit.title}</h3>
+                                <h3 className="text-xs md:text-sm font-black uppercase tracking-widest italic">{benefit.title}</h3>
                                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{benefit.description}</p>
                             </div>
                         </div>
