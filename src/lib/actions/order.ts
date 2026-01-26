@@ -3,6 +3,7 @@
 import prismadb from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { subDays, startOfDay, endOfDay } from 'date-fns';
 
 export async function createOrder(formData: FormData) {
     const session = await getSession();
@@ -14,6 +15,8 @@ export async function createOrder(formData: FormData) {
         const addressId = formData.get('addressId') as string;
         const cartItems = JSON.parse(formData.get('cartItems') as string);
         const total = parseFloat(formData.get('total') as string);
+        const couponId = formData.get('couponId') as string;
+        const discountAmount = parseFloat(formData.get('discountAmount') as string) || 0;
 
         if (!addressId || !cartItems || cartItems.length === 0) {
             return { success: false, error: 'Invalid order data' };
@@ -25,6 +28,8 @@ export async function createOrder(formData: FormData) {
                 userId: session.user.id,
                 addressId,
                 total,
+                discountAmount,
+                couponId: couponId || null,
                 status: 'PENDING',
                 paymentStatus: 'PENDING',
                 items: {
@@ -47,6 +52,16 @@ export async function createOrder(formData: FormData) {
                 },
             },
         });
+
+        // Increment coupon usage
+        if (couponId) {
+            await prismadb.coupon.update({
+                where: { id: couponId },
+                data: {
+                    usedCount: { increment: 1 }
+                }
+            });
+        }
 
         // Update stock for each variant
         for (const item of cartItems) {
@@ -226,7 +241,7 @@ export async function getAdminOrders(options: {
 
         return {
             success: true,
-            data: serializedOrders,
+            data: JSON.parse(JSON.stringify(serializedOrders)),
             pagination: {
                 total,
                 page,
@@ -242,6 +257,8 @@ export async function getAdminOrders(options: {
 
 export async function getDashboardStats() {
     try {
+        const thirtyDaysAgo = subDays(new Date(), 30);
+
         const [
             orderCount,
             totalRevenueResult,
@@ -249,20 +266,18 @@ export async function getDashboardStats() {
             categoryCount,
             recentOrders,
             pendingOrdersCount,
-            lowStockProducts
+            lowStockProducts,
+            last30DaysOrders,
+            allCategories,
+            topOrderItems,
+            newUserList
         ] = await Promise.all([
             prismadb.order.count(),
             prismadb.order.aggregate({
-                _sum: {
-                    total: true
-                },
+                _sum: { total: true },
                 where: {
-                    status: {
-                        notIn: ['CANCELLED']
-                    },
-                    paymentStatus: {
-                        notIn: ['FAILED']
-                    }
+                    status: { notIn: ['CANCELLED'] },
+                    paymentStatus: { notIn: ['FAILED'] }
                 }
             }),
             prismadb.product.count(),
@@ -277,26 +292,93 @@ export async function getDashboardStats() {
             }),
             prismadb.product.findMany({
                 where: {
-                    variants: {
-                        some: {
-                            stock: {
-                                lte: 5
-                            }
-                        }
+                    variants: { some: { stock: { lte: 5 } } }
+                },
+                include: {
+                    variants: { where: { stock: { lte: 5 } } }
+                },
+                take: 5
+            }),
+            prismadb.order.findMany({
+                where: {
+                    createdAt: { gte: thirtyDaysAgo },
+                    status: { not: 'CANCELLED' },
+                    paymentStatus: { not: 'FAILED' }
+                },
+                select: { createdAt: true, total: true }
+            }),
+            prismadb.category.findMany({
+                select: { id: true, name: true }
+            }),
+            prismadb.orderItem.findMany({
+                where: {
+                    order: {
+                        createdAt: { gte: thirtyDaysAgo },
+                        status: { not: 'CANCELLED' },
+                        paymentStatus: { not: 'FAILED' }
                     }
                 },
                 include: {
-                    variants: {
-                        where: {
-                            stock: {
-                                lte: 5
-                            }
-                        }
+                    variant: {
+                        include: { product: true }
                     }
+                }
+            }),
+            prismadb.user.findMany({
+                where: {
+                    createdAt: { gte: thirtyDaysAgo },
+                    role: 'CUSTOMER'
                 },
-                take: 5
+                select: { createdAt: true }
             })
         ]);
+
+        // Process Sales Trend & Customer Growth (Last 30 Days)
+        const salesTrend = Array.from({ length: 30 }, (_, i) => {
+            const date = subDays(new Date(), i);
+            const dateStr = date.toISOString().split('T')[0];
+
+            const dayTotal = last30DaysOrders
+                .filter(o => o.createdAt.toISOString().split('T')[0] === dateStr)
+                .reduce((sum, o) => sum + Number(o.total), 0);
+
+            const dayNewUsers = newUserList
+                .filter(u => u.createdAt.toISOString().split('T')[0] === dateStr)
+                .length;
+
+            return {
+                date: dateStr,
+                revenue: dayTotal,
+                customers: dayNewUsers
+            };
+        }).reverse();
+
+        // Process Category Distribution
+        const categoryData = allCategories.map(cat => {
+            const catRevenue = topOrderItems
+                .filter(item => item.variant.product.categoryId === cat.id)
+                .reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
+
+            return {
+                name: cat.name,
+                value: catRevenue
+            };
+        }).filter(c => c.value > 0);
+
+        // Process Top Products
+        const productSales: Record<string, { name: string, revenue: number, sales: number }> = {};
+        topOrderItems.forEach(item => {
+            const p = item.variant.product;
+            if (!productSales[p.id]) {
+                productSales[p.id] = { name: p.name, revenue: 0, sales: 0 };
+            }
+            productSales[p.id].revenue += Number(item.price) * item.quantity;
+            productSales[p.id].sales += item.quantity;
+        });
+
+        const topSellingProducts = Object.values(productSales)
+            .sort((a, b) => b.revenue - a.revenue)
+            .slice(0, 5);
 
         return {
             success: true,
@@ -305,15 +387,20 @@ export async function getDashboardStats() {
                 totalRevenue: Number(totalRevenueResult._sum.total || 0),
                 productCount,
                 categoryCount,
-                recentOrders: recentOrders.map(o => ({
+                recentOrders: JSON.parse(JSON.stringify(recentOrders.map(o => ({
                     ...o,
                     total: Number(o.total)
-                })),
+                })))),
                 pendingOrdersCount,
-                lowStockProducts: lowStockProducts.map(p => ({
+                lowStockProducts: JSON.parse(JSON.stringify(lowStockProducts.map(p => ({
                     ...p,
                     basePrice: Number(p.basePrice)
-                }))
+                })))),
+                analytics: {
+                    salesTrend,
+                    categoryData,
+                    topSellingProducts
+                }
             }
         };
     } catch (error) {
@@ -374,13 +461,45 @@ export async function getAdminOrderById(orderId: string) {
     }
 }
 
+import { sendEmail } from '@/lib/mail';
+import { getShippingNotificationTemplate } from '@/lib/mail-templates';
+
 export async function updateOrderStatus(orderId: string, status: string) {
     try {
         const order = await prismadb.order.update({
             where: { id: orderId },
             data: { status: status as any },
-            include: { items: true }
+            include: {
+                items: {
+                    include: {
+                        variant: {
+                            include: {
+                                product: true
+                            }
+                        }
+                    }
+                },
+                user: true,
+                address: true
+            }
         });
+
+        // Email Triggers
+        if (order.user?.email) {
+            if (status === 'SHIPPED') {
+                await sendEmail({
+                    to: order.user.email,
+                    subject: 'Good News! Your Thulasi Textiles order has shipped 🚚',
+                    html: getShippingNotificationTemplate(order)
+                });
+            } else if (status === 'CANCELLED') {
+                await sendEmail({
+                    to: order.user.email,
+                    subject: 'Order Cancellation Update - Thulasi Textiles',
+                    html: `<p>Your order #${orderId.slice(-6).toUpperCase()} has been cancelled. If this was not requested by you, please contact support.</p>`
+                });
+            }
+        }
 
         // If cancelled, restore stock
         if (status === 'CANCELLED') {

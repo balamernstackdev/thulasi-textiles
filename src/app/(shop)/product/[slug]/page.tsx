@@ -9,7 +9,11 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import ProductInteraction from '@/components/shop/ProductInteraction';
 import ProductCarousel from '@/components/shop/ProductCarousel';
+import RelatedProducts from '@/components/shop/RelatedProducts';
+import ReviewForm from '@/components/shop/ReviewForm';
+import ReviewList from '@/components/shop/ReviewList';
 import { checkWishstatus } from '@/lib/actions/wishlist';
+import { getReviews } from '@/lib/actions/review';
 import { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -33,31 +37,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     }
 
     // Parallel fetching for remaining data
-    const [wishStatus, relatedProductsResult, session] = await Promise.all([
+    const [wishStatus, session, reviewsResult] = await Promise.all([
         checkWishstatus(product.id),
-        getProducts({
-            categorySlug: product.category.slug,
-            limit: 5
-        }),
-        getSession()
+        getSession(),
+        getReviews(product.id)
     ]);
 
     const isWishlisted = wishStatus.isWishlisted;
-    let relatedProducts: any[] = [];
-    if (relatedProductsResult.success && 'data' in relatedProductsResult) {
-        relatedProducts = relatedProductsResult.data;
-    }
-
-    // Fallback if no related products (ensure a rich listing is always visible)
-    if (relatedProducts.length <= 3) {
-        const featuredResult = await getProducts({ isFeatured: true, limit: 12 });
-        if (featuredResult.success && 'data' in featuredResult) {
-            // Merge and de-duplicate
-            const existingIds = new Set(relatedProducts.map(p => p.id));
-            const additional = (featuredResult.data as any[]).filter(p => !existingIds.has(p.id));
-            relatedProducts = [...relatedProducts, ...additional];
-        }
-    }
 
     // Parse artisan images
     const artisanImages = (() => {
@@ -219,17 +205,39 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                         <div className="hidden lg:block h-full border-l border-gray-100 pl-12" />
                     </div>
 
-                    {/* Related Products Carousel */}
-                    {relatedProducts && relatedProducts.length > 0 && (
-                        <div className="pt-8 mt-8 border-t border-gray-100">
-                            <ProductCarousel
-                                products={relatedProducts.filter((p: any) => p.id !== product.id)}
-                                title="Products related to this item"
-                                session={session}
-                            />
+                    {/* Recommended Products */}
+                    <RelatedProducts
+                        productId={product.id}
+                        categoryId={product.category.id}
+                        fabric={product.fabric || undefined}
+                        session={session}
+                    />
 
+                    {/* Customer Reviews Section */}
+                    <section className="mt-24 pt-16 border-t border-gray-100">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12">
+                            <div>
+                                <h2 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Customer Reviews</h2>
+                                <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-[0.2em] font-black">Authentication feedback from our community</p>
+                            </div>
                         </div>
-                    )}
+
+                        <div className="grid grid-cols-1 lg:grid-cols-[4fr_6fr] gap-12 items-start">
+                            <div>
+                                {session ? (
+                                    <ReviewForm productId={product.id} />
+                                ) : (
+                                    <div className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 text-center">
+                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">You must be logged in to leave a review.</p>
+                                        <Link href="/login" className="inline-block bg-black text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all hover:bg-orange-600">Login to Review</Link>
+                                    </div>
+                                )}
+                            </div>
+                            <div>
+                                <ReviewList reviews={reviewsResult.success ? reviewsResult.data : []} />
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </main>
         </div>

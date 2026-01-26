@@ -114,7 +114,7 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
 
                     {/* Simple Dots */}
                     {banners.length > 1 && (
-                        <div className="absolute bottom-16 md:bottom-24 left-1/2 -translate-x-1/2 z-30 flex space-x-2">
+                        <div className="absolute bottom-16 md:bottom-24 left-1/2 -translate-x-1/2 z-30 hidden md:flex space-x-2">
                             {banners.map((_, index) => (
                                 <button
                                     key={index}

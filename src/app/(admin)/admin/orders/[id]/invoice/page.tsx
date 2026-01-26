@@ -51,15 +51,17 @@ export default async function OrderInvoicePage({
             <style dangerouslySetInnerHTML={{
                 __html: `
                 @page { 
-                    margin: 1cm; 
+                    size: auto;
+                    margin: 0mm; 
                 }
                 @media print {
                     body { margin: 0; padding: 0; }
+                    .print-content { padding: 10mm; }
                     .no-print { display: none; }
                 }
             `}} />
 
-            <div className="max-w-4xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-6 print-content">
                 {/* Print Action Bar - Hidden during print */}
                 <div className="no-print flex justify-end mb-8 pt-4">
                     <PrintInvoiceButton />

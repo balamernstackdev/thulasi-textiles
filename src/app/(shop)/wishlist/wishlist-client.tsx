@@ -42,14 +42,14 @@ export default function WishlistClient({ wishlist }: { wishlist: any[] }) {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="max-w-[1700px] mx-auto px-4 md:px-6 py-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="bg-white rounded-[2.5rem] p-8 shadow-xl">
                 <div className="mb-8">
                     <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tight italic mb-2">My Wishlist</h3>
                     <p className="text-gray-500 font-medium">{wishlist.length} {wishlist.length === 1 ? 'item' : 'items'} saved</p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {wishlist.map((item) => (
                         <div key={item.id} className="group border border-gray-100 rounded-3xl p-4 hover:shadow-lg transition-all relative">
                             {/* Remove Button */}

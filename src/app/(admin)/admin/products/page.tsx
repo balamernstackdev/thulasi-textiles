@@ -1,25 +1,48 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, Search, Filter } from 'lucide-react';
-import { getProducts } from '@/lib/actions/product';
+import { Plus, Search } from 'lucide-react';
+import { getProducts, getFilterValues } from '@/lib/actions/product';
 import Pagination from '@/components/shared/Pagination';
 import DeleteProductButton from '@/components/admin/DeleteProductButton';
+import AdminProductFilters from '@/components/admin/AdminProductFilters';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ProductsPage({
     searchParams
 }: {
-    searchParams: Promise<{ page?: string }>
+    searchParams: Promise<{
+        page?: string,
+        q?: string,
+        sizes?: string,
+        colors?: string,
+        fabrics?: string
+    }>
 }) {
     const params = await searchParams;
     const page = parseInt(params.page || '1');
+    const query = params.q || '';
+    const sizes = params.sizes?.split(',').filter(Boolean);
+    const colors = params.colors?.split(',').filter(Boolean);
+    const fabrics = params.fabrics?.split(',').filter(Boolean);
+
     const pageSize = 10;
 
-    const { data: products, pagination } = await getProducts({
-        page,
-        pageSize
-    });
+    const [productsResult, filterAttributesResult] = await Promise.all([
+        getProducts({
+            page,
+            pageSize,
+            search: query,
+            sizes,
+            colors,
+            fabrics,
+        }),
+        getFilterValues()
+    ]);
+
+    const products = productsResult.success && 'data' in productsResult ? productsResult.data : [];
+    const pagination = productsResult.success && 'pagination' in productsResult ? productsResult.pagination : null;
+    const filterAttributes = filterAttributesResult.success ? filterAttributesResult.data : undefined;
 
     return (
         <div className="space-y-6">
@@ -35,19 +58,8 @@ export default async function ProductsPage({
                 </Link>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                        <input
-                            placeholder="Search products..."
-                            className="pl-12 pr-4 h-12 w-full border-2 border-gray-50 bg-gray-50/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2dd4bf]/20 focus:border-[#2dd4bf] focus:bg-white transition-all font-bold text-gray-900"
-                        />
-                    </div>
-                    <Button variant="outline" className="h-12 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 border-gray-100 hover:bg-gray-50">
-                        <Filter className="w-4 h-4 mr-2" /> Filter catalog
-                    </Button>
-                </div>
+            <div className="bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+                <AdminProductFilters filterAttributes={filterAttributes} />
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse min-w-[800px]">
@@ -80,12 +92,16 @@ export default async function ProductsPage({
                                                 )}
                                             </div>
                                             <div>
-                                                <p className="font-black text-gray-900 group-hover:text-teal-600 transition-colors">{product.name}</p>
+                                                <p className="font-black text-gray-900 group-hover:text-teal-600 transition-colors text-sm">{product.name}</p>
                                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate max-w-[150px]">{product.slug}</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-5 text-[10px] font-black text-gray-500 uppercase tracking-wider">{product.category?.name || 'Uncategorized'}</td>
+                                    <td className="px-6 py-5">
+                                        <span className="text-[10px] font-black text-teal-600 uppercase tracking-wider bg-teal-50 px-2 py-1 rounded">
+                                            {product.category?.name || 'Uncategorized'}
+                                        </span>
+                                    </td>
                                     <td className="px-6 py-5 text-sm font-black text-gray-900 italic">₹{parseFloat(product.basePrice).toLocaleString()}</td>
                                     <td className="px-6 py-5">
                                         <div className="flex flex-col">
@@ -120,13 +136,13 @@ export default async function ProductsPage({
                             ))}
                             {(!products || products.length === 0) && (
                                 <tr>
-                                    <td colSpan={6} className="p-12 text-center text-gray-500">
+                                    <td colSpan={6} className="p-24 text-center text-gray-500">
                                         <div className="flex flex-col items-center justify-center">
-                                            <Search className="w-8 h-8 text-gray-300 mb-2" />
-                                            <p className="font-bold">No products found matching your criteria</p>
-                                            <Link href="/admin/products/new">
-                                                <Button variant="link" className="text-[#2dd4bf] mt-2 font-black uppercase tracking-widest text-xs">Create New Product</Button>
-                                            </Link>
+                                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                                                <Search className="w-8 h-8 text-gray-300" />
+                                            </div>
+                                            <p className="font-black text-gray-900 uppercase tracking-widest text-xs">No products found matching your matrix</p>
+                                            <Link href="/admin/products" className="mt-4 text-teal-600 text-[10px] font-black uppercase tracking-widest hover:underline">Reset Search</Link>
                                         </div>
                                     </td>
                                 </tr>

@@ -81,11 +81,12 @@ export async function getWishlist() {
                 variants: item.product.variants.map(v => ({
                     ...v,
                     price: Number(v.price),
+                    discount: v.discount ? Number(v.discount) : 0,
                 })),
             },
         }));
 
-        return { success: true, data: serializedWishlist };
+        return { success: true, data: JSON.parse(JSON.stringify(serializedWishlist)) };
     } catch (error) {
         console.error('Get wishlist error:', error);
         return { success: false, error: 'Failed to fetch wishlist' };

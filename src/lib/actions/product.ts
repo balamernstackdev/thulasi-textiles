@@ -98,6 +98,11 @@ export const getProducts = cache(async (options: {
     search?: string,
     minPrice?: number,
     maxPrice?: number,
+    sizes?: string[],
+    colors?: string[],
+    materials?: string[],
+    fabrics?: string[],
+    occasions?: string[],
     sort?: string,
     page?: number,
     pageSize?: number,
@@ -124,7 +129,9 @@ export const getProducts = cache(async (options: {
                 if (options.search) {
                     where.OR = [
                         { name: { contains: options.search } },
-                        { description: { contains: options.search } }
+                        { description: { contains: options.search } },
+                        { fabric: { contains: options.search } },
+                        { occasion: { contains: options.search } }
                     ];
                 }
 
@@ -134,8 +141,32 @@ export const getProducts = cache(async (options: {
                     if (options.maxPrice) where.basePrice.lte = options.maxPrice;
                 }
 
+                // Attribute Filters
+                if (options.fabrics && options.fabrics.length > 0) {
+                    where.fabric = { in: options.fabrics };
+                }
+                if (options.occasions && options.occasions.length > 0) {
+                    where.occasion = { in: options.occasions };
+                }
+
+                // Variant Filters (Size, Color, Material)
+                if ((options.sizes && options.sizes.length > 0) ||
+                    (options.colors && options.colors.length > 0) ||
+                    (options.materials && options.materials.length > 0)) {
+                    where.variants = {
+                        some: {
+                            ...(options.sizes && options.sizes.length > 0 && { size: { in: options.sizes } }),
+                            ...(options.colors && options.colors.length > 0 && { color: { in: options.colors } }),
+                            ...(options.materials && options.materials.length > 0 && { material: { in: options.materials } }),
+                        }
+                    };
+                }
+
                 where.isActive = true;
-                const skip = ((options.page || 1) - 1) * (options.pageSize || 10);
+
+                const page = options.page || 1;
+                const pageSize = options.pageSize || 10;
+                const skip = (page - 1) * pageSize;
 
                 let orderBy: any = { createdAt: 'desc' };
                 if (options.sort === 'price_asc') orderBy = { basePrice: 'asc' };
@@ -145,34 +176,28 @@ export const getProducts = cache(async (options: {
                 const [products, total] = await Promise.all([
                     prismadb.product.findMany({
                         where,
-                        select: {
-                            id: true,
-                            name: true,
-                            slug: true,
-                            basePrice: true,
-                            isFeatured: true,
-                            isBestSeller: true,
-                            isOffer: true,
-                            isActive: true,
-                            createdAt: true,
-                            category: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                    slug: true,
-                                }
-                            },
+                        include: {
                             images: {
-                                take: 2, // Take 2 for hover effects if any, or just 1
+                                take: 2,
                                 select: {
                                     url: true,
                                     isPrimary: true,
                                 }
                             },
+                            category: true,
                             variants: {
                                 select: {
+                                    id: true,
+                                    size: true,
+                                    color: true,
+                                    material: true,
                                     stock: true,
+                                    price: true
                                 }
+                            },
+                            reviews: {
+                                where: { isPublic: true },
+                                select: { rating: true }
                             }
                         },
                         take: options.limit || options.pageSize || 10,
@@ -182,14 +207,27 @@ export const getProducts = cache(async (options: {
                     prismadb.product.count({ where })
                 ]);
 
-                const serializedProducts = products.map(p => ({
-                    ...p,
-                    basePrice: Number(p.basePrice),
-                }));
+                const processedProducts = products.map(product => {
+                    const reviewCount = product.reviews.length;
+                    const averageRating = reviewCount > 0
+                        ? product.reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviewCount
+                        : 0;
+
+                    return {
+                        ...product,
+                        basePrice: Number(product.basePrice),
+                        reviewCount,
+                        averageRating,
+                        variants: product.variants.map((v: any) => ({
+                            ...v,
+                            price: Number(v.price)
+                        }))
+                    };
+                });
 
                 return {
                     success: true,
-                    data: serializedProducts,
+                    data: processedProducts,
                     pagination: {
                         total,
                         page: options.page || 1,
@@ -217,6 +255,84 @@ export const getProducts = cache(async (options: {
     )();
 });
 
+export const getFilterValues = cache(async () => {
+    return unstable_cache(
+        async () => {
+            try {
+                const [sizes, colors, materials, fabrics, occasions] = await Promise.all([
+                    prismadb.productVariant.findMany({ select: { size: true }, distinct: ['size'] }),
+                    prismadb.productVariant.findMany({ select: { color: true }, distinct: ['color'] }),
+                    prismadb.productVariant.findMany({ select: { material: true }, distinct: ['material'] }),
+                    prismadb.product.findMany({ select: { fabric: true }, distinct: ['fabric'] }),
+                    prismadb.product.findMany({ select: { occasion: true }, distinct: ['occasion'] }),
+                ]);
+
+                return {
+                    success: true,
+                    data: {
+                        sizes: sizes.map(s => s.size).filter(Boolean) as string[],
+                        colors: colors.map(c => c.color).filter(Boolean) as string[],
+                        materials: materials.map(m => m.material).filter(Boolean) as string[],
+                        fabrics: fabrics.map(f => f.fabric).filter(Boolean) as string[],
+                        occasions: occasions.map(o => o.occasion).filter(Boolean) as string[],
+                    }
+                };
+            } catch (error) {
+                console.error('Error fetching filter values:', error);
+                return { success: false, data: { sizes: [], colors: [], materials: [], fabrics: [], occasions: [] } };
+            }
+        },
+        ['filter-values'],
+        { tags: ['products'], revalidate: 3600 }
+    )();
+});
+
+export const getRelatedProducts = cache(async (productId: string, categoryId: string, fabric?: string) => {
+    return unstable_cache(
+        async () => {
+            try {
+                const products = await prismadb.product.findMany({
+                    where: {
+                        isActive: true,
+                        id: { not: productId },
+                        OR: [
+                            { categoryId: categoryId },
+                            { fabric: fabric || undefined }
+                        ]
+                    },
+                    take: 4,
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        basePrice: true,
+                        images: {
+                            where: { isPrimary: true },
+                            take: 1
+                        }
+                    },
+                    orderBy: {
+                        isBestSeller: 'desc'
+                    }
+                });
+
+                return {
+                    success: true,
+                    data: products.map(p => ({
+                        ...p,
+                        basePrice: Number(p.basePrice)
+                    }))
+                };
+            } catch (error) {
+                console.error('Related products fetch error:', error);
+                return { success: false, data: [] };
+            }
+        },
+        ['related-products', productId],
+        { tags: ['products'], revalidate: 3600 }
+    )();
+});
+
 export const getProductBySlug = cache(async (slug: string) => {
     return unstable_cache(
         async () => {
@@ -230,15 +346,26 @@ export const getProductBySlug = cache(async (slug: string) => {
                                 parent: true
                             }
                         },
-                        variants: true
+                        variants: true,
+                        reviews: {
+                            where: { isPublic: true },
+                            select: { rating: true }
+                        }
                     }
                 });
                 if (!product) return { success: true, data: null };
 
+                const reviewCount = product.reviews.length;
+                const averageRating = reviewCount > 0
+                    ? product.reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviewCount
+                    : 0;
+
                 const serializedProduct = {
                     ...product,
                     basePrice: Number(product.basePrice),
-                    variants: product.variants.map(v => ({
+                    reviewCount,
+                    averageRating,
+                    variants: product.variants.map((v: any) => ({
                         ...v,
                         price: Number(v.price),
                         discount: v.discount ? Number(v.discount) : 0
@@ -265,15 +392,26 @@ export const getProductById = cache(async (id: string) => {
                     include: {
                         images: true,
                         category: true,
-                        variants: true
+                        variants: true,
+                        reviews: {
+                            where: { isPublic: true },
+                            select: { rating: true }
+                        }
                     }
                 });
                 if (!product) return { success: true, data: null };
 
+                const reviewCount = product.reviews.length;
+                const averageRating = reviewCount > 0
+                    ? product.reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviewCount
+                    : 0;
+
                 const serializedProduct = {
                     ...product,
                     basePrice: Number(product.basePrice),
-                    variants: product.variants.map(v => ({
+                    reviewCount,
+                    averageRating,
+                    variants: product.variants.map((v: any) => ({
                         ...v,
                         price: Number(v.price),
                         discount: v.discount ? Number(v.discount) : 0

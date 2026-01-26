@@ -10,12 +10,26 @@ import {
     ShoppingBag,
     Package,
     Users,
-    Settings,
     LogOut,
     Menu,
     X,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Ticket,
+    Box,
+    Star
 } from 'lucide-react';
+
+const navItems = [
+    { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, color: 'text-teal-400' },
+    { href: '/admin/categories', label: 'Categories', icon: Menu, color: 'text-[#2dd4bf]' },
+    { href: '/admin/products', label: 'Products', icon: Package, color: 'text-purple-400' },
+    { href: '/admin/orders', label: 'Orders', icon: ShoppingBag, color: 'text-orange-400' },
+    { href: '/admin/customers', label: 'Customers', icon: Users, color: 'text-blue-400' },
+    { href: '/admin/banners', label: 'Banners', icon: ImageIcon, color: 'text-pink-400' },
+    { href: '/admin/coupons', label: 'Coupons', icon: Ticket, color: 'text-orange-500' },
+    { href: '/admin/inventory', label: 'Inventory', icon: Box, color: 'text-teal-500' },
+    { href: '/admin/reviews', label: 'Reviews', icon: Star, color: 'text-yellow-500' },
+];
 
 export default function AdminLayout({
     children,
@@ -27,17 +41,8 @@ export default function AdminLayout({
     const isInvoicePage = pathname.endsWith('/invoice');
 
     if (isInvoicePage) {
-        return <div className="min-h-screen bg-white bg-white/100">{children}</div>;
+        return <div className="min-h-screen bg-white">{children}</div>;
     }
-
-    const navItems = [
-        { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, color: 'text-teal-400' },
-        { href: '/admin/categories', label: 'Categories', icon: Menu, color: 'text-[#2dd4bf]' },
-        { href: '/admin/products', label: 'Products', icon: Package, color: 'text-purple-400' },
-        { href: '/admin/orders', label: 'Orders', icon: ShoppingBag, color: 'text-orange-400' },
-        { href: '/admin/customers', label: 'Customers', icon: Users, color: 'text-blue-400' },
-        { href: '/admin/banners', label: 'Banners', icon: ImageIcon, color: 'text-pink-400' },
-    ];
 
     return (
         <div className="min-h-screen bg-[#f3f4f6] flex font-sans overflow-x-hidden">
@@ -61,7 +66,7 @@ export default function AdminLayout({
                     </button>
 
                     {/* Official Logo */}
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-2xl p-2 ring-4 ring-white/10 animate-pulse [animation-duration:4s]">
+                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-2xl p-2 ring-4 ring-white/10">
                         <Image
                             src="/logo.png"
                             alt="Logo"
@@ -78,7 +83,7 @@ export default function AdminLayout({
                     </div>
                 </div>
 
-                <div className="p-4 flex-1 overflow-y-auto space-y-1 custom-scrollbar-thin gpu">
+                <div className="p-4 flex-1 overflow-y-auto space-y-1 custom-scrollbar-thin">
                     <p className="px-5 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3 mt-6">Main Menu</p>
 
                     {navItems.map((item) => {
@@ -141,7 +146,7 @@ export default function AdminLayout({
                 </header>
 
                 {/* Page Content */}
-                <main className="p-6 md:p-10 lg:p-12 animate-in fade-in slide-in-from-bottom-5 duration-700 gpu overflow-x-hidden">
+                <main className="p-6 md:p-10 lg:p-12 animate-in fade-in slide-in-from-bottom-2 duration-300 gpu overflow-x-hidden">
                     <div className="w-full">
                         {children}
                     </div>

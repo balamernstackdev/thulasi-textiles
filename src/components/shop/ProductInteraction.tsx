@@ -32,13 +32,15 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
     const [quantity, setQuantity] = useState(1);
     const [currentIdx, setCurrentIdx] = useState(0);
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+    const [brokenImages, setBrokenImages] = useState<string[]>([]);
 
     const currentPrice = selectedVariant ? Number(selectedVariant.price) : Number(product.basePrice);
     const originalPrice = currentPrice * 1.5;
     const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : product.variants.every((v: any) => v.stock <= 0);
 
-    const images = product.images.length > 0 ? product.images : [{ url: '/placeholder-product.png', id: 'placeholder' }];
-    const activeImage = images[currentIdx]?.url;
+    const rawImages = product.images.length > 0 ? product.images : [{ url: '/placeholder-product.png', id: 'placeholder' }];
+    const images = rawImages.filter((img: any) => !brokenImages.includes(img.url));
+    const activeImage = images[currentIdx]?.url || images[0]?.url;
 
     const nextImage = useCallback(() => {
         setCurrentIdx((prev) => (prev + 1) % images.length);
@@ -70,12 +72,12 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
     }, [isAutoPlaying, images.length, nextImage]);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[4fr_4fr_3.5fr] gap-x-6 xl:gap-x-8 gap-y-6 mb-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[4.5fr_4fr_3.5fr] gap-x-6 xl:gap-x-12 gap-y-6 mb-8 items-start">
             {/* COLUMN 1: AMAZON-STYLE GALLERY */}
             <div className="flex flex-col-reverse lg:flex-row gap-4 items-start lg:sticky lg:top-[230px]">
                 {/* Vertical Thumbnail Strip - Desktop Only */}
                 {images.length > 1 && (
-                    <div className="hidden lg:flex lg:flex-col gap-3 overflow-y-auto lg:max-h-[600px] py-1 shrink-0">
+                    <div className="hidden lg:flex lg:flex-col gap-4 overflow-y-auto lg:max-h-[700px] py-1 shrink-0">
                         {images.map((img: any, idx: number) => {
                             const isPrimary = idx === currentIdx;
                             return (
@@ -89,12 +91,18 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                                         setCurrentIdx(idx);
                                         setIsAutoPlaying(false);
                                     }}
-                                    className={`relative shrink-0 w-12 h-16 lg:w-14 lg:h-18 rounded-sm overflow-hidden border-2 cursor-pointer transition-all duration-200 ${isPrimary
-                                        ? 'border-orange-600 shadow-md ring-2 ring-orange-100'
-                                        : 'border-gray-200 opacity-70 hover:opacity-100 hover:border-gray-400'
+                                    className={`relative shrink-0 w-16 h-20 lg:w-20 lg:h-28 rounded-md overflow-hidden border-2 cursor-pointer transition-all duration-300 ${isPrimary
+                                        ? 'border-orange-600 shadow-xl ring-4 ring-orange-50'
+                                        : 'border-gray-100 opacity-60 hover:opacity-100 hover:border-orange-200'
                                         }`}
                                 >
-                                    <Image src={img.url} alt={`View ${idx}`} fill className="object-cover" />
+                                    <Image
+                                        src={img.url}
+                                        alt={`View ${idx}`}
+                                        fill
+                                        className="object-cover"
+                                        onError={() => setBrokenImages(prev => [...prev, img.url])}
+                                    />
                                 </div>
                             );
                         })}
@@ -103,7 +111,7 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
 
                 {/* Primary Image View */}
                 <div
-                    className="relative flex-1 w-full aspect-[4/5] lg:aspect-square rounded-sm overflow-hidden bg-white border border-gray-100 shadow-sm group cursor-zoom-in p-1"
+                    className="relative flex-1 w-full aspect-[4/5] lg:aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-2xl group cursor-zoom-in group p-0"
                     onMouseEnter={() => setIsAutoPlaying(false)}
                     onMouseLeave={() => setIsAutoPlaying(true)}
                 >
@@ -112,8 +120,9 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                             src={activeImage}
                             alt={product.name}
                             fill
-                            className="object-contain transition-all duration-1000 group-hover:scale-105"
+                            className="object-cover transition-all duration-[2000ms] group-hover:scale-110"
                             priority
+                            onError={() => setBrokenImages(prev => [...prev, activeImage])}
                         />
                     </div>
 
@@ -147,13 +156,12 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
             {/* COLUMN 2: INFORMATION */}
             <div className="flex flex-col">
                 <div className="mb-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.1em]">{product.category.name}</span>
-                        <div className="h-2 w-px bg-gray-300" />
-                        <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Thulasi Choice</span>
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="bg-gray-100 text-gray-900 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">{product.category.name}</span>
+                        <span className="bg-orange-50 text-orange-600 border border-orange-100 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-sm shadow-orange-500/5">Thulasi Choice</span>
                     </div>
 
-                    <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-1 leading-tight tracking-tight">
+                    <h1 className="text-2xl lg:text-3xl font-black text-gray-900 mb-2 leading-none tracking-tighter uppercase italic">
                         {product.name}
                     </h1>
 
@@ -192,7 +200,7 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                     </div>
 
                     <div className="space-y-4 mb-8">
-                        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest">Description</h3>
+                        <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest border-l-4 border-orange-600 pl-4 py-1 italic">Product Discovery</h3>
                         <p className="text-gray-600 text-sm leading-relaxed">
                             {product.description}
                         </p>
@@ -253,7 +261,11 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                             <span className="text-4xl font-bold text-gray-900 tracking-tight">₹{currentPrice.toLocaleString()}</span>
                             <span className="text-lg text-gray-400 line-through font-medium">₹{originalPrice.toLocaleString()}</span>
                         </div>
-                        <p className="text-[#007600] text-lg font-bold">Limited time deal</p>
+                        <div className="flex items-center gap-2">
+                            <span className="bg-rose-50 text-rose-600 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest border border-rose-100 shadow-sm shadow-rose-500/5">
+                                Limited time deal
+                            </span>
+                        </div>
                         <div className="text-sm text-gray-400 font-medium">
                             Inclusive of all taxes
                         </div>
@@ -261,20 +273,28 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
 
                     <div className="space-y-5 py-6 border-y border-gray-100">
                         <div className="flex items-center justify-between text-lg">
-                            <span className="text-gray-500 font-medium">Stock Status:</span>
+                            <span className="text-gray-900 font-black uppercase tracking-tighter italic">Stock Status:</span>
                             {selectedVariant && selectedVariant.stock > 0 ? (
-                                <span className="text-[#007600] font-bold">In Stock.</span>
+                                <span className="text-emerald-600 font-extrabold px-3 py-1 bg-emerald-50 rounded-lg border border-emerald-100 shadow-sm">In Stock.</span>
                             ) : (
-                                <span className="text-rose-600 font-bold">Currently unavailable.</span>
+                                <span className="text-rose-600 font-extrabold px-3 py-1 bg-rose-50 rounded-lg border border-rose-100 shadow-sm">Unavailable.</span>
                             )}
                         </div>
 
                         {selectedVariant && selectedVariant.stock > 0 && (
-                            <p className="text-[#B12704] text-sm font-bold">Only {selectedVariant.stock} left in stock - order soon.</p>
+                            <div className="bg-orange-50/50 p-4 rounded-2xl border border-orange-100/50">
+                                <p className="text-[#B12704] text-sm font-black uppercase tracking-tight">
+                                    <AlertCircle className="w-4 h-4 inline-block mr-2 -mt-1" />
+                                    Only {selectedVariant.stock} left in stock - order soon.
+                                </p>
+                            </div>
                         )}
 
-                        <div className="text-lg text-gray-900">
-                            <span className="font-black italic uppercase">FREE delivery</span> by <span className="font-black italic uppercase text-black">Tomorrow.</span>
+                        <div className="text-[12px] text-gray-900 bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-3">
+                            <Truck className="w-5 h-5 text-orange-600 shrink-0" />
+                            <p className="font-bold leading-tight uppercase tracking-tight">
+                                <span className="text-orange-600 font-black italic">FREE delivery</span> by <span className="text-gray-950 font-black italic">Tomorrow, Jan 27.</span>
+                            </p>
                         </div>
                     </div>
 

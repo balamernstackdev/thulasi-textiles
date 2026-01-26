@@ -35,7 +35,7 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                         >
                             <Menu className="w-5 h-5" />
                         </button>
-                        <Link href="/" className="flex flex-col items-center gap-1 group transition-all">
+                        <Link href="/" className="flex flex-row md:flex-col items-center gap-2 md:gap-1 group transition-all">
                             <div className="w-8 h-8 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-md overflow-hidden p-1 ring-2 ring-gray-50 group-hover:ring-orange-50 transition-all">
                                 <Image
                                     src="/logo.png"
@@ -45,7 +45,7 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                                     className="object-contain"
                                 />
                             </div>
-                            <div className="flex flex-col leading-none text-center">
+                            <div className="flex flex-col leading-none text-left md:text-center">
                                 <span className="text-[10px] md:text-sm font-black tracking-tighter uppercase italic">
                                     <span className="text-gray-400">Thulasi</span> <span className="text-orange-600">Textiles</span>
                                 </span>

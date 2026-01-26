@@ -1,4 +1,4 @@
-import { getProducts } from '@/lib/actions/product';
+import { getProducts, getFilterValues } from '@/lib/actions/product';
 import { getCategoriesTree } from '@/lib/actions/category';
 import ProductCard from '@/components/shop/ProductCard';
 import ProductFilters from '@/components/shop/ProductFilters';
@@ -18,6 +18,11 @@ export default async function SearchPage({
         page?: string,
         minPrice?: string,
         maxPrice?: string,
+        sizes?: string,
+        colors?: string,
+        materials?: string,
+        fabrics?: string,
+        occasions?: string,
         sort?: string,
         category?: string
     }>
@@ -27,26 +32,40 @@ export default async function SearchPage({
     const page = parseInt(params.page || '1');
     const minPrice = params.minPrice ? parseFloat(params.minPrice) : undefined;
     const maxPrice = params.maxPrice ? parseFloat(params.maxPrice) : undefined;
+
+    const sizes = params.sizes?.split(',').filter(Boolean);
+    const colors = params.colors?.split(',').filter(Boolean);
+    const materials = params.materials?.split(',').filter(Boolean);
+    const fabrics = params.fabrics?.split(',').filter(Boolean);
+    const occasions = params.occasions?.split(',').filter(Boolean);
+
     const sort = params.sort;
     const categorySlug = params.category;
     const pageSize = 12;
 
-    const [productsResult, categoriesResult, session] = await Promise.all([
+    const [productsResult, categoriesResult, filterAttributesResult, session] = await Promise.all([
         getProducts({
             search: query,
             minPrice,
             maxPrice,
+            sizes,
+            colors,
+            materials,
+            fabrics,
+            occasions,
             sort,
             categorySlug,
             page,
             pageSize
         }),
         getCategoriesTree(),
+        getFilterValues(),
         getSession()
     ]);
 
     const products = productsResult.success && 'data' in productsResult ? productsResult.data : [];
     const categories = categoriesResult.success ? categoriesResult.data : [];
+    const filterAttributes = filterAttributesResult.success ? filterAttributesResult.data : undefined;
     const pagination = productsResult.success && 'pagination' in productsResult ? productsResult.pagination : null;
 
     return (
@@ -66,7 +85,7 @@ export default async function SearchPage({
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Sidebar / Filters (Desktop) */}
                     <aside className="hidden lg:block w-72 shrink-0 space-y-10">
-                        <ProductFilters categories={categories} />
+                        <ProductFilters categories={categories} filterAttributes={filterAttributes} />
                     </aside>
 
                     {/* Main Content */}
@@ -106,13 +125,13 @@ export default async function SearchPage({
                                 )}
                             </>
                         ) : (
-                            <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-20 text-center flex flex-col items-center justify-center">
+                            <div className="bg-white rounded-3xl border border-dashed border-gray-200 p-20 text-center flex flex-col items-center justify-center">
                                 <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                                     <ShoppingBag className="w-10 h-10 text-gray-300" />
                                 </div>
                                 <h2 className="text-xl font-bold text-gray-900 mb-2">No products found</h2>
                                 <p className="text-gray-500 mb-8 max-w-xs mx-auto text-sm">
-                                    We couldn't find matches for "{query}". Try checking your spelling or use different keywords.
+                                    We couldn't find matches. Try adjusting your filters or use different keywords.
                                 </p>
                                 <Link href="/" className="bg-orange-600 text-white px-8 py-3 rounded-full font-bold hover:bg-orange-700 transition-colors shadow-lg shadow-orange-100">
                                     Continue Shopping

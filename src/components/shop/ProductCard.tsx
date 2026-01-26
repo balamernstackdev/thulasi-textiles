@@ -16,9 +16,11 @@ interface ProductWithData extends Product {
 export default function ProductCard({ product, session, priority = false }: { product: ProductWithData, session?: any, priority?: boolean }) {
     const [currentIdx, setCurrentIdx] = useState(0);
     const [isHovering, setIsHovering] = useState(false);
+    const [brokenImages, setBrokenImages] = useState<string[]>([]);
 
-    const images = product.images.length > 0 ? product.images : [{ url: '/placeholder-product.png' }];
-    const primaryImage = images[currentIdx]?.url;
+    const rawImages = product.images.length > 0 ? product.images : [{ url: '/placeholder-product.png' }];
+    const images = rawImages.filter((img: any) => !brokenImages.includes(img.url));
+    const primaryImage = images[currentIdx]?.url || images[0]?.url || '/placeholder-product.png';
     const addItem = useCartStore((state) => state.addItem);
 
     const priceValue = Number(product.basePrice);
@@ -54,6 +56,7 @@ export default function ProductCard({ product, session, priority = false }: { pr
                         className="object-cover transition-all duration-700 group-hover:scale-105 gpu"
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 25vw"
                         priority={priority}
+                        onError={() => setBrokenImages(prev => [...prev, primaryImage])}
                     />
 
                     {/* Image Progress Dots (Only on Hover) */}
@@ -89,10 +92,12 @@ export default function ProductCard({ product, session, priority = false }: { pr
                     <div className="flex items-center gap-1 mb-1">
                         <div className="flex items-center gap-0.5 text-[#FFA41C]">
                             {[1, 2, 3, 4, 5].map(s => (
-                                <Star key={s} className={`w-3.5 h-3.5 ${s <= 4 ? 'fill-current' : 'text-gray-200'}`} />
+                                <Star key={s} className={`w-3.5 h-3.5 ${s <= Math.round((product as any).averageRating || 0) ? 'fill-current' : 'text-gray-200'}`} />
                             ))}
                         </div>
-                        <span className="text-xs text-[#007185] hover:text-[#C45500] ml-1">2,739</span>
+                        <span className="text-[10px] font-bold text-[#007185] hover:text-[#C45500] ml-1">
+                            {(product as any).reviewCount || 0}
+                        </span>
                     </div>
 
                     {/* Deal Badge */}
