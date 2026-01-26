@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { logout } from '@/lib/actions/auth';
 import { usePathname } from 'next/navigation';
 import {
     LayoutDashboard,
@@ -102,7 +103,10 @@ export default function AdminLayout({
                 </div>
 
                 <div className="p-6 border-t border-gray-700/50">
-                    <button className="flex items-center gap-4 px-5 py-4 w-full rounded-2xl text-red-400 hover:bg-red-500/10 transition-all font-bold group text-left">
+                    <button
+                        onClick={() => logout()}
+                        className="flex items-center gap-4 px-5 py-4 w-full rounded-2xl text-red-400 hover:bg-red-500/10 transition-all font-bold group text-left"
+                    >
                         <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                         Sign Out
                     </button>
