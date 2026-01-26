@@ -14,11 +14,21 @@ export const getCategoriesTree = cache(async () => {
                         id: true,
                         name: true,
                         slug: true,
+                        description: true,
+                        image: true,
+                        parentId: true,
+                        createdAt: true,
+                        updatedAt: true,
                         children: {
                             select: {
                                 id: true,
                                 name: true,
                                 slug: true,
+                                description: true,
+                                image: true,
+                                parentId: true,
+                                createdAt: true,
+                                updatedAt: true,
                             }
                         }
                     },
