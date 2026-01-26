@@ -3,26 +3,23 @@
 import prisma from '@/lib/prisma';
 import { unstable_cache, revalidateTag, revalidatePath } from 'next/cache';
 
-export const getCategoriesTree = unstable_cache(
-    async () => {
-        try {
-            const categories = await prisma.category.findMany({
-                where: { parentId: null },
-                include: {
-                    children: true,
-                },
-                orderBy: { name: 'asc' }
-            });
-            console.log(`[DATABASE_SUCCESS] Loaded ${categories.length} root categories.`);
-            return { success: true, data: categories };
-        } catch (error) {
-            console.error('[DATABASE_ERROR] Failed to load categories tree:', error);
-            return { success: false, error: 'Failed to load categories' };
-        }
-    },
-    ['categories-tree'],
-    { tags: ['categories'], revalidate: 3600 }
-);
+export async function getCategoriesTree() {
+    try {
+        const categories = await prisma.category.findMany({
+            where: { parentId: null },
+            include: {
+                children: true,
+            },
+            orderBy: { name: 'asc' }
+        });
+        console.log(`[DATABASE_SUCCESS] Loaded ${categories.length} root categories.`);
+        return { success: true, data: categories };
+    } catch (error) {
+        console.error('[DATABASE_ERROR] Failed to load categories tree:', error);
+        return { success: false, error: 'Failed to load categories' };
+    }
+}
+
 export async function getCategoryBySlug(slug: string) {
     try {
         const category = await prisma.category.findUnique({
@@ -161,5 +158,16 @@ export async function deleteCategory(id: string) {
         return { success: true };
     } catch (error) {
         return { success: false, error: 'Failed to delete category' };
+    }
+}
+export async function revalidateCategories() {
+    try {
+        revalidateTag('categories', 'default');
+        revalidatePath('/', 'layout');
+        revalidatePath('/admin/categories', 'page');
+        return { success: true };
+    } catch (error) {
+        console.error('Revalidation error:', error);
+        return { success: false, error: 'Failed to refresh cache' };
     }
 }

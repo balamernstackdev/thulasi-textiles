@@ -1,0 +1,335 @@
+[
+  {
+    "id": "cmksj65b70001mmoxod3uz2mm",
+    "name": "Men",
+    "slug": "men",
+    "description": "All products for Men",
+    "image": null,
+    "parentId": null,
+    "createdAt": "2026-01-24T16:35:09.283Z",
+    "updatedAt": "2026-01-24T16:35:09.283Z",
+    "_count": {
+      "products": 0
+    },
+    "children": [
+      {
+        "id": "cmksj65o10003mmox16czwo5b",
+        "name": "Shirts",
+        "slug": "men-shirts",
+        "description": "Shirts for Men",
+        "image": null,
+        "parentId": "cmksj65b70001mmoxod3uz2mm",
+        "createdAt": "2026-01-24T16:35:09.736Z",
+        "updatedAt": "2026-01-24T16:35:09.736Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj65wo0005mmoxs7nsgzsl",
+        "name": "T-Shirts",
+        "slug": "men-t-shirts",
+        "description": "T-Shirts for Men",
+        "image": null,
+        "parentId": "cmksj65b70001mmoxod3uz2mm",
+        "createdAt": "2026-01-24T16:35:10.056Z",
+        "updatedAt": "2026-01-24T16:35:10.056Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj66490007mmoxnzvjbq11",
+        "name": "Jeans",
+        "slug": "men-jeans",
+        "description": "Jeans for Men",
+        "image": null,
+        "parentId": "cmksj65b70001mmoxod3uz2mm",
+        "createdAt": "2026-01-24T16:35:10.329Z",
+        "updatedAt": "2026-01-24T16:35:10.329Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj66be0009mmoxlimqx4hd",
+        "name": "Trousers",
+        "slug": "men-trousers",
+        "description": "Trousers for Men",
+        "image": null,
+        "parentId": "cmksj65b70001mmoxod3uz2mm",
+        "createdAt": "2026-01-24T16:35:10.586Z",
+        "updatedAt": "2026-01-24T16:35:10.586Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj66it000bmmoxb5r1by5m",
+        "name": "Ethnic Wear",
+        "slug": "men-ethnic-wear",
+        "description": "Ethnic Wear for Men",
+        "image": null,
+        "parentId": "cmksj65b70001mmoxod3uz2mm",
+        "createdAt": "2026-01-24T16:35:10.853Z",
+        "updatedAt": "2026-01-24T16:35:10.853Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj66ri000dmmoxg47dicu3",
+        "name": "Innerwear",
+        "slug": "men-innerwear",
+        "description": "Innerwear for Men",
+        "image": null,
+        "parentId": "cmksj65b70001mmoxod3uz2mm",
+        "createdAt": "2026-01-24T16:35:11.166Z",
+        "updatedAt": "2026-01-24T16:35:11.166Z",
+        "_count": {
+          "products": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "cmksj66yy000emmoxu9r98xtz",
+    "name": "Women",
+    "slug": "women",
+    "description": "All products for Women",
+    "image": null,
+    "parentId": null,
+    "createdAt": "2026-01-24T16:35:11.434Z",
+    "updatedAt": "2026-01-24T16:35:11.434Z",
+    "_count": {
+      "products": 0
+    },
+    "children": [
+      {
+        "id": "cmksj676c000gmmoxzyx5fxss",
+        "name": "Sarees",
+        "slug": "women-sarees",
+        "description": "Sarees for Women",
+        "image": null,
+        "parentId": "cmksj66yy000emmoxu9r98xtz",
+        "createdAt": "2026-01-24T16:35:11.701Z",
+        "updatedAt": "2026-01-24T16:35:11.701Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj67du000immox0zqvj8z0",
+        "name": "Kurtas & Kurtis",
+        "slug": "women-kurtas-and-kurtis",
+        "description": "Kurtas & Kurtis for Women",
+        "image": null,
+        "parentId": "cmksj66yy000emmoxu9r98xtz",
+        "createdAt": "2026-01-24T16:35:11.971Z",
+        "updatedAt": "2026-01-24T16:35:11.971Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj67ky000kmmoxso9yi3c2",
+        "name": "Lehengas",
+        "slug": "women-lehengas",
+        "description": "Lehengas for Women",
+        "image": null,
+        "parentId": "cmksj66yy000emmoxu9r98xtz",
+        "createdAt": "2026-01-24T16:35:12.226Z",
+        "updatedAt": "2026-01-24T16:35:12.226Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj67ry000mmmoxab1qv10b",
+        "name": "Jeans & Jeggings",
+        "slug": "women-jeans-and-jeggings",
+        "description": "Jeans & Jeggings for Women",
+        "image": null,
+        "parentId": "cmksj66yy000emmoxu9r98xtz",
+        "createdAt": "2026-01-24T16:35:12.478Z",
+        "updatedAt": "2026-01-24T16:35:12.478Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj67zo000ommoxdk14il26",
+        "name": "Tops & Tees",
+        "slug": "women-tops-and-tees",
+        "description": "Tops & Tees for Women",
+        "image": null,
+        "parentId": "cmksj66yy000emmoxu9r98xtz",
+        "createdAt": "2026-01-24T16:35:12.756Z",
+        "updatedAt": "2026-01-24T16:35:12.756Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj686v000qmmox6yji3nl7",
+        "name": "Lingerie",
+        "slug": "women-lingerie",
+        "description": "Lingerie for Women",
+        "image": null,
+        "parentId": "cmksj66yy000emmoxu9r98xtz",
+        "createdAt": "2026-01-24T16:35:13.015Z",
+        "updatedAt": "2026-01-24T16:35:13.015Z",
+        "_count": {
+          "products": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "cmksj68e1000rmmoxpjch39fk",
+    "name": "Kids",
+    "slug": "kids",
+    "description": "All products for Kids",
+    "image": null,
+    "parentId": null,
+    "createdAt": "2026-01-24T16:35:13.273Z",
+    "updatedAt": "2026-01-24T16:35:13.273Z",
+    "_count": {
+      "products": 1
+    },
+    "children": [
+      {
+        "id": "cmksj68l9000tmmoxbcxff37h",
+        "name": "Boys Clothing",
+        "slug": "kids-boys-clothing",
+        "description": "Boys Clothing for Kids",
+        "image": null,
+        "parentId": "cmksj68e1000rmmoxpjch39fk",
+        "createdAt": "2026-01-24T16:35:13.532Z",
+        "updatedAt": "2026-01-24T16:35:13.532Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj68sh000vmmoxxz91cqky",
+        "name": "Girls Clothing",
+        "slug": "kids-girls-clothing",
+        "description": "Girls Clothing for Kids",
+        "image": null,
+        "parentId": "cmksj68e1000rmmoxpjch39fk",
+        "createdAt": "2026-01-24T16:35:13.793Z",
+        "updatedAt": "2026-01-24T16:35:13.793Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj68zt000xmmox3c6duj7r",
+        "name": "Infants",
+        "slug": "kids-infants",
+        "description": "Infants for Kids",
+        "image": null,
+        "parentId": "cmksj68e1000rmmoxpjch39fk",
+        "createdAt": "2026-01-24T16:35:14.057Z",
+        "updatedAt": "2026-01-24T16:35:14.057Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj6971000zmmox1mtfv7g1",
+        "name": "School Uniforms",
+        "slug": "kids-school-uniforms",
+        "description": "School Uniforms for Kids",
+        "image": null,
+        "parentId": "cmksj68e1000rmmoxpjch39fk",
+        "createdAt": "2026-01-24T16:35:14.317Z",
+        "updatedAt": "2026-01-24T16:35:14.317Z",
+        "_count": {
+          "products": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "cmksj69em0010mmoxxmpphphk",
+    "name": "Home Linen",
+    "slug": "home-linen",
+    "description": "All products for Home Linen",
+    "image": null,
+    "parentId": null,
+    "createdAt": "2026-01-24T16:35:14.590Z",
+    "updatedAt": "2026-01-24T16:35:14.590Z",
+    "_count": {
+      "products": 0
+    },
+    "children": [
+      {
+        "id": "cmksj69lv0012mmoxhhnz90vm",
+        "name": "Bedsheets",
+        "slug": "home-linen-bedsheets",
+        "description": "Bedsheets for Home Linen",
+        "image": null,
+        "parentId": "cmksj69em0010mmoxxmpphphk",
+        "createdAt": "2026-01-24T16:35:14.851Z",
+        "updatedAt": "2026-01-24T16:35:14.851Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj69t20014mmoxl8orsghe",
+        "name": "Curtains",
+        "slug": "home-linen-curtains",
+        "description": "Curtains for Home Linen",
+        "image": null,
+        "parentId": "cmksj69em0010mmoxxmpphphk",
+        "createdAt": "2026-01-24T16:35:15.110Z",
+        "updatedAt": "2026-01-24T16:35:15.110Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj6a0c0016mmox06d4x7p9",
+        "name": "Towels",
+        "slug": "home-linen-towels",
+        "description": "Towels for Home Linen",
+        "image": null,
+        "parentId": "cmksj69em0010mmoxxmpphphk",
+        "createdAt": "2026-01-24T16:35:15.372Z",
+        "updatedAt": "2026-01-24T16:35:15.372Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj6a7m0018mmox1g5t8nai",
+        "name": "Blankets",
+        "slug": "home-linen-blankets",
+        "description": "Blankets for Home Linen",
+        "image": null,
+        "parentId": "cmksj69em0010mmoxxmpphphk",
+        "createdAt": "2026-01-24T16:35:15.634Z",
+        "updatedAt": "2026-01-24T16:35:15.634Z",
+        "_count": {
+          "products": 1
+        }
+      },
+      {
+        "id": "cmksj6aev001ammoxhuwdiydv",
+        "name": "Cushion Covers",
+        "slug": "home-linen-cushion-covers",
+        "description": "Cushion Covers for Home Linen",
+        "image": null,
+        "parentId": "cmksj69em0010mmoxxmpphphk",
+        "createdAt": "2026-01-24T16:35:15.895Z",
+        "updatedAt": "2026-01-24T16:35:15.895Z",
+        "_count": {
+          "products": 1
+        }
+      }
+    ]
+  }
+]

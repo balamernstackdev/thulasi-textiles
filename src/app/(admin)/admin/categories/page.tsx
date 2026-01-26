@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Edit2, Trash2, Package, Search, Filter } from 'lucide-react';
 import { getCategories } from '@/lib/actions/category';
 import Pagination from '@/components/shared/Pagination';
+import RefreshCacheButton from '@/components/admin/RefreshCacheButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,11 +26,14 @@ export default async function CategoriesPage({
                     <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Categories</h1>
                     <p className="text-xs md:text-sm text-gray-500 mt-1 uppercase tracking-widest font-bold">Organize your products</p>
                 </div>
-                <Link href="/admin/categories/new" className="w-full sm:w-auto">
-                    <Button className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white px-8 py-6 sm:py-2.5 rounded-xl flex items-center justify-center transition-colors font-black text-[10px] uppercase tracking-widest shadow-lg shadow-orange-100 border-none">
-                        <Plus className="w-4 h-4 mr-2" /> Add Category
-                    </Button>
-                </Link>
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    <RefreshCacheButton />
+                    <Link href="/admin/categories/new" className="w-full sm:w-auto">
+                        <Button className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white px-8 py-6 sm:py-2.5 rounded-xl flex items-center justify-center transition-colors font-black text-[10px] uppercase tracking-widest shadow-lg shadow-orange-100 border-none">
+                            <Plus className="w-4 h-4 mr-2" /> Add Category
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             <div className="space-y-6">
