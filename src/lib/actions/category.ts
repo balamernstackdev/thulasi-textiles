@@ -109,7 +109,7 @@ export async function createCategory(formData: FormData) {
             }
         });
 
-        revalidateTag('categories');
+        revalidateTag('categories', 'default');
         revalidatePath('/', 'layout');
         revalidatePath('/admin/categories', 'page');
 
@@ -138,7 +138,7 @@ export async function updateCategory(id: string, formData: FormData) {
             }
         });
 
-        revalidateTag('categories');
+        revalidateTag('categories', 'default');
         revalidatePath('/', 'layout');
         revalidatePath('/admin/categories', 'page');
 
@@ -154,7 +154,7 @@ export async function deleteCategory(id: string) {
             where: { id }
         });
 
-        revalidateTag('categories');
+        revalidateTag('categories', 'default');
         revalidatePath('/', 'layout');
         revalidatePath('/admin/categories', 'page');
 
