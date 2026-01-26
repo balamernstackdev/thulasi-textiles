@@ -4,6 +4,7 @@ import { Plus, Edit2, Trash2, Package, Search, Filter } from 'lucide-react';
 import { getCategories } from '@/lib/actions/category';
 import Pagination from '@/components/shared/Pagination';
 import RefreshCacheButton from '@/components/admin/RefreshCacheButton';
+import DeleteCategoryButton from '@/components/admin/DeleteCategoryButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -109,9 +110,7 @@ export default async function CategoriesPage({
                                                             <Edit2 className="w-5 h-5" />
                                                         </div>
                                                     </Link>
-                                                    <button className="text-gray-300 hover:text-red-600 p-3 hover:bg-red-50 rounded-xl transition-all active:scale-90">
-                                                        <Trash2 className="w-5 h-5" />
-                                                    </button>
+                                                    <DeleteCategoryButton id={cat.id} name={cat.name} />
                                                 </div>
                                             </td>
                                         </tr>

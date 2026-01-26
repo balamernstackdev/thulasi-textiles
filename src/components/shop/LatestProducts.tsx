@@ -22,7 +22,7 @@ export default function LatestProducts({ products, session }: { products: any[],
                         </p>
                     </div>
                     <Link
-                        href="/"
+                        href="/category/new-arrivals"
                         className="group flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-900 hover:text-orange-600 transition-colors"
                     >
 

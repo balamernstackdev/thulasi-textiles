@@ -29,6 +29,7 @@ export default async function CategoryPage({
     }>
 }) {
     const { slug } = await params;
+    const isNewPage = slug === 'new-arrivals';
     const sParams = await searchParams;
     const page = parseInt(sParams.page || '1');
     const minPrice = sParams.minPrice ? parseFloat(sParams.minPrice) : undefined;
@@ -43,18 +44,21 @@ export default async function CategoryPage({
 
     const pageSize = 12;
 
-    const [{ data: category }, session, filterAttributesResult] = await Promise.all([
-        getCategoryBySlug(slug),
+    const [{ data: categoryData }, session, filterAttributesResult] = await Promise.all([
+        isNewPage ? Promise.resolve({ success: true, data: { name: 'New Arrivals', slug: 'new-arrivals', parent: null } }) : getCategoryBySlug(slug),
         getSession(),
         getFilterValues()
     ]);
 
-    if (!category) {
+    const category = categoryData;
+
+    if (!category && !isNewPage) {
         notFound();
     }
 
     const productsResult = await getProducts({
-        categorySlug: slug,
+        categorySlug: isNewPage ? undefined : slug,
+        isNew: isNewPage ? true : undefined,
         page,
         pageSize,
         minPrice,
@@ -79,7 +83,7 @@ export default async function CategoryPage({
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
                         <Link href="/" className="hover:text-orange-600 transition-colors">Home</Link>
                         <ChevronRight className="w-3.5 h-3.5 text-gray-200" />
-                        {category.parent && (
+                        {category?.parent && (
                             <>
                                 <Link href={`/category/${category.parent.slug}`} className="hover:text-orange-600 transition-colors">
                                     {category.parent.name}
@@ -87,7 +91,7 @@ export default async function CategoryPage({
                                 <ChevronRight className="w-3.5 h-3.5 text-gray-200" />
                             </>
                         )}
-                        <span className="text-gray-900 truncate uppercase tracking-widest">{category.name}</span>
+                        <span className="text-gray-900 truncate uppercase tracking-widest">{category?.name || 'New Arrivals'}</span>
                     </div>
                 </div>
             </div>
@@ -104,7 +108,7 @@ export default async function CategoryPage({
                         {/* Title & Sorting */}
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                             <div>
-                                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 uppercase italic tracking-tighter">{category.name}</h1>
+                                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 uppercase italic tracking-tighter">{category?.name}</h1>
                                 <p className="text-sm text-gray-500 mt-1">
                                     {pagination?.total || 0} Products found
                                 </p>
@@ -118,7 +122,7 @@ export default async function CategoryPage({
                         {/* Product Grid */}
                         {products && products.length > 0 ? (
                             <>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
                                     {products.map((product: any) => (
                                         <ProductCard key={product.id} product={product} session={session} />
                                     ))}

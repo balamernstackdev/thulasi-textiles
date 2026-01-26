@@ -132,7 +132,7 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                         const verifyData = await verifyRes.json();
 
                         if (verifyData.success) {
-                            clearCart();
+                            // Cart clear handled by destination page
                             router.push(`/orders/${orderId}?success=true`);
                         } else {
                             alert('Payment verification failed. Please contact support.');
@@ -169,7 +169,7 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                 const result = await createOrder(formData);
 
                 if (result.success && result.data) {
-                    clearCart();
+                    // Cart clear handled by destination page
                     router.push(`/orders/${result.data.id}?success=true`);
                 } else {
                     alert(result.error || 'Failed to place order');

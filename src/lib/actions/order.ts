@@ -90,7 +90,7 @@ export async function getUserOrders() {
     }
 
     try {
-        const orders = await prismadb.order.findMany({
+        const ordersRaw = await prismadb.order.findMany({
             where: { userId: session.user.id },
             include: {
                 items: {
@@ -110,12 +110,14 @@ export async function getUserOrders() {
             },
             orderBy: { createdAt: 'desc' },
         });
+        const orders = ordersRaw as any[];
 
         // Serialize Decimal fields
         const serializedOrders = orders.map((order) => ({
             ...order,
             total: Number(order.total),
-            items: order.items.map((item) => ({
+            discountAmount: Number(order.discountAmount || 0),
+            items: order.items.map((item: any) => ({
                 ...item,
                 price: Number(item.price),
                 variant: {
@@ -172,10 +174,12 @@ export async function getOrderById(orderId: string) {
         }
 
         // Serialize
+        const orderData = order as any;
         const serializedOrder = {
-            ...order,
-            total: Number(order.total),
-            items: order.items.map((item) => ({
+            ...orderData,
+            total: Number(orderData.total),
+            discountAmount: Number(orderData.discountAmount || 0),
+            items: orderData.items.map((item: any) => ({
                 ...item,
                 price: Number(item.price),
                 variant: {
@@ -234,9 +238,23 @@ export async function getAdminOrders(options: {
             prismadb.order.count({ where })
         ]);
 
-        const serializedOrders = orders.map((order) => ({
+        const serializedOrders = (orders as any[]).map((order) => ({
             ...order,
             total: Number(order.total),
+            discountAmount: Number(order.discountAmount || 0),
+            items: order.items.map((item: any) => ({
+                ...item,
+                price: Number(item.price),
+                variant: {
+                    ...item.variant,
+                    price: Number(item.variant.price),
+                    discount: item.variant.discount ? Number(item.variant.discount) : 0,
+                    product: {
+                        ...item.variant.product,
+                        basePrice: Number(item.variant.product.basePrice),
+                    },
+                },
+            })),
         }));
 
         return {
@@ -436,10 +454,12 @@ export async function getAdminOrderById(orderId: string) {
             return { success: false, error: 'Order not found' };
         }
 
+        const orderData = order as any;
         const serializedOrder = {
-            ...order,
-            total: Number(order.total),
-            items: order.items.map((item) => ({
+            ...orderData,
+            total: Number(orderData.total),
+            discountAmount: Number(orderData.discountAmount || 0),
+            items: orderData.items.map((item: any) => ({
                 ...item,
                 price: Number(item.price),
                 variant: {
@@ -540,5 +560,25 @@ export async function updateUserRole(userId: string, role: 'ADMIN' | 'CUSTOMER')
     } catch (error) {
         console.error('Update user role error:', error);
         return { success: false, error: 'Failed to update user role' };
+    }
+}
+
+export async function updateOrderTracking(orderId: string, courierName: string, trackingNumber: string) {
+    try {
+        await prismadb.order.update({
+            where: { id: orderId },
+            data: {
+                courierName,
+                trackingNumber,
+                status: 'SHIPPED'
+            }
+        });
+        revalidatePath('/admin/orders');
+        revalidatePath(`/admin/orders/${orderId}`);
+        revalidatePath('/orders');
+        return { success: true };
+    } catch (error) {
+        console.error('Error updating order tracking:', error);
+        return { success: false, error: 'Failed to update tracking' };
     }
 }

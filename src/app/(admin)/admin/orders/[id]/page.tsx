@@ -4,6 +4,7 @@ import { ArrowLeft, User, MapPin, CreditCard, ShoppingBag, Package } from 'lucid
 import Link from 'next/link';
 import { format } from 'date-fns';
 import OrderStatusSelector from '@/components/admin/OrderStatusSelector';
+import TrackingForm from '@/components/admin/TrackingForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -115,8 +116,20 @@ export default async function AdminOrderDetailPage({
                     </div>
                 </div>
 
+                import TrackingForm from '@/components/admin/TrackingForm';
+
+                // ... existing imports
+
+                // Inside the component return, sidebar div:
                 {/* Sidebar - Details */}
                 <div className="space-y-6">
+                    {/* Fulfillment / Tracking */}
+                    <TrackingForm
+                        orderId={order.id}
+                        initialCourier={order.courierName}
+                        initialTracking={order.trackingNumber}
+                    />
+
                     {/* Customer */}
                     <div className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-sm">
                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-4 flex items-center gap-2">

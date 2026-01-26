@@ -31,6 +31,7 @@ export async function createAddress(formData: FormData) {
 
     try {
         const name = formData.get('name') as string;
+        const phone = formData.get('phone') as string;
         const street = formData.get('street') as string;
         const city = formData.get('city') as string;
         const state = formData.get('state') as string;
@@ -54,6 +55,7 @@ export async function createAddress(formData: FormData) {
             data: {
                 userId: session.user.id,
                 name,
+                phone,
                 street,
                 city,
                 state,
@@ -80,6 +82,7 @@ export async function updateAddress(id: string, formData: FormData) {
 
     try {
         const name = formData.get('name') as string;
+        const phone = formData.get('phone') as string;
         const street = formData.get('street') as string;
         const city = formData.get('city') as string;
         const state = formData.get('state') as string;
@@ -106,7 +109,7 @@ export async function updateAddress(id: string, formData: FormData) {
 
         const address = await prismadb.address.update({
             where: { id },
-            data: { name, street, city, state, zip, country, isDefault },
+            data: { name, phone, street, city, state, zip, country, isDefault },
         });
 
         revalidatePath('/checkout');

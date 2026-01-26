@@ -81,5 +81,26 @@ body {
   transform: translateZ(0);
   will-change: transform;
 }
-.gpu-opacity { will-change: opacity; }
-img { content-visibility: auto; }
+
+.gpu-opacity {
+  will-change: opacity;
+}
+
+img {
+  content-visibility: auto;
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}

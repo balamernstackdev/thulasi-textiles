@@ -12,7 +12,7 @@ export default function UserMenu({ session }: { session: any }) {
 
     if (!session) {
         return (
-            <div className="flex items-center gap-1 sm:gap-4 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-4 shrink-0 px-1 sm:px-0">
                 <Link href="/cart" className="relative p-1.5 sm:p-2 hover:bg-gray-50 rounded-lg sm:rounded-xl transition-colors">
                     <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
                 </Link>
@@ -24,7 +24,7 @@ export default function UserMenu({ session }: { session: any }) {
                 </Link>
                 <Link
                     href="/register"
-                    className="bg-black hover:bg-orange-600 text-white px-4 sm:px-7 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] transition-all shadow-xl active:scale-95 whitespace-nowrap"
+                    className="bg-black hover:bg-orange-600 text-white px-3 sm:px-7 py-2 sm:py-3 rounded-xl sm:rounded-2xl text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] transition-all shadow-xl active:scale-95 whitespace-nowrap"
                 >
                     Register
                 </Link>
@@ -70,10 +70,10 @@ export default function UserMenu({ session }: { session: any }) {
 
                 {isOpen && (
                     <>
-                        <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-                        <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] border border-gray-50 py-4 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
+                        <div className="fixed inset-0 z-[90]" onClick={() => setIsOpen(false)} />
+                        <div className="absolute right-0 mt-2 w-64 bg-white rounded-3xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] border border-gray-100 py-4 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
                             <div className="px-6 py-4 border-b border-gray-50 mb-2">
-                                <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest mb-1">Authenticated Account</p>
+                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Authenticated Account</p>
                                 <p className="text-sm font-bold text-gray-900 truncate">{user.email}</p>
                             </div>
 

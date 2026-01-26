@@ -16,6 +16,7 @@ export async function createProduct(formData: FormData) {
     const isFeatured = formData.get('isFeatured') === 'true';
     const isBestSeller = formData.get('isBestSeller') === 'true';
     const isOffer = formData.get('isOffer') === 'true';
+    const isNew = formData.get('isNew') === 'true';
     const isActive = formData.get('isActive') === 'true';
 
     const artisanStory = formData.get('artisanStory') as string;
@@ -49,6 +50,7 @@ export async function createProduct(formData: FormData) {
                 isFeatured,
                 isBestSeller,
                 isOffer,
+                isNew,
                 isActive,
                 artisanStory,
                 artisanImage,
@@ -95,6 +97,7 @@ export const getProducts = cache(async (options: {
     isFeatured?: boolean,
     isBestSeller?: boolean,
     isOffer?: boolean,
+    isNew?: boolean,
     search?: string,
     minPrice?: number,
     maxPrice?: number,
@@ -116,6 +119,7 @@ export const getProducts = cache(async (options: {
                 if (options.isFeatured) where.isFeatured = true;
                 if (options.isBestSeller) where.isBestSeller = true;
                 if (options.isOffer) where.isOffer = true;
+                if (options.isNew) where.isNew = true;
 
                 if (options.categorySlug) {
                     where.category = {
@@ -199,7 +203,7 @@ export const getProducts = cache(async (options: {
                                 where: { isPublic: true },
                                 select: { rating: true }
                             }
-                        },
+                        } as any,
                         take: options.limit || options.pageSize || 10,
                         skip: options.limit ? 0 : skip,
                         orderBy
@@ -207,8 +211,8 @@ export const getProducts = cache(async (options: {
                     prismadb.product.count({ where })
                 ]);
 
-                const processedProducts = products.map(product => {
-                    const reviewCount = product.reviews.length;
+                const processedProducts = (products as any[]).map(product => {
+                    const reviewCount = product.reviews?.length || 0;
                     const averageRating = reviewCount > 0
                         ? product.reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviewCount
                         : 0;
@@ -218,10 +222,10 @@ export const getProducts = cache(async (options: {
                         basePrice: Number(product.basePrice),
                         reviewCount,
                         averageRating,
-                        variants: product.variants.map((v: any) => ({
+                        variants: product.variants?.map((v: any) => ({
                             ...v,
                             price: Number(v.price)
-                        }))
+                        })) || []
                     };
                 });
 
@@ -440,6 +444,7 @@ export async function updateProduct(id: string, formData: FormData) {
     const isFeatured = formData.get('isFeatured') === 'true';
     const isBestSeller = formData.get('isBestSeller') === 'true';
     const isOffer = formData.get('isOffer') === 'true';
+    const isNew = formData.get('isNew') === 'true';
     const isActive = formData.get('isActive') === 'true';
     const artisanStory = formData.get('artisanStory') as string | null;
     const artisanImage = formData.get('artisanImage') as string | null;
@@ -470,6 +475,7 @@ export async function updateProduct(id: string, formData: FormData) {
                 isFeatured,
                 isBestSeller,
                 isOffer,
+                isNew,
                 isActive,
                 artisanStory,
                 artisanImage,
@@ -524,3 +530,42 @@ export async function deleteProduct(id: string) {
         return { success: false, error: 'Failed to delete product' };
     }
 }
+
+export const getQuickSearch = cache(async (query: string) => {
+    if (!query || query.length < 2) return { success: true, data: [] };
+
+    try {
+        const products = await prismadb.product.findMany({
+            where: {
+                isActive: true,
+                OR: [
+                    { name: { contains: query } },
+                    { category: { name: { contains: query } } }
+                ]
+            },
+            take: 6,
+            select: {
+                id: true,
+                name: true,
+                slug: true,
+                basePrice: true,
+                images: {
+                    where: { isPrimary: true },
+                    take: 1,
+                    select: { url: true }
+                }
+            }
+        });
+
+        return {
+            success: true,
+            data: products.map(p => ({
+                ...p,
+                basePrice: Number(p.basePrice)
+            }))
+        };
+    } catch (error) {
+        console.error('Quick search error:', error);
+        return { success: false, data: [] };
+    }
+});

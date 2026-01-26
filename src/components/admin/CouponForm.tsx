@@ -72,7 +72,7 @@ export default function CouponForm() {
                         <input
                             required
                             placeholder="e.g. WELCOME10"
-                            className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all uppercase placeholder:text-gray-300"
+                            className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all uppercase placeholder:text-gray-400 text-gray-900"
                             value={formData.code}
                             onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                         />
@@ -84,7 +84,7 @@ export default function CouponForm() {
                                 <TrendingUp className="w-3 h-3 text-blue-500" /> Type
                             </label>
                             <select
-                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold appearance-none transition-all"
+                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold appearance-none transition-all text-gray-900"
                                 value={formData.discountType}
                                 onChange={(e) => setFormData({ ...formData, discountType: e.target.value as CouponType })}
                             >
@@ -101,7 +101,7 @@ export default function CouponForm() {
                                 required
                                 type="number"
                                 placeholder={formData.discountType === 'PERCENTAGE' ? "10" : "500"}
-                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all"
+                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all placeholder:text-gray-400 text-gray-900"
                                 value={formData.discountValue}
                                 onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
                             />
@@ -117,7 +117,7 @@ export default function CouponForm() {
                             <input
                                 type="number"
                                 placeholder="0"
-                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all"
+                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all placeholder:text-gray-400 text-gray-900"
                                 value={formData.minOrderAmount}
                                 onChange={(e) => setFormData({ ...formData, minOrderAmount: e.target.value })}
                             />
@@ -127,7 +127,7 @@ export default function CouponForm() {
                             <input
                                 type="number"
                                 placeholder="No limit"
-                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all"
+                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all placeholder:text-gray-400 text-gray-900"
                                 value={formData.maxDiscount}
                                 onChange={(e) => setFormData({ ...formData, maxDiscount: e.target.value })}
                                 disabled={formData.discountType === 'FIXED'}
@@ -141,7 +141,7 @@ export default function CouponForm() {
                             <input
                                 type="number"
                                 placeholder="Total uses"
-                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all"
+                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all placeholder:text-gray-400 text-gray-900"
                                 value={formData.usageLimit}
                                 onChange={(e) => setFormData({ ...formData, usageLimit: e.target.value })}
                             />
@@ -152,7 +152,7 @@ export default function CouponForm() {
                             </label>
                             <input
                                 type="date"
-                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all"
+                                className="w-full h-14 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-2xl px-6 text-sm font-bold transition-all text-gray-900"
                                 value={formData.expiryDate}
                                 onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
                             />

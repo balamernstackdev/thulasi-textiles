@@ -94,7 +94,7 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
     return (
         <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
             <div className="flex items-center justify-between mb-8 sticky top-0 bg-white z-10 py-2">
-                <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em]">Filters</h3>
+                <h3 className="text-xs font-black text-gray-600 uppercase tracking-[0.2em]">Filters</h3>
                 {hasActiveFilters && (
                     <button
                         onClick={clearAll}
@@ -135,7 +135,7 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                                     placeholder="Min"
                                     value={minPrice}
                                     onChange={(e) => setMinPrice(e.target.value)}
-                                    className="w-full text-xs border border-gray-100 bg-gray-50/50 pl-7 pr-3 py-3 rounded-xl focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none font-black"
+                                    className="w-full text-xs border border-gray-200 bg-white pl-7 pr-3 py-3 rounded-xl focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none font-black placeholder:text-gray-400 text-gray-900"
                                 />
                             </div>
                             <span className="text-gray-200">-</span>
@@ -146,7 +146,7 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                                     placeholder="Max"
                                     value={maxPrice}
                                     onChange={(e) => setMaxPrice(e.target.value)}
-                                    className="w-full text-xs border border-gray-100 bg-gray-50/50 pl-7 pr-3 py-3 rounded-xl focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none font-black"
+                                    className="w-full text-xs border border-gray-200 bg-white pl-7 pr-3 py-3 rounded-xl focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none font-black placeholder:text-gray-400 text-gray-900"
                                 />
                             </div>
                         </div>
@@ -167,7 +167,7 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                                 <button
                                     key={size}
                                     onClick={() => toggleAttribute(size, selectedSizes, setSelectedSizes, 'sizes')}
-                                    className={`py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${selectedSizes.includes(size) ? 'bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-100' : 'bg-white border-gray-100 text-gray-500 hover:border-orange-200 hover:text-orange-600'}`}
+                                    className={`py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${selectedSizes.includes(size) ? 'bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-gray-700 hover:border-orange-200 hover:text-orange-600'}`}
                                 >
                                     {size}
                                 </button>
@@ -184,7 +184,7 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                                 <button
                                     key={color}
                                     onClick={() => toggleAttribute(color, selectedColors, setSelectedColors, 'colors')}
-                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${selectedColors.includes(color) ? 'bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-100' : 'bg-white border-gray-100 text-gray-500 hover:border-orange-200 hover:text-orange-600'}`}
+                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${selectedColors.includes(color) ? 'bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-gray-700 hover:border-orange-200 hover:text-orange-600'}`}
                                 >
                                     {color}
                                 </button>

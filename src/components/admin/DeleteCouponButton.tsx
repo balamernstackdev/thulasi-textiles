@@ -5,39 +5,36 @@ import { deleteCoupon } from '@/lib/actions/coupon';
 import { useRouter } from 'next/navigation';
 import { Trash2, Loader2 } from 'lucide-react';
 
+import DeleteConfirmation from './DeleteConfirmation';
+import { toast } from 'sonner';
+
 export default function DeleteCouponButton({ id }: { id: string }) {
-    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleDelete = async () => {
-        if (!confirm('Are you sure you want to delete this coupon? This action cannot be undone.')) {
-            return;
-        }
-
-        setLoading(true);
         try {
             await deleteCoupon(id);
+            toast.success('Campaign terminated successfully');
             router.refresh();
         } catch (error) {
             console.error(error);
-            alert('Failed to delete coupon');
-        } finally {
-            setLoading(false);
+            toast.error('Failed to delete campaign');
         }
     };
 
     return (
-        <button
-            onClick={handleDelete}
-            disabled={loading}
-            className="p-2 text-gray-300 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all active:scale-90 disabled:opacity-50"
-            title="Delete Coupon"
-        >
-            {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-                <Trash2 className="w-4 h-4" />
-            )}
-        </button>
+        <DeleteConfirmation
+            title="Terminate Campaign?"
+            description="This will permanently disable this coupon code. Future customers won't be able to apply this discount."
+            onConfirm={handleDelete}
+            trigger={
+                <button
+                    className="p-3 text-gray-300 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all active:scale-90"
+                    title="Delete Coupon"
+                >
+                    <Trash2 className="w-5 h-5" />
+                </button>
+            }
+        />
     );
 }

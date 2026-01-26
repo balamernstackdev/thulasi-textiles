@@ -8,6 +8,8 @@ import { logout } from '@/lib/actions/auth';
 import { useRouter } from 'next/navigation';
 import AddressesClient from './addresses/addresses-client';
 import WishlistClient from '../wishlist/wishlist-client';
+import SettingsClient from './settings-client';
+import { format } from 'date-fns';
 
 type Tab = 'overview' | 'orders' | 'addresses' | 'wishlist' | 'settings';
 
@@ -127,36 +129,45 @@ export default function ProfileClient({
                                     {initialOrders.length > 0 ? (
                                         <div className="space-y-4">
                                             {initialOrders.slice(0, 5).map((order) => (
-                                                <div key={order.id} className="border border-gray-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 hover:shadow-md transition-all">
-                                                    <div className="flex items-center justify-between mb-4">
-                                                        <div>
-                                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Order #{order.id.slice(0, 8)}</span>
-                                                            <p className="text-xs sm:text-sm font-bold text-gray-900 mt-1">
-                                                                {new Date(order.createdAt).toLocaleDateString()}
-                                                            </p>
-                                                        </div>
-                                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
-                                                            order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
-                                                                'bg-blue-100 text-blue-700'
-                                                            }`}>
-                                                            {order.status}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                                                        {order.items.slice(0, 4).map((item: any, idx: number) => (
-                                                            <div key={idx} className="w-16 h-16 bg-gray-50 rounded-xl relative overflow-hidden shrink-0">
-                                                                {item.variant?.product?.images?.[0] && (
-                                                                    <Image
-                                                                        src={item.variant.product.images[0].url}
-                                                                        alt="Product"
-                                                                        fill
-                                                                        className="object-cover"
-                                                                    />
-                                                                )}
+                                                <Link key={order.id} href={`/orders/${order.id}`} className="block group">
+                                                    <div className="border border-gray-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 hover:shadow-xl hover:border-orange-100 transition-all bg-white relative overflow-hidden">
+                                                        <div className="flex items-center justify-between mb-4">
+                                                            <div>
+                                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Order #{order.id.slice(0, 8)}</span>
+                                                                <p className="text-xs sm:text-sm font-bold text-gray-900 mt-1">
+                                                                    {format(new Date(order.createdAt), 'MMM d, yyyy')}
+                                                                </p>
                                                             </div>
-                                                        ))}
+                                                            <div className="flex items-center gap-3">
+                                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
+                                                                    order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
+                                                                        order.status === 'PROCESSING' ? 'bg-orange-100 text-orange-700' :
+                                                                            'bg-blue-100 text-blue-700'
+                                                                    }`}>
+                                                                    {order.status}
+                                                                </span>
+                                                                <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-orange-600 transition-colors" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-end justify-between">
+                                                            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                                                {order.items.slice(0, 4).map((item: any, idx: number) => (
+                                                                    <div key={idx} className="w-16 h-16 bg-gray-50 rounded-xl relative overflow-hidden shrink-0 border border-gray-100 shadow-inner">
+                                                                        {item.variant?.product?.images?.[0] && (
+                                                                            <Image
+                                                                                src={item.variant.product.images[0].url}
+                                                                                alt="Product"
+                                                                                fill
+                                                                                className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                                            />
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                            <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-2 opacity-0 group-hover:opacity-100 transition-opacity">View Info</span>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                </Link>
                                             ))}
                                         </div>
                                     ) : (
@@ -200,37 +211,45 @@ export default function ProfileClient({
 
                                     <div className="space-y-4">
                                         {paginatedOrders.map((order) => (
-                                            <div key={order.id} className="border border-gray-100 rounded-3xl p-6 hover:shadow-md transition-all">
-                                                {/* (Same order card content) */}
-                                                <div className="flex items-center justify-between mb-4">
-                                                    <div>
-                                                        <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Order #{order.id.slice(0, 8)}</span>
-                                                        <p className="text-sm font-bold text-gray-900 mt-1">
-                                                            {new Date(order.createdAt).toLocaleDateString()}
-                                                        </p>
-                                                    </div>
-                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
-                                                        order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
-                                                            'bg-blue-100 text-blue-700'
-                                                        }`}>
-                                                        {order.status}
-                                                    </span>
-                                                </div>
-                                                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                                                    {order.items.map((item: any, idx: number) => (
-                                                        <div key={idx} className="w-16 h-16 bg-gray-50 rounded-xl relative overflow-hidden shrink-0">
-                                                            {item.variant?.product?.images?.[0] && (
-                                                                <Image
-                                                                    src={item.variant.product.images[0].url}
-                                                                    alt="Product"
-                                                                    fill
-                                                                    className="object-cover"
-                                                                />
-                                                            )}
+                                            <Link key={order.id} href={`/orders/${order.id}`} className="block group">
+                                                <div className="border border-gray-100 rounded-3xl p-6 hover:shadow-xl hover:border-orange-100 transition-all bg-white relative overflow-hidden">
+                                                    <div className="flex items-center justify-between mb-4">
+                                                        <div>
+                                                            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Order #{order.id.slice(0, 8)}</span>
+                                                            <p className="text-sm font-bold text-gray-900 mt-1">
+                                                                {format(new Date(order.createdAt), 'MMM d, yyyy')}
+                                                            </p>
                                                         </div>
-                                                    ))}
+                                                        <div className="flex items-center gap-4">
+                                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
+                                                                order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
+                                                                    order.status === 'PROCESSING' ? 'bg-orange-100 text-orange-700' :
+                                                                        'bg-blue-100 text-blue-700'
+                                                                }`}>
+                                                                {order.status}
+                                                            </span>
+                                                            <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-orange-600 transition-colors" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-end justify-between">
+                                                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                                            {order.items.map((item: any, idx: number) => (
+                                                                <div key={idx} className="w-16 h-16 bg-gray-50 rounded-xl relative overflow-hidden shrink-0 border border-gray-100 shadow-inner">
+                                                                    {item.variant?.product?.images?.[0] && (
+                                                                        <Image
+                                                                            src={item.variant.product.images[0].url}
+                                                                            alt="Product"
+                                                                            fill
+                                                                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                                        />
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        <span className="text-xs font-black text-orange-600 uppercase tracking-widest mb-2 opacity-0 group-hover:opacity-100 transition-opacity">Details</span>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </Link>
                                         ))}
                                         {initialOrders.length === 0 && (
                                             <p className="text-gray-500 font-medium text-center py-10">No orders found.</p>
@@ -263,17 +282,11 @@ export default function ProfileClient({
                             </div>
                         )}
 
-                        {/* SETTINGS TAB (Placeholder) */}
+                        {/* SETTINGS TAB */}
                         {activeTab === 'settings' && (
                             <div className="animate-in fade-in zoom-in-95 duration-300">
-                                <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 shadow-xl flex items-center justify-center min-h-[500px] md:min-h-[600px]">
-                                    <div className="text-center">
-                                        <Settings className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                        <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight italic mb-2">Account Settings</h3>
-                                        <p className="text-gray-500 font-medium max-w-xs mx-auto">
-                                            Security and preference settings are coming soon.
-                                        </p>
-                                    </div>
+                                <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 shadow-xl min-h-[500px] md:min-h-[600px]">
+                                    <SettingsClient session={session} />
                                 </div>
                             </div>
                         )}

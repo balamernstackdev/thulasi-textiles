@@ -1,11 +1,12 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Package, Clock, Truck, CheckCircle, XCircle, MapPin, CreditCard, ArrowLeft, Receipt, ShieldCheck } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart';
+import { format } from 'date-fns';
 
 type OrderDetail = {
     id: string;
@@ -21,12 +22,21 @@ export default function OrderDetailClient({ order }: { order: OrderDetail }) {
     const searchParams = useSearchParams();
     const isSuccess = searchParams.get('success') === 'true';
     const clearCart = useCartStore(state => state.clearCart);
+    const router = useRouter();
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
 
     useEffect(() => {
         if (isSuccess) {
+            setShowSuccessModal(true);
             clearCart();
         }
     }, [isSuccess, clearCart]);
+
+    const handleCloseSuccess = () => {
+        setShowSuccessModal(false);
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+    };
 
     const statusConfig = {
         PENDING: { label: 'Order Placed', color: 'bg-yellow-100 text-yellow-700', icon: Clock },
@@ -50,41 +60,50 @@ export default function OrderDetailClient({ order }: { order: OrderDetail }) {
 
     return (
         <div className="min-h-screen py-12 px-4 lg:px-8 bg-gray-50">
-            <div className="max-w-5xl mx-auto">
-                {/* Success Message */}
-                {isSuccess && (
-                    <div className="mb-8 bg-green-50 border-2 border-green-200 rounded-3xl p-8 text-center">
-                        <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-                        <h2 className="text-3xl font-black text-green-900 mb-2">Order Placed Successfully!</h2>
-                        <p className="text-green-700 font-medium">Thank you for shopping with Thulasi Textiles</p>
+            {/* Success Modal Popup */}
+            {showSuccessModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleCloseSuccess} />
+                    <div className="bg-white rounded-[2rem] p-8 md:p-12 max-w-md w-full relative z-10 text-center shadow-2xl animate-in zoom-in-95 duration-300">
+                        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <CheckCircle className="w-10 h-10 text-green-600" />
+                        </div>
+                        <h2 className="text-3xl font-black text-gray-900 uppercase italic tracking-tighter mb-4">
+                            Order Placed!
+                        </h2>
+                        <p className="text-gray-500 font-medium mb-8">
+                            Your order has been successfully placed. We'll send you a confirmation email shortly.
+                        </p>
+                        <button
+                            onClick={handleCloseSuccess}
+                            className="bg-black text-white px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs w-full hover:bg-orange-600 transition-colors"
+                        >
+                            Continue Shopping
+                        </button>
                     </div>
-                )}
+                </div>
+            )}
 
+            <div className="max-w-5xl mx-auto">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         <Link href="/orders" className="inline-flex items-center gap-2 text-gray-400 hover:text-orange-600 font-black uppercase text-[10px] tracking-widest transition-all group">
                             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
                             Back to My Orders
                         </Link>
                         <div className="space-y-1">
-                            <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase leading-none">
+                            <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase leading-none italic">
                                 Order <span className="text-orange-600">#{order.id.slice(0, 8).toUpperCase()}</span>
                             </h1>
-                            <p className="text-gray-400 font-bold uppercase tracking-widest text-xs flex items-center gap-2">
+                            <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] flex items-center gap-2">
                                 <Clock className="w-3.5 h-3.5" />
-                                Placed {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                                    day: 'numeric',
-                                    month: 'long',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                })}
+                                Placed {format(new Date(order.createdAt), 'MMMM d, yyyy, h:mm a')}
                             </p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <span className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-sm border ${config.color.replace('bg-', 'border-').replace('text-', 'bg-').split(' ')[0] + '/10'} ${config.color}`}>
+                        <span className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-[0_10px_20px_-5px_rgba(0,0,0,0.1)] border ${order.status === 'PROCESSING' ? 'bg-orange-100 text-orange-700 border-orange-200' : config.color.replace('bg-', 'border-').replace('text-', 'bg-').split(' ')[0] + '/10'} ${order.status === 'PROCESSING' ? '' : config.color}`}>
                             <StatusIcon className="w-4 h-4" />
                             {config.label}
                         </span>
@@ -94,7 +113,7 @@ export default function OrderDetailClient({ order }: { order: OrderDetail }) {
                 {/* Status Stepper - Modernized */}
                 {order.status !== 'CANCELLED' && (
                     <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-gray-200/50 mb-12 border border-gray-50 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-orange-50/30 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-orange-50/20 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl" />
 
                         <div className="relative flex items-center justify-between">
                             {statusSteps.map((step, idx) => {
@@ -106,7 +125,7 @@ export default function OrderDetailClient({ order }: { order: OrderDetail }) {
                                     <div key={step.key} className="flex flex-col items-center flex-1 relative z-10">
                                         {/* Connector Line */}
                                         {idx < statusSteps.length - 1 && (
-                                            <div className="absolute top-6 left-1/2 w-full h-[3px] bg-gray-100 -z-10">
+                                            <div className="absolute top-7 md:top-8 left-1/2 w-full h-[4px] bg-gray-100 -z-10 rounded-full overflow-hidden">
                                                 <div
                                                     className="h-full bg-orange-600 transition-all duration-1000 ease-out"
                                                     style={{ width: idx < currentStepIndex ? '100%' : '0%' }}
@@ -114,16 +133,21 @@ export default function OrderDetailClient({ order }: { order: OrderDetail }) {
                                             </div>
                                         )}
 
-                                        <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg ${isActive
-                                            ? 'bg-orange-600 text-white scale-110'
-                                            : 'bg-white border-2 border-gray-100 text-gray-300'
+                                        <div className={`w-14 h-14 md:w-16 md:h-16 rounded-[1.25rem] flex items-center justify-center transition-all duration-700 shadow-xl ${isActive
+                                            ? 'bg-orange-600 text-white scale-110 shadow-orange-200'
+                                            : 'bg-white border-2 border-gray-100 text-gray-200'
                                             }`}>
-                                            {isCompleted ? <CheckCircle className="w-6 h-6" /> : <StepIcon className="w-6 h-6" />}
+                                            {isCompleted ? <CheckCircle className="w-7 h-7" /> : <StepIcon className="w-7 h-7" />}
                                         </div>
-                                        <span className={`text-[10px] md:text-xs font-black mt-4 uppercase tracking-widest text-center max-w-[80px] leading-tight ${isActive ? 'text-gray-900' : 'text-gray-300'
-                                            }`}>
-                                            {step.label}
-                                        </span>
+                                        <div className="mt-5 space-y-1 text-center">
+                                            <span className={`text-[10px] font-black uppercase tracking-[0.2em] leading-tight block ${isActive ? 'text-gray-900 font-black' : 'text-gray-300 font-bold'
+                                                }`}>
+                                                {step.label}
+                                            </span>
+                                            {isActive && idx === currentStepIndex && (
+                                                <span className="text-[8px] font-black text-orange-600 uppercase tracking-widest animate-pulse">Current Phase</span>
+                                            )}
+                                        </div>
                                     </div>
                                 );
                             })}
@@ -208,18 +232,19 @@ export default function OrderDetailClient({ order }: { order: OrderDetail }) {
 
                             {/* Payment Section */}
                             <div className="relative border-t border-gray-50 pt-10">
-                                <div className="flex items-center gap-3 mb-4 text-blue-600">
+                                <div className="flex items-center gap-3 mb-6 text-blue-600">
                                     <CreditCard className="w-5 h-5" />
-                                    <h3 className="font-black uppercase tracking-widest text-[10px]">Payment Info</h3>
+                                    <h3 className="font-black uppercase tracking-widest text-[10px]">Payment Strategy</h3>
                                 </div>
-                                <div className="space-y-3">
-                                    <div className="flex justify-between items-center bg-gray-50 p-3 rounded-2xl border border-gray-100">
-                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Method</span>
-                                        <span className="text-xs font-black text-gray-900 uppercase italic">Cash on Delivery</span>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center bg-gray-50/80 p-4 rounded-3xl border border-gray-100">
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">METHOD</span>
+                                        <span className="text-[11px] font-black text-gray-900 uppercase italic">Cash on Delivery</span>
                                     </div>
-                                    <div className="flex justify-between items-center bg-orange-50/50 p-3 rounded-2xl border border-orange-100">
-                                        <span className="text-[10px] font-black text-orange-400 uppercase tracking-widest">Status</span>
-                                        <span className={`text-xs font-black uppercase tracking-widest ${order.paymentStatus === 'PAID' ? 'text-green-600' : 'text-orange-600'
+                                    <div className="flex justify-between items-center bg-white p-4 rounded-3xl border-2 border-orange-50 shadow-sm relative overflow-hidden group">
+                                        <div className="absolute inset-0 bg-orange-50/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <span className="text-[10px] font-black text-orange-400 uppercase tracking-widest leading-none relative z-10">STATUS</span>
+                                        <span className={`text-[11px] font-black uppercase tracking-widest relative z-10 ${order.paymentStatus === 'PAID' ? 'text-green-600' : 'text-orange-600'
                                             }`}>
                                             {order.paymentStatus}
                                         </span>
@@ -234,18 +259,21 @@ export default function OrderDetailClient({ order }: { order: OrderDetail }) {
                                     <h3 className="font-black uppercase tracking-widest text-[10px]">Price Details</h3>
                                 </div>
                                 <div className="space-y-4">
-                                    <div className="flex justify-between items-center text-sm font-bold text-gray-500 px-1">
+                                    <div className="flex justify-between items-center text-[11px] font-black text-gray-500 px-1 uppercase tracking-widest">
                                         <span>Order Subtotal</span>
-                                        <span>₹{order.total.toLocaleString('en-IN')}</span>
+                                        <span className="text-gray-900">₹{order.total.toLocaleString('en-IN')}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-sm font-bold text-gray-500 px-1">
-                                        <span>Shipping</span>
-                                        <span className="text-green-600 uppercase tracking-widest text-[10px] font-black">Free</span>
+                                    <div className="flex justify-between items-center text-[11px] font-black text-gray-500 px-1 uppercase tracking-widest">
+                                        <span>Logistics</span>
+                                        <span className="text-green-600 font-black">FREE</span>
                                     </div>
-                                    <div className="pt-4 mt-4 border-t-2 border-dashed border-gray-100">
+                                    <div className="pt-6 mt-6 border-t-4 border-double border-gray-50">
                                         <div className="flex justify-between items-end px-1">
-                                            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Grand Total</span>
-                                            <span className="text-3xl font-black text-gray-900 tracking-tighter leading-none italic">
+                                            <div className="space-y-1">
+                                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em] block leading-none">GRAND TOTAL</span>
+                                                <span className="text-[8px] font-bold text-gray-300 uppercase tracking-widest">INCL. ALL TAXES</span>
+                                            </div>
+                                            <span className="text-4xl font-black text-gray-900 tracking-tighter leading-none italic">
                                                 ₹{order.total.toLocaleString('en-IN')}
                                             </span>
                                         </div>

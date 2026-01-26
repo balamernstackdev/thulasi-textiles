@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Package, Clock, Truck, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { Package, Clock, Truck, CheckCircle, XCircle, Eye, ChevronRight } from 'lucide-react';
+import { format } from 'date-fns';
 
 type Order = {
     id: string;
@@ -12,6 +13,8 @@ type Order = {
     total: number;
     createdAt: Date;
     items: any[];
+    courierName?: string | null;
+    trackingNumber?: string | null;
 };
 
 const STATUSES = ['ALL', 'PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
@@ -92,98 +95,91 @@ export default function OrdersClient({ orders }: { orders: Order[] }) {
                         const StatusIcon = config.icon;
 
                         return (
-                            <div key={order.id} className="group bg-white rounded-[2.5rem] p-6 md:p-8 shadow-xl shadow-gray-200/40 border border-gray-50 transition-all duration-500 hover:shadow-2xl hover:shadow-orange-200/20 hover:-translate-y-1 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 w-48 h-48 bg-gray-50/50 rounded-full translate-x-12 -translate-y-12 blur-3xl group-hover:bg-orange-50/50 transition-colors" />
+                            <Link key={order.id} href={`/orders/${order.id}`} className="block group">
+                                <div className="bg-white rounded-[2.5rem] p-6 md:p-8 shadow-xl shadow-gray-200/40 border border-gray-50 transition-all duration-500 hover:shadow-2xl hover:shadow-orange-200/20 hover:-translate-y-1 overflow-hidden relative">
+                                    <div className="absolute top-0 right-0 w-48 h-48 bg-gray-50/50 rounded-full translate-x-12 -translate-y-12 blur-3xl group-hover:bg-orange-50/50 transition-colors" />
 
-                                <div className="relative space-y-8">
-                                    {/* Card Header */}
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-3">
-                                                <h3 className="text-xl font-black text-gray-900 uppercase italic tracking-tight leading-none group-hover:text-orange-600 transition-colors">
-                                                    #{order.id.slice(0, 8).toUpperCase()}
-                                                </h3>
-                                                <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2 border shadow-sm ${config.color.replace('bg-', 'border-').replace('text-', 'bg-').split(' ')[0] + '/10'} ${config.color}`}>
-                                                    <StatusIcon className="w-3 h-3" />
-                                                    {config.label}
-                                                </span>
-                                            </div>
-                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                                                <Clock className="w-3 h-3" />
-                                                Placed {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                                                    day: 'numeric',
-                                                    month: 'long',
-                                                    year: 'numeric'
-                                                })}
-                                            </p>
-                                        </div>
-                                        <Link
-                                            href={`/orders/${order.id}`}
-                                            className="hidden sm:flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-orange-600 transition-all group/link"
-                                        >
-                                            View Snapshot
-                                            <Eye className="w-4 h-4 group-hover/link:scale-110" />
-                                        </Link>
-                                    </div>
-
-                                    {/* Items Preview - Modern Layout */}
-                                    <div className="flex items-center gap-6 group/items">
-                                        <div className="flex -space-x-4 md:-space-x-6 overflow-hidden">
-                                            {order.items.slice(0, 3).map((item: any, idx: number) => (
-                                                <div
-                                                    key={idx}
-                                                    className="relative w-24 h-32 md:w-32 md:h-40 rounded-2xl md:rounded-3xl border-4 border-white shadow-xl bg-gray-100 overflow-hidden hover:z-10 hover:scale-110 hover:-translate-y-2 transition-all duration-500 first:ml-0"
-                                                    style={{ transitionDelay: `${idx * 100}ms` }}
-                                                >
-                                                    {item.variant?.product?.images?.[0] && (
-                                                        <Image
-                                                            src={item.variant.product.images[0].url}
-                                                            alt={item.variant.product.name}
-                                                            fill
-                                                            className="object-cover"
-                                                        />
-                                                    )}
+                                    <div className="relative space-y-8">
+                                        {/* Card Header */}
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-3">
+                                                    <h3 className="text-xl font-black text-gray-900 uppercase italic tracking-tight leading-none group-hover:text-orange-600 transition-colors">
+                                                        #{order.id.slice(0, 8).toUpperCase()}
+                                                    </h3>
+                                                    <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2 border shadow-sm ${order.status === 'PROCESSING' ? 'bg-orange-100 text-orange-700 border-orange-200' : config.color.replace('bg-', 'border-').replace('text-', 'bg-').split(' ')[0] + '/10'} ${order.status === 'PROCESSING' ? '' : config.color}`}>
+                                                        <StatusIcon className="w-3 h-3" />
+                                                        {config.label}
+                                                    </span>
                                                 </div>
-                                            ))}
-                                            {order.items.length > 3 && (
-                                                <div className="relative w-24 h-32 md:w-32 md:h-40 rounded-2xl md:rounded-3xl border-4 border-white shadow-xl bg-black text-white flex flex-col items-center justify-center hover:z-10 hover:scale-110 transition-all duration-500">
-                                                    <span className="text-xl md:text-2xl font-black">+{order.items.length - 3}</span>
-                                                    <span className="text-[8px] font-black uppercase tracking-widest">More</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="hidden lg:block space-y-1">
-                                            <p className="text-sm font-black text-gray-900 line-clamp-1 italic uppercase">
-                                                {order.items[0]?.variant?.product?.name}
-                                            </p>
-                                            {order.items.length > 1 && (
-                                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">
-                                                    & {order.items.length - 1} other pieces
+                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-2">
+                                                    <Clock className="w-3 h-3" />
+                                                    Placed {format(new Date(order.createdAt), 'MMMM d, yyyy')}
                                                 </p>
-                                            )}
+                                            </div>
+                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-300 group-hover:text-orange-600 transition-all">
+                                                Order Details
+                                                <ChevronRight className="w-4 h-4" />
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    {/* Footer Section - Optimized for Mobile */}
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between pt-8 border-t border-dashed border-gray-100 gap-6">
-                                        <div className="space-y-1">
-                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Vault Total</span>
-                                            <p className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter leading-none italic">
-                                                ₹{order.total.toLocaleString('en-IN')}
-                                            </p>
+                                        {/* Items Preview - Modern Layout */}
+                                        <div className="flex items-center gap-6 group/items">
+                                            <div className="flex -space-x-4 md:-space-x-6 overflow-hidden">
+                                                {order.items.slice(0, 3).map((item: any, idx: number) => (
+                                                    <div
+                                                        key={idx}
+                                                        className="relative w-24 h-32 md:w-32 md:h-40 rounded-2xl md:rounded-3xl border-4 border-white shadow-xl bg-gray-100 overflow-hidden group-hover:z-10 group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500 first:ml-0"
+                                                        style={{ transitionDelay: `${idx * 100}ms` }}
+                                                    >
+                                                        {item.variant?.product?.images?.[0] && (
+                                                            <Image
+                                                                src={item.variant.product.images[0].url}
+                                                                alt={item.variant.product.name}
+                                                                fill
+                                                                className="object-cover"
+                                                            />
+                                                        )}
+                                                    </div>
+                                                ))}
+                                                {order.items.length > 3 && (
+                                                    <div className="relative w-24 h-32 md:w-32 md:h-40 rounded-2xl md:rounded-3xl border-4 border-white shadow-xl bg-black text-white flex flex-col items-center justify-center group-hover:z-10 group-hover:scale-110 transition-all duration-500">
+                                                        <span className="text-xl md:text-2xl font-black">+{order.items.length - 3}</span>
+                                                        <span className="text-[8px] font-black uppercase tracking-widest">More</span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="hidden lg:block space-y-1">
+                                                <p className="text-sm font-black text-gray-900 line-clamp-1 italic uppercase">
+                                                    {order.items[0]?.variant?.product?.name}
+                                                </p>
+                                                {order.items.length > 1 && (
+                                                    <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">
+                                                        & {order.items.length - 1} other pieces
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="flex w-full sm:w-auto gap-3">
-                                            <Link
-                                                href={`/orders/${order.id}`}
-                                                className="flex-1 sm:flex-none bg-orange-600 text-white px-10 py-5 rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-200 active:scale-95 text-center"
-                                            >
-                                                View Order details
-                                            </Link>
+
+                                        {/* Footer Section - Optimized for Mobile */}
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between pt-8 border-t border-dashed border-gray-100 gap-6">
+                                            <div className="space-y-1">
+                                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Vault Total</span>
+                                                <div className="flex items-baseline gap-2">
+                                                    <p className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter leading-none italic">
+                                                        ₹{order.total.toLocaleString('en-IN')}
+                                                    </p>
+                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tax Incl.</span>
+                                                </div>
+                                            </div>
+                                            <div className="bg-gray-900 text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest group-hover:bg-orange-600 transition-colors shadow-xl">
+                                                Archive Snapshot
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         );
                     })}
                 </div>

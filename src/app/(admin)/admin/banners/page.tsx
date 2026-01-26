@@ -7,6 +7,8 @@ export const dynamic = 'force-dynamic';
 
 import Pagination from '@/components/shared/Pagination';
 import BannerForm from '@/components/admin/BannerForm';
+import DeleteBannerButton from '@/components/admin/DeleteBannerButton';
+import EditBannerModal from '@/components/admin/EditBannerModal';
 
 export default async function BannersPage({
     searchParams
@@ -88,15 +90,14 @@ export default async function BannersPage({
                                             {banner.link || "— No Path Defined —"}
                                         </p>
                                     </div>
-                                    <form action={handleDeleteBanner}>
-                                        <input type="hidden" name="id" value={banner.id} />
-                                        <button
-                                            type="submit"
-                                            className="bg-gray-50 text-gray-300 hover:bg-red-600 hover:text-white p-4 rounded-2xl transition-all active:scale-90 shadow-sm"
-                                        >
-                                            <Trash2 className="w-5 h-5 transition-transform" />
-                                        </button>
-                                    </form>
+                                    <div className="flex gap-2">
+                                        <div className="relative">
+                                            {/* We need to dynamically import EditBannerModal or ensure it's client side. 
+                                                Since page is server, and Modal is client, it's fine. */}
+                                            <EditBannerModal banner={banner} />
+                                        </div>
+                                        <DeleteBannerButton id={banner.id} />
+                                    </div>
                                 </div>
                             </div>
                         ))}

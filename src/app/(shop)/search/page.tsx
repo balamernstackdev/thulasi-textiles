@@ -7,6 +7,9 @@ import Link from 'next/link';
 import { ChevronRight, Filter, ShoppingBag } from 'lucide-react';
 import { getSession } from '@/lib/auth';
 import ProductSort from '@/components/shop/ProductSort';
+import { getBanners } from '@/lib/actions/banner';
+import AnnouncementTicker from '@/components/shop/AnnouncementTicker';
+import Banner from '@/components/shop/Banner';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,7 +46,7 @@ export default async function SearchPage({
     const categorySlug = params.category;
     const pageSize = 12;
 
-    const [productsResult, categoriesResult, filterAttributesResult, session] = await Promise.all([
+    const [productsResult, categoriesResult, filterAttributesResult, bannersResult, session] = await Promise.all([
         getProducts({
             search: query,
             minPrice,
@@ -60,6 +63,7 @@ export default async function SearchPage({
         }),
         getCategoriesTree(),
         getFilterValues(),
+        getBanners({ isActive: true }),
         getSession()
     ]);
 
@@ -67,16 +71,30 @@ export default async function SearchPage({
     const categories = categoriesResult.success ? categoriesResult.data : [];
     const filterAttributes = filterAttributesResult.success ? filterAttributesResult.data : undefined;
     const pagination = productsResult.success && 'pagination' in productsResult ? productsResult.pagination : null;
+    const allBanners = (bannersResult.data || []) as any[];
+
+    const announcementBanners = allBanners.filter(b => b.type === 'ANNOUNCEMENT');
+    const searchBanners = allBanners.filter(b => b.type === 'OFFER_SECTION').slice(0, 1);
 
     return (
-        <div className="bg-gray-50 min-h-screen">
+        <div className="bg-white min-h-screen">
+            {/* Announcement Bar - Consistent with Home */}
+            {announcementBanners.length > 0 && <AnnouncementTicker banners={announcementBanners} />}
+
+            {/* Small Search Banner or Promo if available */}
+            {searchBanners.length > 0 && (
+                <div className="mt-4">
+                    <Banner banners={searchBanners} type="section" />
+                </div>
+            )}
+
             {/* Breadcrumbs */}
-            <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-[130px] lg:top-[76px] z-40 transition-all duration-300 hidden lg:block">
-                <div className="max-w-[1700px] mx-auto px-4 lg:px-6 py-5">
+            <div className="bg-[#f9f9f9]/80 backdrop-blur-md border-b border-gray-100 sticky top-[130px] lg:top-[76px] z-40 transition-all duration-300 hidden lg:block">
+                <div className="max-w-[1700px] mx-auto px-4 lg:px-6 py-4">
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
                         <Link href="/" className="hover:text-orange-600 transition-colors">Home</Link>
                         <ChevronRight className="w-3.5 h-3.5 text-gray-200" />
-                        <span className="text-gray-900 uppercase tracking-widest">Search Results</span>
+                        <span className="text-gray-900 uppercase tracking-widest">Global Search</span>
                     </div>
                 </div>
             </div>

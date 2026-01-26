@@ -16,7 +16,8 @@ import {
     Image as ImageIcon,
     Ticket,
     Box,
-    Star
+    Star,
+    Settings
 } from 'lucide-react';
 
 const navItems = [
@@ -29,6 +30,7 @@ const navItems = [
     { href: '/admin/coupons', label: 'Coupons', icon: Ticket, color: 'text-orange-500' },
     { href: '/admin/inventory', label: 'Inventory', icon: Box, color: 'text-teal-500' },
     { href: '/admin/reviews', label: 'Reviews', icon: Star, color: 'text-yellow-500' },
+    { href: '/admin/settings', label: 'Settings', icon: Settings, color: 'text-gray-400' },
 ];
 
 export default function AdminLayout({

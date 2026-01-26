@@ -82,9 +82,8 @@ export default function ProductCard({ product, session, priority = false }: { pr
                     </div>
                 </div>
 
-                {/* Content */}
-                <div className="flex flex-col flex-1">
-                    <h3 className="text-sm font-medium text-gray-900 mb-1 line-clamp-2 leading-tight group-hover:text-[#C45500] transition-colors">
+                <div className="flex flex-col flex-1 px-1 sm:px-0">
+                    <h3 className="text-[11px] md:text-sm font-medium text-gray-900 mb-1 line-clamp-2 leading-tight group-hover:text-[#C45500] transition-colors">
                         {product.name}
                     </h3>
 
@@ -109,16 +108,15 @@ export default function ProductCard({ product, session, priority = false }: { pr
                         </div>
                     )}
 
-                    {/* Pricing Block */}
-                    <div className="mt-auto space-y-1">
-                        <div className="flex items-baseline flex-wrap gap-x-2">
-                            <span className="text-2xl font-black text-orange-600">-{discount}%</span>
+                    <div className="mt-auto space-y-0.5 md:space-y-1">
+                        <div className="flex items-baseline flex-wrap gap-x-1.5 md:gap-x-2">
+                            <span className="text-lg md:text-2xl font-black text-orange-600">-{discount}%</span>
                             <div className="flex items-baseline">
-                                <span className="text-sm font-bold text-gray-900 mr-0.5">₹</span>
-                                <span className="text-2xl font-black text-gray-900">{priceValue.toLocaleString()}</span>
+                                <span className="text-xs md:text-sm font-bold text-gray-900 mr-0.5">₹</span>
+                                <span className="text-xl md:text-2xl font-black text-gray-900">{priceValue.toLocaleString()}</span>
                             </div>
                         </div>
-                        <div className="text-[11px] text-gray-400 font-bold uppercase tracking-tight">
+                        <div className="text-[9px] md:text-[11px] text-gray-400 font-bold uppercase tracking-tight">
                             M.R.P.: <span className="line-through">₹{originalPrice.toLocaleString()}</span>
                         </div>
 
@@ -156,7 +154,7 @@ export default function ProductCard({ product, session, priority = false }: { pr
                     });
                     toast.success(`${product.name} added to cart`);
                 }}
-                className="mt-4 bg-orange-600 hover:bg-orange-700 text-white py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all active:scale-[0.98] shadow-lg shadow-orange-100 border-none"
+                className="mt-3 md:mt-4 bg-orange-600 hover:bg-orange-700 text-white py-2 md:py-2.5 rounded-full text-[9px] md:text-[11px] font-black uppercase tracking-[0.1em] md:tracking-widest transition-all active:scale-[0.98] shadow-lg shadow-orange-100 border-none"
             >
                 Add to Cart
             </button>

@@ -1,32 +1,67 @@
-'use client';
-
+'use client'
 import Link from 'next/link';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { Search, ShoppingCart, Menu, User, MapPin, X, ChevronRight, ChevronDown, Package } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Search, ShoppingCart, Menu, User, MapPin, X, ChevronRight, ChevronDown, Package, Loader2 } from 'lucide-react';
 import { Category } from '@prisma/client';
 import UserMenu from './UserMenu';
+import { getQuickSearch } from '@/lib/actions/product';
+import AnnouncementTicker from './AnnouncementTicker';
 
 type CategoryWithChildren = Category & { children: Category[] };
 
-export default function Navbar({ categories, session }: { categories: CategoryWithChildren[], session?: any }) {
+export default function Navbar({ categories, session, announcements = [] }: { categories: CategoryWithChildren[], session?: any, announcements?: any[] }) {
     console.log('[Navbar] Received categories:', categories?.length || 0);
     const router = useRouter();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeMobileCategory, setActiveMobileCategory] = useState<string | null>(null);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
+    // Search Suggestions State
+    const [searchQuery, setSearchQuery] = useState('');
+    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const searchRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setShowSuggestions(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            if (searchQuery.trim().length >= 2) {
+                setIsLoadingSuggestions(true);
+                const result = await getQuickSearch(searchQuery);
+                if (result.success) {
+                    setSuggestions(result.data);
+                    setShowSuggestions(true);
+                }
+                setIsLoadingSuggestions(false);
+            } else {
+                setSuggestions([]);
+                setShowSuggestions(false);
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     return (
-        <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
-            {/* Top Bar */}
-            <div className="bg-black text-[8px] md:text-[9px] font-black text-center py-2.5 px-4 text-white uppercase tracking-[0.2em] md:tracking-[0.3em] leading-tight">
-                Discover Handcrafted Heritage | Free Shipping on Orders Over ₹2999
-            </div>
+        <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100 w-full">
+            {/* Dynamic Announcement Bar - Absolute Top */}
+            {announcements.length > 0 && <AnnouncementTicker banners={announcements} />}
 
             <div className="max-w-[1700px] mx-auto px-4 md:px-6">
                 {/* Top Row: Logo, Search, Actions */}
-                <div className="flex items-center justify-between py-4 lg:py-5 gap-4 md:gap-8">
+                <div className="flex items-center justify-between py-1.5 md:py-3 gap-2 md:gap-8 min-h-[50px] md:min-h-[60px]">
 
                     {/* Logo & Mobile Menu Button */}
                     <div className="flex items-center gap-2 md:gap-6 shrink-0">
@@ -38,42 +73,112 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                         </button>
                         <Link href="/" className="flex flex-row md:flex-col items-center gap-2 md:gap-1 group transition-all">
                             <div className="w-8 h-8 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-md overflow-hidden p-1 ring-2 ring-gray-50 group-hover:ring-orange-50 transition-all">
-                                <Image
+                                <NextImage
                                     src="/logo.png"
                                     alt="Thulasi Textiles Logo"
-                                    width={32}
-                                    height={32}
+                                    width={28}
+                                    height={28}
                                     className="object-contain"
                                 />
                             </div>
-                            <div className="flex flex-col leading-none text-left md:text-center">
-                                <span className="text-[10px] md:text-sm font-black tracking-tighter uppercase italic">
+                            <div className="flex flex-col leading-none text-left md:text-center shrink truncate">
+                                <span className="text-[9px] md:text-sm font-black tracking-tighter uppercase italic truncate">
                                     <span className="text-gray-400">Thulasi</span> <span className="text-orange-600">Textiles</span>
                                 </span>
-                                <span className="text-[6px] md:text-[7px] font-black text-orange-600 tracking-[0.2em] md:tracking-[0.3em] uppercase mt-0.5 whitespace-nowrap">Women's World</span>
+                                <span className="text-[5px] md:text-[7px] font-black text-orange-600 tracking-[0.1em] md:tracking-[0.3em] uppercase mt-0.5 whitespace-nowrap hidden xs:block">Women's World</span>
                             </div>
                         </Link>
                     </div>
 
                     {/* Center: Search Bar */}
-                    <div className="hidden lg:flex flex-1 justify-center px-10">
-                        <form onSubmit={(e) => {
-                            e.preventDefault();
-                            const query = (e.currentTarget.elements.namedItem('q') as HTMLInputElement).value;
-                            if (query.trim()) {
-                                router.push(`/search?q=${encodeURIComponent(query)}`);
-                            }
-                        }} className="relative flex items-center w-full group max-w-4xl">
-                            <input
-                                type="text"
-                                name="q"
-                                placeholder="Search Thulasi Textiles..."
-                                className="w-full bg-white text-gray-900 border border-gray-300 rounded-sm py-2.5 pl-4 pr-16 text-sm focus:outline-none focus:border-orange-600 transition-all font-medium placeholder:text-gray-400 shadow-sm"
-                            />
+                    <div className="hidden lg:flex flex-1 justify-center px-10 relative" ref={searchRef}>
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (searchQuery.trim()) {
+                                    setShowSuggestions(false);
+                                    router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+                                }
+                            }}
+                            className="relative flex items-center w-full group max-w-4xl"
+                        >
+                            <div className="relative w-full">
+                                <input
+                                    type="text"
+                                    name="q"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onFocus={() => searchQuery.length >= 2 && setShowSuggestions(true)}
+                                    placeholder="Search Thulasi Textiles..."
+                                    autoComplete="off"
+                                    className="w-full bg-white text-gray-900 border border-gray-300 rounded-sm py-2.5 pl-4 pr-16 text-sm focus:outline-none focus:border-orange-600 transition-all font-medium placeholder:text-gray-400 shadow-sm focus:shadow-md"
+                                />
+                                {isLoadingSuggestions && (
+                                    <div className="absolute right-14 top-1/2 -translate-y-1/2">
+                                        <Loader2 className="w-4 h-4 animate-spin text-orange-600" />
+                                    </div>
+                                )}
+                            </div>
                             <button type="submit" className="absolute right-0 top-0 bottom-0 bg-[#febd69] hover:bg-[#f3a847] text-black px-5 rounded-r-sm transition-all flex items-center justify-center">
                                 <Search className="w-6 h-6" />
                             </button>
                         </form>
+
+                        {/* Suggestion Dropdown */}
+                        {showSuggestions && (suggestions.length > 0 || isLoadingSuggestions) && (
+                            <div className="absolute top-[calc(100%+8px)] left-10 right-10 bg-white shadow-2xl rounded-2xl border border-gray-100 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                                {suggestions.length > 0 ? (
+                                    <div className="py-2">
+                                        <div className="px-4 py-2 border-b border-gray-50 flex items-center justify-between">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Suggested Products</span>
+                                            <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">{suggestions.length} Found</span>
+                                        </div>
+                                        <div className="max-h-[400px] overflow-y-auto">
+                                            {suggestions.map((product) => (
+                                                <Link
+                                                    key={product.id}
+                                                    href={`/product/${product.slug}`}
+                                                    onClick={() => {
+                                                        setShowSuggestions(false);
+                                                        setSearchQuery('');
+                                                    }}
+                                                    className="flex items-center gap-4 px-4 py-3 hover:bg-orange-50 transition-colors group"
+                                                >
+                                                    <div className="w-12 h-12 rounded-lg bg-gray-50 overflow-hidden shrink-0 border border-gray-100">
+                                                        <NextImage
+                                                            src={product.images[0]?.url || '/placeholder-product.png'}
+                                                            alt={product.name}
+                                                            width={48}
+                                                            height={48}
+                                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-xs font-black text-gray-900 truncate uppercase tracking-tight">{product.name}</p>
+                                                        <p className="text-[10px] font-bold text-orange-600 mt-0.5">₹{product.basePrice.toLocaleString()}</p>
+                                                    </div>
+                                                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-orange-600 group-hover:translate-x-1 transition-all" />
+                                                </Link>
+                                            ))}
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setShowSuggestions(false);
+                                                router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+                                            }}
+                                            className="w-full py-4 text-center text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-black hover:bg-gray-50 transition-all border-t border-gray-50"
+                                        >
+                                            View All Results
+                                        </button>
+                                    </div>
+                                ) : isLoadingSuggestions ? (
+                                    <div className="p-8 text-center text-gray-400 flex flex-col items-center gap-3">
+                                        <Loader2 className="w-6 h-6 animate-spin text-orange-600" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Searching Heritage...</span>
+                                    </div>
+                                ) : null}
+                            </div>
+                        )}
                     </div>
 
                     {/* Right Actions */}
@@ -133,6 +238,60 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                         </div>
 
                         <div className="p-8 space-y-8">
+                            {/* Mobile Search */}
+                            <div className="relative">
+                                <div className="relative group">
+                                    <input
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="Search products..."
+                                        className="w-full bg-gray-50 text-gray-900 border border-gray-100 rounded-2xl py-4 pl-5 pr-12 text-sm focus:outline-none focus:border-orange-600 transition-all font-bold placeholder:text-gray-400 uppercase tracking-widest text-[10px]"
+                                    />
+                                    <button
+                                        onClick={() => {
+                                            if (searchQuery.trim()) {
+                                                setIsMenuOpen(false);
+                                                router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+                                            }
+                                        }}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                                    >
+                                        <Search className="w-5 h-5" />
+                                    </button>
+                                </div>
+
+                                {/* Mobile Suggestions */}
+                                {showSuggestions && searchQuery.length >= 2 && (suggestions.length > 0 || isLoadingSuggestions) && (
+                                    <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-white shadow-xl rounded-2xl border border-gray-50 overflow-hidden z-[80] animate-in fade-in slide-in-from-top-2 duration-200">
+                                        {suggestions.length > 0 ? (
+                                            <div className="max-h-[300px] overflow-y-auto">
+                                                {suggestions.map((product) => (
+                                                    <Link
+                                                        key={product.id}
+                                                        href={`/product/${product.slug}`}
+                                                        onClick={() => {
+                                                            setIsMenuOpen(false);
+                                                            setSearchQuery('');
+                                                        }}
+                                                        className="flex items-center gap-3 px-4 py-3 hover:bg-orange-50 border-b border-gray-50 last:border-0"
+                                                    >
+                                                        <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
+                                                            <NextImage src={product.images[0]?.url || ''} alt={product.name} width={40} height={40} className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <span className="text-[10px] font-black uppercase tracking-tight truncate flex-1">{product.name}</span>
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="p-4 text-center">
+                                                <Loader2 className="w-4 h-4 animate-spin mx-auto text-orange-600" />
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
                             {!session ? (
                                 <div className="grid grid-cols-2 gap-3">
                                     <Link

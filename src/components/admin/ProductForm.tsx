@@ -27,6 +27,7 @@ export default function ProductForm({ categories, product }: { categories: any[]
     const [isFeatured, setIsFeatured] = useState(product?.isFeatured || false);
     const [isBestSeller, setIsBestSeller] = useState(product?.isBestSeller || false);
     const [isOffer, setIsOffer] = useState(product?.isOffer || false);
+    const [isNew, setIsNew] = useState(product?.isNew || false);
     const [isActive, setIsActive] = useState(product?.isActive ?? true);
 
     // Parse artisan images (JSON array or single string)
@@ -110,6 +111,7 @@ export default function ProductForm({ categories, product }: { categories: any[]
         formData.set('isFeatured', String(isFeatured));
         formData.set('isBestSeller', String(isBestSeller));
         formData.set('isOffer', String(isOffer));
+        formData.set('isNew', String(isNew));
         formData.set('isActive', String(isActive));
         formData.set('artisanImage', JSON.stringify(artisanImageUrls));
 
@@ -274,6 +276,16 @@ export default function ProductForm({ categories, product }: { categories: any[]
                                 className="w-6 h-6 text-orange-600 border-2 border-gray-300 rounded-lg focus:ring-orange-500 transition-all"
                             />
                             <span className="text-sm font-black text-gray-700 uppercase tracking-widest group-hover:text-green-600 transition-colors">On Offer</span>
+                        </label>
+
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                            <input
+                                type="checkbox"
+                                checked={isNew}
+                                onChange={(e) => setIsNew(e.target.checked)}
+                                className="w-6 h-6 text-orange-600 border-2 border-gray-300 rounded-lg focus:ring-orange-500 transition-all"
+                            />
+                            <span className="text-sm font-black text-gray-700 uppercase tracking-widest group-hover:text-purple-600 transition-colors">New Arrival</span>
                         </label>
 
                         <label className="flex items-center gap-3 cursor-pointer group">

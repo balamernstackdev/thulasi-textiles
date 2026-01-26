@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { MapPin, Plus, Trash, Star, ArrowLeft, Edit } from 'lucide-react';
+import { MapPin, Plus, Trash, Star, ArrowLeft, Edit, Phone } from 'lucide-react';
 import { createAddress, deleteAddress, setDefaultAddress, updateAddress } from '@/lib/actions/address';
 import { useRouter } from 'next/navigation';
 
 type Address = {
     id: string;
     name: string;
+    phone?: string | null;
     street: string;
     city: string;
     state: string;
@@ -102,7 +103,10 @@ export default function AddressesClient({ addresses }: { addresses: Address[] })
                                 {editingAddress ? 'Edit Address' : 'New Address'}
                             </h2>
                             <form onSubmit={handleSubmit} className="space-y-5">
-                                <input name="name" defaultValue={editingAddress?.name} placeholder="Full Name" required className="w-full px-6 py-4 rounded-2xl border border-gray-100 focus:border-orange-600 outline-none font-bold bg-gray-50/50 focus:bg-white transition-all placeholder:text-gray-300 text-gray-900" />
+                                <div className="grid grid-cols-2 gap-5">
+                                    <input name="name" defaultValue={editingAddress?.name} placeholder="Full Name" required className="px-6 py-4 rounded-2xl border border-gray-100 focus:border-orange-600 outline-none font-bold bg-gray-50/50 focus:bg-white transition-all placeholder:text-gray-300 text-gray-900" />
+                                    <input name="phone" defaultValue={editingAddress?.phone || ""} placeholder="Phone Number" required className="px-6 py-4 rounded-2xl border border-gray-100 focus:border-orange-600 outline-none font-bold bg-gray-50/50 focus:bg-white transition-all placeholder:text-gray-300 text-gray-900" />
+                                </div>
                                 <input name="street" defaultValue={editingAddress?.street} placeholder="Street Address" required className="w-full px-6 py-4 rounded-2xl border border-gray-100 focus:border-orange-600 outline-none font-bold bg-gray-50/50 focus:bg-white transition-all placeholder:text-gray-300 text-gray-900" />
                                 <div className="grid grid-cols-2 gap-5">
                                     <input name="city" defaultValue={editingAddress?.city} placeholder="City" required className="px-6 py-4 rounded-2xl border border-gray-100 focus:border-orange-600 outline-none font-bold bg-gray-50/50 focus:bg-white transition-all placeholder:text-gray-300 text-gray-900" />
@@ -171,6 +175,15 @@ export default function AddressesClient({ addresses }: { addresses: Address[] })
                                 {address.street}<br />
                                 {address.city}, {address.state} - {address.zip}<br />
                                 {address.country}
+                                {address.phone && (
+                                    <>
+                                        <br />
+                                        <span className="inline-flex items-center gap-1.5 mt-2 text-gray-400 font-bold">
+                                            <Phone className="w-3 h-3" />
+                                            {address.phone}
+                                        </span>
+                                    </>
+                                )}
                             </p>
 
                             <div className="flex items-center gap-2 pl-14 pt-4 border-t border-gray-50">
