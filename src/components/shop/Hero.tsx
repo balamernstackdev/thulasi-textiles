@@ -8,7 +8,7 @@ export default function Hero() {
             <div className="container mx-auto px-8 lg:px-24 xl:px-40 pt-4">
                 <div className="relative h-[250px] md:h-[350px] overflow-hidden rounded-[2.5rem] shadow-sm">
                     <Image
-                        src="https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1280&q=80"
+                        src="/placeholder-product.png"
                         alt="Hero Background"
                         fill
                         className="object-cover"
@@ -36,19 +36,19 @@ export default function Hero() {
                     <h2 className="text-xl font-black text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">Women's Ethnic Wear</h2>
                     <div className="grid grid-cols-2 gap-3 aspect-square mb-4">
                         <div className="relative rounded-lg overflow-hidden bg-gray-50 h-full">
-                            <Image src="https://images.unsplash.com/photo-1621252179027-94459d278660?auto=format&fit=crop&w=400&q=80" alt="Sarees" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                            <Image src="/placeholder-product.png" alt="Sarees" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                             <div className="absolute bottom-0 inset-x-0 p-2 bg-black/40 text-white text-[10px] font-bold uppercase tracking-wider">Sarees</div>
                         </div>
                         <div className="relative rounded-lg overflow-hidden bg-gray-50 h-full">
-                            <Image src="https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?auto=format&fit=crop&w=400&q=80" alt="Kurtis" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                            <Image src="/placeholder-product.png" alt="Kurtis" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                             <div className="absolute bottom-0 inset-x-0 p-2 bg-black/40 text-white text-[10px] font-bold uppercase tracking-wider">Kurtis</div>
                         </div>
                         <div className="relative rounded-lg overflow-hidden bg-gray-50 h-full">
-                            <Image src="https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&w=400&q=80" alt="Lehengas" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                            <Image src="/placeholder-product.png" alt="Lehengas" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                             <div className="absolute bottom-0 inset-x-0 p-2 bg-black/40 text-white text-[10px] font-bold uppercase tracking-wider">Lehengas</div>
                         </div>
                         <div className="relative rounded-lg overflow-hidden bg-gray-50 h-full">
-                            <Image src="https://images.unsplash.com/photo-1611601322175-ef8ec8c85f01?auto=format&fit=crop&w=400&q=80" alt="More" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                            <Image src="/placeholder-product.png" alt="More" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                             <div className="absolute bottom-0 inset-x-0 p-2 bg-black/40 text-white text-[10px] font-bold uppercase tracking-wider">Explore All</div>
                         </div>
                     </div>
@@ -61,7 +61,7 @@ export default function Hero() {
                 <div className="bg-white p-5 shadow-xl rounded-xl group overflow-hidden">
                     <h2 className="text-xl font-black text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">Men's Premium Collection</h2>
                     <div className="relative aspect-square mb-4 rounded-lg overflow-hidden">
-                        <Image src="https://images.unsplash.com/photo-1597131628347-c769fc631754?auto=format&fit=crop&w=800&q=80" alt="Men's Fashion" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <Image src="/placeholder-product.png" alt="Men's Fashion" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                         <div className="absolute top-4 left-4 bg-orange-600 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg">NEW ARRIVAL</div>
                     </div>
                     <Link href="/category/men" className="text-orange-600 hover:underline text-sm font-bold flex items-center gap-2">
@@ -74,11 +74,11 @@ export default function Hero() {
                     <h2 className="text-xl font-black text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">Revamp Your Home</h2>
                     <div className="grid grid-cols-1 gap-3 aspect-square mb-4">
                         <div className="relative rounded-lg overflow-hidden bg-gray-50 h-[48%] group/item">
-                            <Image src="https://images.unsplash.com/photo-1628592102751-ba83b0314276?auto=format&fit=crop&w=800&q=80" alt="Bedsheets" fill className="object-cover group-hover/item:scale-110 transition-transform duration-500" />
+                            <Image src="/placeholder-product.png" alt="Bedsheets" fill className="object-cover group-hover/item:scale-110 transition-transform duration-500" />
                             <div className="absolute inset-0 bg-black/20 flex items-center justify-center text-white font-black text-lg shadow-inner">BEDSHEETS</div>
                         </div>
                         <div className="relative rounded-lg overflow-hidden bg-gray-50 h-[48%] group/item">
-                            <Image src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=800&q=80" alt="Towels" fill className="object-cover group-hover/item:scale-110 transition-transform duration-500" />
+                            <Image src="/placeholder-product.png" alt="Towels" fill className="object-cover group-hover/item:scale-110 transition-transform duration-500" />
                             <div className="absolute inset-0 bg-black/20 flex items-center justify-center text-white font-black text-lg shadow-inner">TOWELS</div>
                         </div>
                     </div>

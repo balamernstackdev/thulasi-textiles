@@ -11,6 +11,7 @@ import UserMenu from './UserMenu';
 type CategoryWithChildren = Category & { children: Category[] };
 
 export default function Navbar({ categories, session }: { categories: CategoryWithChildren[], session?: any }) {
+    console.log('[Navbar] Received categories:', categories?.length || 0);
     const router = useRouter();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeMobileCategory, setActiveMobileCategory] = useState<string | null>(null);

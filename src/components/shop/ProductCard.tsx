@@ -18,9 +18,9 @@ export default function ProductCard({ product, session, priority = false }: { pr
     const [isHovering, setIsHovering] = useState(false);
     const [brokenImages, setBrokenImages] = useState<string[]>([]);
 
-    const rawImages = product.images.length > 0 ? product.images : [{ url: '/placeholder-product.png' }];
-    const images = rawImages.filter((img: any) => !brokenImages.includes(img.url));
-    const primaryImage = images[currentIdx]?.url || images[0]?.url || '/placeholder-product.png';
+    const rawImages = (product.images && product.images.length > 0) ? product.images : [{ url: '/placeholder-product.png' }];
+    const images = rawImages.filter((img: any) => img.url && !brokenImages.includes(img.url));
+    const primaryImage = images[currentIdx]?.url || '/placeholder-product.png';
     const addItem = useCartStore((state) => state.addItem);
 
     const priceValue = Number(product.basePrice);

@@ -12,6 +12,10 @@ export default async function ShopLayout({
     children: React.ReactNode;
 }) {
     const { data: categories } = await getCategoriesTree();
+    console.log('[ShopLayout] Fetched categories:', categories?.length || 0);
+    if (categories?.length === 0) {
+        console.warn('[ShopLayout] WARNING: No categories found!');
+    }
     const session = await getSession();
 
     return (

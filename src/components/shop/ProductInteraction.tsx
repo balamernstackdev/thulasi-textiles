@@ -38,9 +38,9 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
     const originalPrice = currentPrice * 1.5;
     const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : product.variants.every((v: any) => v.stock <= 0);
 
-    const rawImages = product.images.length > 0 ? product.images : [{ url: '/placeholder-product.png', id: 'placeholder' }];
-    const images = rawImages.filter((img: any) => !brokenImages.includes(img.url));
-    const activeImage = images[currentIdx]?.url || images[0]?.url;
+    const rawImages = (product.images && product.images.length > 0) ? product.images : [{ url: '/placeholder-product.png', id: 'placeholder' }];
+    const images = rawImages.filter((img: any) => img.url && !brokenImages.includes(img.url));
+    const activeImage = images[currentIdx]?.url || '/placeholder-product.png';
 
     const nextImage = useCallback(() => {
         setCurrentIdx((prev) => (prev + 1) % images.length);

@@ -94,7 +94,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                     {/* For multiple images, we show the first one but acknowledge the "listing" by using a fade/carousel effect in the future. 
                                         For now, we fulfill the "banners" requirement by supporting multiple uploads. */}
                                     <Image
-                                        src={artisanImages[0] || "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&q=80&w=2000"}
+                                        src={artisanImages[0] || "/placeholder-product.png"}
                                         alt="The Artisan Story"
                                         fill
                                         className="object-cover transition-transform duration-[2000ms] group-hover:scale-105"

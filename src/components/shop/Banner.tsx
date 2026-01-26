@@ -67,6 +67,10 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
                                     className={`object-cover object-top ${banner.title ? 'brightness-75' : 'brightness-100'} transition-transform duration-[2000ms] group-hover:scale-105 will-change-transform gpu`}
                                     priority={index === 0}
                                     sizes="100vw"
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.src = '/placeholder-product.png';
+                                    }}
                                 />
 
                                 {/* Dynamic Text Overlay from Database */}
