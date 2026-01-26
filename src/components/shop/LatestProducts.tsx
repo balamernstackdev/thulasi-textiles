@@ -31,8 +31,8 @@ export default function LatestProducts({ products, session }: { products: any[],
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-                    {products.slice(0, 5).map((product) => (
-                        <ProductCard key={product.id} product={product} session={session} />
+                    {products.slice(0, 5).map((product, index) => (
+                        <ProductCard key={product.id} product={product} session={session} priority={index < 4} />
                     ))}
                 </div>
             </div>

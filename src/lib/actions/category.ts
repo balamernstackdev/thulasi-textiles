@@ -2,47 +2,69 @@
 
 import prisma from '@/lib/prisma';
 import { unstable_cache, revalidateTag, revalidatePath } from 'next/cache';
+import { cache } from 'react';
 
-export async function getCategoriesTree() {
-    try {
-        const categories = await prisma.category.findMany({
-            where: { parentId: null },
-            include: {
-                children: true,
-            },
-            orderBy: { name: 'asc' }
-        });
-        console.log(`[DATABASE_SUCCESS] Loaded ${categories.length} root categories.`);
-        return { success: true, data: categories };
-    } catch (error) {
-        console.error('[DATABASE_ERROR] Failed to load categories tree:', error);
-        return { success: false, error: 'Failed to load categories' };
-    }
-}
-
-export async function getCategoryBySlug(slug: string) {
-    try {
-        const category = await prisma.category.findUnique({
-            where: { slug },
-            include: {
-                children: true,
-                parent: {
-                    include: {
-                        children: true
-                    }
-                },
+export const getCategoriesTree = cache(async () => {
+    return unstable_cache(
+        async () => {
+            try {
+                const categories = await prisma.category.findMany({
+                    where: { parentId: null },
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        children: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                            }
+                        }
+                    },
+                    orderBy: { name: 'asc' }
+                });
+                console.log(`[DATABASE_SUCCESS] Loaded ${categories.length} root categories.`);
+                return { success: true, data: categories };
+            } catch (error) {
+                console.error('[DATABASE_ERROR] Failed to load categories tree:', error);
+                return { success: false, error: 'Failed to load categories' };
             }
-        });
-        return { success: true, data: category };
-    } catch (error) {
-        console.error('Error fetching category:', error);
-        return { success: false, error: 'Failed to load category' };
-    }
-}
-export async function getCategories(options: {
+        },
+        ['categories-tree'],
+        { tags: ['categories'], revalidate: 3600 }
+    )();
+});
+
+export const getCategoryBySlug = cache(async (slug: string) => {
+    return unstable_cache(
+        async () => {
+            try {
+                const category = await prisma.category.findUnique({
+                    where: { slug },
+                    include: {
+                        children: true,
+                        parent: {
+                            include: {
+                                children: true
+                            }
+                        },
+                    }
+                });
+                return { success: true, data: category };
+            } catch (error) {
+                console.error('Error fetching category:', error);
+                return { success: false, error: 'Failed to load category' };
+            }
+        },
+        ['category-detail', slug],
+        { tags: ['categories'], revalidate: 3600 }
+    )();
+});
+export const getCategories = cache(async (options: {
     page?: number,
     pageSize?: number
-} = {}) {
+} = {}) => {
     try {
         const { page = 1, pageSize = 10 } = options;
         const skip = (page - 1) * pageSize;
@@ -72,9 +94,9 @@ export async function getCategories(options: {
     } catch (error) {
         return { success: false, error: 'Failed to load categories' };
     }
-}
+});
 
-export async function getCategoryById(id: string) {
+export const getCategoryById = cache(async (id: string) => {
     try {
         const category = await prisma.category.findUnique({
             where: { id },
@@ -86,7 +108,7 @@ export async function getCategoryById(id: string) {
     } catch (error) {
         return { success: false, error: 'Failed to load category' };
     }
-}
+});
 
 export async function createCategory(formData: FormData) {
     try {

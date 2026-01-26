@@ -88,7 +88,9 @@ export async function createProduct(formData: FormData) {
     redirect('/admin/products');
 }
 
-export async function getProducts(options: {
+import { cache } from 'react';
+
+export const getProducts = cache(async (options: {
     categorySlug?: string,
     isFeatured?: boolean,
     isBestSeller?: boolean,
@@ -100,7 +102,7 @@ export async function getProducts(options: {
     page?: number,
     pageSize?: number,
     limit?: number
-} = {}) {
+} = {}) => {
     const key = JSON.stringify(options);
     return unstable_cache(
         async () => {
@@ -143,9 +145,35 @@ export async function getProducts(options: {
                 const [products, total] = await Promise.all([
                     prismadb.product.findMany({
                         where,
-                        include: {
-                            images: { take: 1 },
-                            category: true,
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                            basePrice: true,
+                            isFeatured: true,
+                            isBestSeller: true,
+                            isOffer: true,
+                            isActive: true,
+                            createdAt: true,
+                            category: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    slug: true,
+                                }
+                            },
+                            images: {
+                                take: 2, // Take 2 for hover effects if any, or just 1
+                                select: {
+                                    url: true,
+                                    isPrimary: true,
+                                }
+                            },
+                            variants: {
+                                select: {
+                                    stock: true,
+                                }
+                            }
                         },
                         take: options.limit || options.pageSize || 10,
                         skip: options.limit ? 0 : skip,
@@ -187,9 +215,9 @@ export async function getProducts(options: {
         ['products-list', key],
         { tags: ['products'], revalidate: 3600 }
     )();
-}
+});
 
-export async function getProductBySlug(slug: string) {
+export const getProductBySlug = cache(async (slug: string) => {
     return unstable_cache(
         async () => {
             try {
@@ -226,9 +254,9 @@ export async function getProductBySlug(slug: string) {
         ['product-detail', slug],
         { tags: ['products'], revalidate: 3600 }
     )();
-}
+});
 
-export async function getProductById(id: string) {
+export const getProductById = cache(async (id: string) => {
     return unstable_cache(
         async () => {
             try {
@@ -261,7 +289,7 @@ export async function getProductById(id: string) {
         ['product-by-id', id],
         { tags: ['products'], revalidate: 3600 }
     )();
-}
+});
 
 export async function updateProduct(id: string, formData: FormData) {
     const name = formData.get('name') as string;

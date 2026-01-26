@@ -13,7 +13,7 @@ interface ProductWithData extends Product {
     category: Category;
 }
 
-export default function ProductCard({ product, session }: { product: ProductWithData, session?: any }) {
+export default function ProductCard({ product, session, priority = false }: { product: ProductWithData, session?: any, priority?: boolean }) {
     const [currentIdx, setCurrentIdx] = useState(0);
     const [isHovering, setIsHovering] = useState(false);
 
@@ -51,8 +51,9 @@ export default function ProductCard({ product, session }: { product: ProductWith
                         src={primaryImage}
                         alt={product.name}
                         fill
-                        className="object-cover transition-all duration-700 group-hover:scale-105"
+                        className="object-cover transition-all duration-700 group-hover:scale-105 gpu"
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 25vw"
+                        priority={priority}
                     />
 
                     {/* Image Progress Dots (Only on Hover) */}

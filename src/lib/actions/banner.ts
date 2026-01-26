@@ -1,47 +1,55 @@
 'use server';
 
 import prismadb from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, unstable_cache } from 'next/cache';
+import { cache } from 'react';
 
-export async function getBanners(options: {
+export const getBanners = cache(async (options: {
     page?: number,
     pageSize?: number,
     isActive?: boolean
-} = {}) {
-    try {
-        const { page = 1, pageSize = 10, isActive } = options;
-        const skip = (page - 1) * pageSize;
+} = {}) => {
+    const key = JSON.stringify(options);
+    return unstable_cache(
+        async () => {
+            try {
+                const { page = 1, pageSize = 10, isActive } = options;
+                const skip = (page - 1) * pageSize;
 
-        let where: any = {};
-        if (isActive !== undefined) {
-            where.isActive = isActive;
-        }
+                let where: any = {};
+                if (isActive !== undefined) {
+                    where.isActive = isActive;
+                }
 
-        const [banners, total] = await Promise.all([
-            prismadb.banner.findMany({
-                where,
-                skip,
-                take: pageSize,
-                orderBy: { order: 'asc' }
-            }),
-            prismadb.banner.count({ where })
-        ]);
+                const [banners, total] = await Promise.all([
+                    prismadb.banner.findMany({
+                        where,
+                        skip,
+                        take: pageSize,
+                        orderBy: { order: 'asc' }
+                    }),
+                    prismadb.banner.count({ where })
+                ]);
 
-        return {
-            success: true,
-            data: banners,
-            pagination: {
-                total,
-                page,
-                pageSize,
-                totalPages: Math.ceil(total / pageSize)
+                return {
+                    success: true,
+                    data: banners,
+                    pagination: {
+                        total,
+                        page,
+                        pageSize,
+                        totalPages: Math.ceil(total / pageSize)
+                    }
+                };
+            } catch (error) {
+                console.error('Failed to fetch banners:', error);
+                return { success: false, error: 'Failed to fetch banners' };
             }
-        };
-    } catch (error) {
-        console.error('Failed to fetch banners:', error);
-        return { success: false, error: 'Failed to fetch banners' };
-    }
-}
+        },
+        ['banners-list', key],
+        { tags: ['banners'], revalidate: 3600 }
+    )();
+});
 
 export async function createBanner(formData: FormData) {
     const imageUrl = formData.get('imageUrl') as string;

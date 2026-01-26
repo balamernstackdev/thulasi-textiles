@@ -210,7 +210,7 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                                                             className="block py-3 px-4 text-xs text-orange-600 font-black uppercase tracking-widest hover:bg-orange-50 rounded-xl transition-all"
                                                             onClick={() => {
                                                                 setIsMenuOpen(false);
-                                                                window.scrollTo(0, 0);
+                                                                window.scrollTo({ top: 0, behavior: 'smooth' });
                                                             }}
                                                         >
                                                             View All {cat.name}
@@ -222,7 +222,7 @@ export default function Navbar({ categories, session }: { categories: CategoryWi
                                                                 className="block py-3 px-4 text-sm text-gray-500 font-bold hover:text-orange-600 transition-colors"
                                                                 onClick={() => {
                                                                     setIsMenuOpen(false);
-                                                                    window.scrollTo(0, 0);
+                                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
                                                                 }}
                                                             >
                                                                 {sub.name}
