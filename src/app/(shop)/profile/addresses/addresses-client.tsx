@@ -70,7 +70,7 @@ export default function AddressesClient({ addresses }: { addresses: Address[] })
     };
 
     return (
-        <div className="min-h-screen py-12 px-4 lg:px-8 bg-gray-50">
+        <div className="min-h-screen py-12 px-4 sm:px-8 md:px-12 lg:px-20 bg-gray-50">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="mb-12">

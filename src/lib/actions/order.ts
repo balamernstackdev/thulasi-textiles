@@ -285,9 +285,8 @@ export async function getDashboardStats() {
             recentOrders,
             pendingOrdersCount,
             lowStockProducts,
-            last30DaysOrders,
+            last30DaysOrdersFull,
             allCategories,
-            topOrderItems,
             newUserList
         ] = await Promise.all([
             prismadb.order.count(),
@@ -323,24 +322,18 @@ export async function getDashboardStats() {
                     status: { not: 'CANCELLED' },
                     paymentStatus: { not: 'FAILED' }
                 },
-                select: { createdAt: true, total: true }
+                include: {
+                    items: {
+                        include: {
+                            variant: {
+                                include: { product: true }
+                            }
+                        }
+                    }
+                }
             }),
             prismadb.category.findMany({
                 select: { id: true, name: true }
-            }),
-            prismadb.orderItem.findMany({
-                where: {
-                    order: {
-                        createdAt: { gte: thirtyDaysAgo },
-                        status: { not: 'CANCELLED' },
-                        paymentStatus: { not: 'FAILED' }
-                    }
-                },
-                include: {
-                    variant: {
-                        include: { product: true }
-                    }
-                }
             }),
             prismadb.user.findMany({
                 where: {
@@ -351,12 +344,15 @@ export async function getDashboardStats() {
             })
         ]);
 
+        // Flatten items from orders for easier processing
+        const topOrderItems = last30DaysOrdersFull.flatMap(order => order.items);
+
         // Process Sales Trend & Customer Growth (Last 30 Days)
         const salesTrend = Array.from({ length: 30 }, (_, i) => {
             const date = subDays(new Date(), i);
             const dateStr = date.toISOString().split('T')[0];
 
-            const dayTotal = last30DaysOrders
+            const dayTotal = last30DaysOrdersFull
                 .filter(o => o.createdAt.toISOString().split('T')[0] === dateStr)
                 .reduce((sum, o) => sum + Number(o.total), 0);
 
@@ -374,7 +370,7 @@ export async function getDashboardStats() {
         // Process Category Distribution
         const categoryData = allCategories.map(cat => {
             const catRevenue = topOrderItems
-                .filter(item => item.variant.product.categoryId === cat.id)
+                .filter(item => item.variant?.product?.categoryId === cat.id)
                 .reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
 
             return {
@@ -386,12 +382,14 @@ export async function getDashboardStats() {
         // Process Top Products
         const productSales: Record<string, { name: string, revenue: number, sales: number }> = {};
         topOrderItems.forEach(item => {
-            const p = item.variant.product;
-            if (!productSales[p.id]) {
-                productSales[p.id] = { name: p.name, revenue: 0, sales: 0 };
+            const p = item.variant?.product;
+            if (p) {
+                if (!productSales[p.id]) {
+                    productSales[p.id] = { name: p.name, revenue: 0, sales: 0 };
+                }
+                productSales[p.id].revenue += Number(item.price) * item.quantity;
+                productSales[p.id].sales += item.quantity;
             }
-            productSales[p.id].revenue += Number(item.price) * item.quantity;
-            productSales[p.id].sales += item.quantity;
         });
 
         const topSellingProducts = Object.values(productSales)
@@ -414,11 +412,11 @@ export async function getDashboardStats() {
                     ...p,
                     basePrice: Number(p.basePrice)
                 })))),
-                analytics: {
+                analytics: JSON.parse(JSON.stringify({
                     salesTrend,
                     categoryData,
                     topSellingProducts
-                }
+                }))
             }
         };
     } catch (error) {

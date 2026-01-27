@@ -93,13 +93,17 @@ export default async function AdminDashboard() {
             className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between group hover:border-orange-500 hover:shadow-xl transition-all active:scale-95 relative overflow-hidden"
           >
             <div className="relative z-10">
-              <p className="text-gray-400 font-black text-[9px] uppercase tracking-widest mb-1">{stat.title}</p>
-              <h3 className="text-xl font-black text-gray-900 truncate">{stat.value}</h3>
-              <p className="text-[8px] font-bold text-gray-400 uppercase tracking-tighter mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`w-8 h-8 rounded-xl ${stat.color} flex items-center justify-center`}>
+                  <stat.icon className="w-4 h-4 text-white" />
+                </div>
+                <p className="text-gray-400 font-black text-[9px] uppercase tracking-widest">{stat.title}</p>
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 truncate">{stat.value}</h3>
+              <p className="text-[8px] font-bold text-gray-400 uppercase tracking-tighter mt-1">
                 {stat.change}
               </p>
             </div>
-            <stat.icon className={`w-8 h-8 absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-20 transition-all group-hover:scale-125 ${stat.textColor}`} />
           </Link>
         ))}
       </div>

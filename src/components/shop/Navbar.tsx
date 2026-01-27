@@ -59,7 +59,7 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
             {/* Dynamic Announcement Bar - Absolute Top */}
             {announcements.length > 0 && <AnnouncementTicker banners={announcements} />}
 
-            <div className="max-w-[1700px] mx-auto px-4 md:px-6">
+            <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20">
                 {/* Top Row: Logo, Search, Actions */}
                 <div className="flex items-center justify-between py-1.5 md:py-3 gap-2 md:gap-8 min-h-[50px] md:min-h-[60px]">
 

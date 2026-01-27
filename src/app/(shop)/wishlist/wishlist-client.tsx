@@ -42,7 +42,7 @@ export default function WishlistClient({ wishlist }: { wishlist: any[] }) {
     }
 
     return (
-        <div className="max-w-[1700px] mx-auto px-4 md:px-6 py-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="bg-white rounded-[2.5rem] p-8 shadow-xl">
                 <div className="mb-8">
                     <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tight italic mb-2">My Wishlist</h3>

@@ -79,7 +79,7 @@ export default function CartClient({ session }: { session: any }) {
 
     return (
         <div className="min-h-screen py-12 bg-gray-50">
-            <div className="max-w-[1700px] mx-auto px-4 lg:px-6">
+            <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20">
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tighter uppercase italic mb-1">Shopping Cart</h1>

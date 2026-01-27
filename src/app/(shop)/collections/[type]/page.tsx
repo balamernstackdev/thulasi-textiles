@@ -65,7 +65,7 @@ export default async function CollectionPage({
         <div className="bg-gray-50 min-h-screen">
             {/* Breadcrumbs */}
             <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-[160px] z-40 transition-all duration-300 hidden lg:block">
-                <div className="max-w-[1700px] mx-auto px-4 lg:px-6 py-5">
+                <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-5">
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
                         <Link href="/" className="hover:text-orange-600 transition-colors">Home</Link>
                         <ChevronRight className="w-3.5 h-3.5 text-gray-200" />
@@ -74,7 +74,7 @@ export default async function CollectionPage({
                 </div>
             </div>
 
-            <div className="max-w-[1700px] mx-auto px-4 lg:px-6 py-8">
+            <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-8">
                 <div className="flex flex-col gap-8">
                     {/* Header */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

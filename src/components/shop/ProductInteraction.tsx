@@ -34,8 +34,8 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
     const [brokenImages, setBrokenImages] = useState<string[]>([]);
 
-    const currentPrice = selectedVariant ? Number(selectedVariant.price) : Number(product.basePrice);
-    const originalPrice = currentPrice * 1.5;
+    const currentPrice = Math.round(selectedVariant ? Number(selectedVariant.price) : Number(product.basePrice));
+    const originalPrice = Math.round(currentPrice * 1.5);
     const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : product.variants.every((v: any) => v.stock <= 0);
 
     const rawImages = (product.images && product.images.length > 0) ? product.images : [{ url: '/placeholder-product.png', id: 'placeholder' }];
@@ -74,7 +74,7 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[4.5fr_4fr_3.5fr] gap-x-6 xl:gap-x-12 gap-y-6 mb-8 items-start">
             {/* COLUMN 1: AMAZON-STYLE GALLERY */}
-            <div className="flex flex-col-reverse lg:flex-row gap-4 items-start lg:sticky lg:top-[230px]">
+            <div className="flex flex-col-reverse lg:flex-row gap-4 items-start lg:sticky lg:top-[120px]">
                 {/* Vertical Thumbnail Strip - Desktop Only */}
                 {images.length > 1 && (
                     <div className="hidden lg:flex lg:flex-col gap-4 overflow-y-auto lg:max-h-[700px] py-1 shrink-0">
@@ -254,7 +254,7 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
             </div>
 
             {/* COLUMN 3: BUY BOX */}
-            <div>
+            <div className="lg:sticky lg:top-[120px] md:col-start-2 lg:col-start-auto">
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-8 space-y-8">
                     <div className="space-y-4">
                         <div className="flex items-baseline gap-3">
@@ -334,14 +334,20 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                         <WishlistButton productId={product.id} initialState={isWishlisted} />
                     </div>
 
-                    <div className="text-[11px] space-y-2 text-gray-500 font-bold">
-                        <div className="flex justify-between">
-                            <span>Ships from:</span>
-                            <span className="text-[#007185] hover:text-[#C45500] cursor-pointer">Thulasi Textiles</span>
+                    <div className="pt-4 space-y-3 border-t border-gray-100">
+                        <div className="flex items-center justify-between group cursor-help">
+                            <div className="flex items-center gap-2">
+                                <Truck className="w-3.5 h-3.5 text-gray-400 group-hover:text-orange-600 transition-colors" />
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Ships from:</span>
+                            </div>
+                            <span className="text-[10px] font-black text-gray-900 uppercase italic">Thulasi Textiles</span>
                         </div>
-                        <div className="flex justify-between">
-                            <span>Sold by:</span>
-                            <span className="text-[#007185] hover:text-[#C45500] cursor-pointer">Thulasi Retail Ltd</span>
+                        <div className="flex items-center justify-between group cursor-help">
+                            <div className="flex items-center gap-2">
+                                <ShieldCheck className="w-3.5 h-3.5 text-orange-600" />
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Sold by:</span>
+                            </div>
+                            <span className="text-[10px] font-black text-orange-600 uppercase italic">Thulasi Retail Ltd</span>
                         </div>
                     </div>
                 </div>

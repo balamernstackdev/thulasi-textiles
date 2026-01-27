@@ -2,25 +2,40 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createCoupon } from '@/lib/actions/coupon';
+import { createCoupon, updateCoupon } from '@/lib/actions/coupon';
 import { Button } from '@/components/ui/button';
 import { Loader2, Ticket, Percent, DollarSign, Calendar, TrendingUp } from 'lucide-react';
 import { CouponType } from '@prisma/client';
+import { format } from 'date-fns';
 
-export default function CouponForm() {
+interface CouponFormProps {
+    initialData?: {
+        id: string;
+        code: string;
+        discountType: CouponType;
+        discountValue: number;
+        minOrderAmount: number;
+        maxDiscount: number | null;
+        usageLimit: number | null;
+        expiryDate: Date | null;
+        isActive: boolean;
+    };
+}
+
+export default function CouponForm({ initialData }: CouponFormProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
     const [formData, setFormData] = useState({
-        code: '',
-        discountType: 'PERCENTAGE' as CouponType,
-        discountValue: '',
-        minOrderAmount: '',
-        maxDiscount: '',
-        usageLimit: '',
-        expiryDate: '',
-        isActive: true
+        code: initialData?.code || '',
+        discountType: initialData?.discountType || 'PERCENTAGE' as CouponType,
+        discountValue: initialData?.discountValue?.toString() || '',
+        minOrderAmount: initialData?.minOrderAmount?.toString() || '',
+        maxDiscount: initialData?.maxDiscount?.toString() || '',
+        usageLimit: initialData?.usageLimit?.toString() || '',
+        expiryDate: initialData?.expiryDate ? format(new Date(initialData.expiryDate), 'yyyy-MM-dd') : '',
+        isActive: initialData !== undefined ? initialData.isActive : true
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -29,7 +44,7 @@ export default function CouponForm() {
         setError(null);
 
         try {
-            const res = await createCoupon({
+            const data = {
                 code: formData.code,
                 discountType: formData.discountType,
                 discountValue: Number(formData.discountValue),
@@ -38,13 +53,20 @@ export default function CouponForm() {
                 usageLimit: formData.usageLimit ? Number(formData.usageLimit) : undefined,
                 expiryDate: formData.expiryDate ? new Date(formData.expiryDate) : undefined,
                 isActive: formData.isActive
-            });
+            };
+
+            let res;
+            if (initialData) {
+                res = await updateCoupon(initialData.id, data);
+            } else {
+                res = await createCoupon(data);
+            }
 
             if (res.success) {
                 router.push('/admin/coupons');
                 router.refresh();
             } else {
-                setError(res.error || 'Failed to create coupon');
+                setError(res.error || `Failed to ${initialData ? 'update' : 'create'} coupon`);
             }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred');
@@ -167,7 +189,7 @@ export default function CouponForm() {
                     disabled={loading}
                     className="flex-1 bg-black text-white hover:bg-orange-600 h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-gray-200 hover:shadow-orange-500/20 transition-all active:scale-95"
                 >
-                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Activate Campaign'}
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (initialData ? 'Update Campaign' : 'Activate Campaign')}
                 </Button>
                 <Button
                     type="button"

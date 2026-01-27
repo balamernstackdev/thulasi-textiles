@@ -134,3 +134,69 @@ export async function validateCoupon(code: string, cartTotal: number) {
         return { success: false, error: 'An error occurred during verification' };
     }
 }
+
+export async function getCoupon(id: string) {
+    const session = await getSession();
+    if (!session || session.user.role !== 'ADMIN') {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    try {
+        const coupon = await prismadb.coupon.findUnique({
+            where: { id }
+        });
+
+        if (!coupon) {
+            return { success: false, error: 'Coupon not found' };
+        }
+
+        return { success: true, data: JSON.parse(JSON.stringify(coupon)) };
+    } catch (error) {
+        console.error('Error fetching coupon:', error);
+        return { success: false, error: 'Failed to fetch coupon' };
+    }
+}
+
+export async function updateCoupon(id: string, data: {
+    code: string;
+    discountType: CouponType;
+    discountValue: number;
+    minOrderAmount?: number;
+    maxDiscount?: number;
+    usageLimit?: number;
+    expiryDate?: Date;
+    isActive?: boolean;
+}) {
+    const session = await getSession();
+    if (!session || session.user.role !== 'ADMIN') {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    try {
+        // Check if code is already taken by another coupon
+        const existingCoupon = await prismadb.coupon.findFirst({
+            where: {
+                code: data.code.toUpperCase().trim(),
+                NOT: { id }
+            }
+        });
+
+        if (existingCoupon) {
+            return { success: false, error: 'Coupon code already exists' };
+        }
+
+        const coupon = await prismadb.coupon.update({
+            where: { id },
+            data: {
+                ...data,
+                code: data.code.toUpperCase().trim()
+            }
+        });
+        revalidatePath('/admin/coupons');
+        revalidatePath(`/admin/coupons/${id}`);
+        return { success: true, data: JSON.parse(JSON.stringify(coupon)) };
+    } catch (error) {
+        console.error('Error updating coupon:', error);
+        return { success: false, error: 'Failed to update coupon' };
+    }
+}

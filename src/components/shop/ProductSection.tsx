@@ -33,7 +33,7 @@ export default function ProductSection({
 
     return (
         <section className={`py-12 md:py-16 ${bgVariant === 'gray' ? 'bg-gray-50' : 'bg-white'}`}>
-            <div className="max-w-[1700px] mx-auto px-6">
+            <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                     <div>
                         <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight mb-2 uppercase">{title}</h2>

@@ -54,7 +54,7 @@ export default function ProfileClient({
 
     return (
         <div className="min-h-screen py-12 bg-gray-50">
-            <div className="max-w-[1700px] mx-auto px-4 lg:px-6">
+            <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 md:mb-12">
                     <div>

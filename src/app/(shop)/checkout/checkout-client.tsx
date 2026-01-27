@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCartStore } from '@/lib/store/cart';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -40,8 +40,14 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
     const discount = appliedCoupon ? appliedCoupon.discountAmount : 0;
     const finalTotal = totalPrice + shipping + tax - discount;
 
+    // Redirect to cart if empty
+    useEffect(() => {
+        if (items.length === 0) {
+            router.push('/cart');
+        }
+    }, [items.length, router]);
+
     if (items.length === 0) {
-        router.push('/cart');
         return null;
     }
 
@@ -216,7 +222,7 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
     ];
 
     return (
-        <div className="min-h-screen py-12 px-4 lg:px-8 bg-gray-50">
+        <div className="min-h-screen py-12 px-4 sm:px-8 md:px-12 lg:px-20 bg-gray-50">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-6 md:mb-12">
@@ -382,7 +388,7 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                                 <div className="flex flex-col-reverse sm:flex-row gap-4 mt-6">
                                     <button
                                         onClick={() => setStep(1)}
-                                        className="w-full sm:w-auto px-8 py-4 border-2 border-gray-300 rounded-full font-black hover:bg-gray-50 transition-colors"
+                                        className="w-full sm:w-auto px-8 py-4 border-2 border-gray-900 text-gray-900 rounded-full font-black hover:bg-gray-900 hover:text-white transition-colors"
                                     >
                                         Back
                                     </button>
@@ -421,7 +427,7 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                                 <div className="flex flex-col-reverse sm:flex-row gap-4">
                                     <button
                                         onClick={() => setStep(2)}
-                                        className="w-full sm:w-auto px-8 py-4 border-2 border-gray-300 rounded-full font-black hover:bg-gray-50 transition-colors"
+                                        className="w-full sm:w-auto px-8 py-4 border-2 border-gray-900 text-gray-900 rounded-full font-black hover:bg-gray-900 hover:text-white transition-colors"
                                     >
                                         Back
                                     </button>
@@ -452,7 +458,7 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                                         <div className="flex gap-2">
                                             <input
                                                 placeholder="Enter code"
-                                                className="flex-1 bg-gray-50 border-2 border-transparent focus:border-orange-600 focus:bg-white rounded-xl px-4 py-2.5 text-xs font-bold transition-all uppercase"
+                                                className="flex-1 bg-gray-50 text-gray-900 placeholder:text-gray-400 border-2 border-gray-200 focus:border-orange-600 focus:bg-white rounded-xl px-4 py-2.5 text-xs font-bold transition-all uppercase"
                                                 value={couponCode}
                                                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                                                 onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
@@ -518,8 +524,8 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                             <div className="bg-green-50 border border-green-200 rounded-2xl p-4">
                                 <p className="text-xs font-black text-green-700">
                                     {discount > 0
-                                        ? `You are saving ₹${(discount + (totalPrice - (totalPrice - discount)) * 0.1).toFixed(2)} on this order!`
-                                        : `You could save ₹${(totalPrice * 0.1).toFixed(2)} with a coupon code`
+                                        ? `You are saving ₹${discount.toFixed(2)} with this coupon!`
+                                        : `You could save more with a coupon code`
                                     }
                                 </p>
                             </div>

@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `Product` ADD COLUMN `basePrice` DECIMAL(10, 2) NOT NULL DEFAULT 0;

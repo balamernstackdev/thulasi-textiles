@@ -37,21 +37,25 @@ async function main() {
         {
             name: 'Men',
             slug: 'men',
+            image: '/images/categories/category_men.jpg',
             subcategories: ['Shirts', 'T-Shirts', 'Jeans', 'Trousers', 'Ethnic Wear', 'Innerwear']
         },
         {
             name: 'Women',
             slug: 'women',
+            image: '/images/categories/category_women.jpg',
             subcategories: ['Sarees', 'Kurtas & Kurtis', 'Lehengas', 'Jeans & Jeggings', 'Tops & Tees', 'Lingerie']
         },
         {
             name: 'Kids',
             slug: 'kids',
+            image: '/images/categories/category_kids.jpg', // Better kids traditional/festive image
             subcategories: ['Boys Clothing', 'Girls Clothing', 'Infants', 'School Uniforms']
         },
         {
             name: 'Home Linen',
             slug: 'home-linen',
+            image: '/images/categories/category_homelinen.jpg',
             subcategories: ['Bedsheets', 'Curtains', 'Towels', 'Blankets', 'Cushion Covers']
         }
     ];
@@ -59,11 +63,14 @@ async function main() {
     for (const cat of categories) {
         const parent = await prisma.category.upsert({
             where: { slug: cat.slug },
-            update: {},
+            update: {
+                image: cat.image // Ensure updating works if it exists
+            },
             create: {
                 name: cat.name,
                 slug: cat.slug,
-                description: `All products for ${cat.name}`
+                description: `All products for ${cat.name}`,
+                image: cat.image
             }
         });
 
@@ -88,12 +95,12 @@ async function main() {
 
                 let mainImageUrl = 'https://images.unsplash.com/photo-1571513722275-4b41940f54b8?auto=format&fit=crop&w=800&q=80';
                 // Subcategory-specific image selection
-                if (sub === 'Shirts') mainImageUrl = 'https://images.unsplash.com/photo-1620012253295-c15cc3e65df4?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'T-Shirts') mainImageUrl = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Jeans') mainImageUrl = 'https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Trousers') mainImageUrl = 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Ethnic Wear' && cat.name === 'Men') mainImageUrl = 'https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Innerwear') mainImageUrl = 'https://images.unsplash.com/photo-1583209212005-cb41a4571d87?auto=format&fit=crop&w=800&q=80';
+                if (sub === 'Shirts') mainImageUrl = '/images/products/product_men.jpg';
+                else if (sub === 'T-Shirts') mainImageUrl = '/images/products/product_men.jpg';
+                else if (sub === 'Jeans') mainImageUrl = '/images/products/product_men.jpg';
+                else if (sub === 'Trousers') mainImageUrl = '/images/products/product_men.jpg';
+                else if (sub === 'Ethnic Wear' && cat.name === 'Men') mainImageUrl = '/images/categories/category_men.jpg';
+                else if (sub === 'Innerwear') mainImageUrl = '/images/products/product_men.jpg';
                 else if (sub === 'Sarees') mainImageUrl = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80';
                 else if (sub === 'Kurtas & Kurtis') mainImageUrl = 'https://images.unsplash.com/photo-1589156229687-496a31ad1d1f?auto=format&fit=crop&w=800&q=80';
                 else if (sub === 'Lehengas') mainImageUrl = 'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&w=800&q=80';
@@ -111,7 +118,7 @@ async function main() {
                 else if (sub === 'Cushion Covers') mainImageUrl = 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80';
                 else {
                     // Category-level fallback
-                    if (cat.name === 'Men') mainImageUrl = 'https://images.unsplash.com/photo-1617137968427-b5742710090e?auto=format&fit=crop&w=800&q=80';
+                    if (cat.name === 'Men') mainImageUrl = '/images/categories/category_men.jpg';
                     else if (cat.name === 'Women') mainImageUrl = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80';
                     else if (cat.name === 'Kids') mainImageUrl = 'https://images.unsplash.com/photo-1519750157634-b6d493a0f77c?auto=format&fit=crop&w=800&q=80';
                     else if (cat.name === 'Home Linen') mainImageUrl = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80';
@@ -119,7 +126,7 @@ async function main() {
 
                 // Secondary image selection logic
                 let secondImageUrl = 'https://images.unsplash.com/photo-1560243563-062bfc001d68?auto=format&fit=crop&w=800&q=80';
-                if (cat.name === 'Men') secondImageUrl = 'https://images.unsplash.com/photo-1617137968427-b5742710090e?auto=format&fit=crop&w=800&q=80';
+                if (cat.name === 'Men') secondImageUrl = '/images/products/product_men.jpg';
                 else if (cat.name === 'Women') secondImageUrl = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80';
                 else if (cat.name === 'Home Linen') secondImageUrl = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80';
 
@@ -176,7 +183,248 @@ async function main() {
         }
     }
 
-    console.log('Categories seeded successfully');
+
+    // Seed Banners
+    console.log('Seeding banners...');
+    await prisma.banner.deleteMany({});
+
+    // Main Hero Banners
+    await prisma.banner.create({
+        data: {
+            title: 'FESTIVE COLLECTION',
+            subtitle: 'Celebrate Tradition | Flat 40% Off on Silk Sarees',
+            imageUrl: '/images/banners/banner_festive.jpg',
+            type: 'HOME_MAIN',
+            isActive: true,
+            order: 1,
+            buttonText: 'SHOP NOW',
+            link: '/category/women-sarees',
+            alignment: 'LEFT',
+            textColor: '#ffffff',
+            backgroundColor: '#000000'
+        }
+    });
+
+    await prisma.banner.create({
+        data: {
+            title: 'PREMIUM HANDLOOMS',
+            subtitle: 'Direct from Master Weavers of Tamil Nadu',
+            imageUrl: '/images/banners/banner_handloom.jpg',
+            type: 'HOME_MAIN',
+            isActive: true,
+            order: 2,
+            buttonText: 'Explore Collection',
+            link: '/category/women',
+            alignment: 'CENTER',
+            textColor: '#ffffff',
+            backgroundColor: '#000000'
+        }
+    });
+
+    await prisma.banner.create({
+        data: {
+            title: 'MEN\'S ETHNIC WEAR',
+            subtitle: 'Kurtas & Sherwanis for Every Occasion',
+            imageUrl: '/images/banners/banner_men.jpg',
+            type: 'HOME_MAIN',
+            isActive: true,
+            order: 3,
+            buttonText: 'Shop Men',
+            link: '/category/men',
+            alignment: 'RIGHT',
+            textColor: '#ffffff',
+            backgroundColor: '#000000'
+        }
+    });
+
+    /*
+    // ============================================
+    // Seed Related Products (Complementary Relationships)
+    // ============================================
+    console.log('Seeding related product relationships...');
+
+    // Strategy: Link products within categories and across complementary categories
+    // Sarees → Other Sarees, Blouses (if exists)
+    // Kurtas → Other Kurtas, Tops
+    // Men's Ethnic → Other Men's Ethnic
+    // Home Linen → Matching sets within same category
+
+    // Get all products to create relationships
+    const allProducts = await prisma.product.findMany({
+        include: {
+            category: true
+        }
+    });
+
+    // Helper function to find products by category slug pattern
+    const findProductsByCategory = (slugPattern: string) => {
+        return allProducts.filter(p => p.category.slug.includes(slugPattern));
+    };
+
+    // Women's Sarees - Link to other sarees and blouses
+    const sarees = findProductsByCategory('sarees');
+    const blouses = findProductsByCategory('kurtas'); // Using kurtas as blouse alternative
+
+    for (let i = 0; i < sarees.length; i++) {
+        const relatedIds: string[] = [];
+
+        // Add 2 other sarees
+        const otherSarees = sarees.filter((_, idx) => idx !== i).slice(0, 2);
+        relatedIds.push(...otherSarees.map(p => p.id));
+
+        // Add 1-2 blouses/kurtas
+        relatedIds.push(...blouses.slice(0, 2).map(p => p.id));
+
+        if (relatedIds.length > 0) {
+            await prisma.product.update({
+                where: { id: sarees[i].id },
+                data: {
+                    complementaryProducts: {
+                        connect: relatedIds.map(id => ({ id }))
+                    }
+                }
+            });
+        }
+    }
+
+    // Women's Kurtas - Link to other kurtas, tops, and lehengas
+    const kurtas = findProductsByCategory('kurtas');
+    const tops = findProductsByCategory('tops');
+    const lehengas = findProductsByCategory('lehengas');
+
+    for (let i = 0; i < kurtas.length; i++) {
+        const relatedIds: string[] = [];
+
+        // Add 1-2 other kurtas
+        const otherKurtas = kurtas.filter((_, idx) => idx !== i).slice(0, 2);
+        relatedIds.push(...otherKurtas.map(p => p.id));
+
+        // Add tops
+        relatedIds.push(...tops.slice(0, 1).map(p => p.id));
+
+        // Add lehengas
+        relatedIds.push(...lehengas.slice(0, 1).map(p => p.id));
+
+        if (relatedIds.length > 0) {
+            await prisma.product.update({
+                where: { id: kurtas[i].id },
+                data: {
+                    complementaryProducts: {
+                        connect: relatedIds.map(id => ({ id }))
+                    }
+                }
+            });
+        }
+    }
+
+    // Men's Shirts - Link to other shirts, trousers, and ethnic wear
+    const menShirts = findProductsByCategory('men-shirts');
+    const menTrousers = findProductsByCategory('men-trousers');
+    const menEthnic = findProductsByCategory('men-ethnic');
+
+    for (let i = 0; i < menShirts.length; i++) {
+        const relatedIds: string[] = [];
+
+        // Add other shirts
+        const otherShirts = menShirts.filter((_, idx) => idx !== i).slice(0, 2);
+        relatedIds.push(...otherShirts.map(p => p.id));
+
+        // Add trousers
+        relatedIds.push(...menTrousers.slice(0, 1).map(p => p.id));
+
+        // Add ethnic wear
+        relatedIds.push(...menEthnic.slice(0, 1).map(p => p.id));
+
+        if (relatedIds.length > 0) {
+            await prisma.product.update({
+                where: { id: menShirts[i].id },
+                data: {
+                    complementaryProducts: {
+                        connect: relatedIds.map(id => ({ id }))
+                    }
+                }
+            });
+        }
+    }
+
+    // Men's Ethnic Wear - Link to other ethnic pieces
+    for (let i = 0; i < menEthnic.length; i++) {
+        const relatedIds: string[] = [];
+
+        // Add other ethnic wear
+        const otherEthnic = menEthnic.filter((_, idx) => idx !== i).slice(0, 3);
+        relatedIds.push(...otherEthnic.map(p => p.id));
+
+        if (relatedIds.length > 0) {
+            await prisma.product.update({
+                where: { id: menEthnic[i].id },
+                data: {
+                    complementaryProducts: {
+                        connect: relatedIds.map(id => ({ id }))
+                    }
+                }
+            });
+        }
+    }
+
+    // Home Linen - Link matching sets
+    const bedsheets = findProductsByCategory('bedsheets');
+    const curtains = findProductsByCategory('curtains');
+    const towels = findProductsByCategory('towels');
+    const cushions = findProductsByCategory('cushion');
+
+    for (let i = 0; i < bedsheets.length; i++) {
+        const relatedIds: string[] = [];
+
+        // Add curtains (matching room decor)
+        relatedIds.push(...curtains.slice(0, 1).map(p => p.id));
+
+        // Add cushions
+        relatedIds.push(...cushions.slice(0, 2).map(p => p.id));
+
+        // Add towels
+        relatedIds.push(...towels.slice(0, 1).map(p => p.id));
+
+        if (relatedIds.length > 0) {
+            await prisma.product.update({
+                where: { id: bedsheets[i].id },
+                data: {
+                    complementaryProducts: {
+                        connect: relatedIds.map(id => ({ id }))
+                    }
+                }
+            });
+        }
+    }
+
+    // Kids Clothing - Link within same gender and across
+    const boysClothing = findProductsByCategory('boys-clothing');
+    const girlsClothing = findProductsByCategory('girls-clothing');
+
+    for (let i = 0; i < boysClothing.length; i++) {
+        const relatedIds: string[] = [];
+
+        // Add other boys clothing
+        const otherBoys = boysClothing.filter((_, idx) => idx !== i).slice(0, 2);
+        relatedIds.push(...otherBoys.map(p => p.id));
+
+        // Add girls clothing (sibling sets)
+        relatedIds.push(...girlsClothing.slice(0, 1).map(p => p.id));
+
+        if (relatedIds.length > 0) {
+            await prisma.product.update({
+                where: { id: boysClothing[i].id },
+                data: {
+                    complementaryProducts: {
+                        connect: relatedIds.map(id => ({ id }))
+                    }
+                }
+            });
+        }
+    }
+    */
+
+    console.log('Categories, Banners, and Related Products seeded successfully');
 }
 
 main()

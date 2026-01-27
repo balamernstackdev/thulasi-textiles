@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, Search, Ticket, Calendar, BarChart3, Trash2 } from 'lucide-react';
+import { Plus, Search, Ticket } from 'lucide-react';
 import { getCoupons } from '@/lib/actions/coupon';
 import ToggleCouponStatus from '@/components/admin/ToggleCouponStatus';
 import DeleteCouponButton from '@/components/admin/DeleteCouponButton';
@@ -12,7 +12,7 @@ export default async function CouponsPage() {
     const { data: coupons } = await getCoupons();
 
     return (
-        <div className="space-y-8 p-4 md:p-0">
+        <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Coupons & Discounts</h1>
@@ -25,86 +25,119 @@ export default async function CouponsPage() {
                 </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {coupons?.map((coupon: any) => (
-                    <div key={coupon.id} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl transition-all overflow-hidden group">
-                        <div className="p-6 space-y-6">
-                            {/* Header: Code and Status */}
-                            <div className="flex justify-between items-start">
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
-                                        <Ticket className="w-4 h-4 text-orange-600" />
-                                        <span className="text-lg font-black text-gray-900 tracking-tighter uppercase">{coupon.code}</span>
-                                    </div>
-                                    <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${coupon.isActive ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-50 text-gray-400'
-                                        }`}>
-                                        {coupon.isActive ? 'Active' : 'Draft'}
-                                    </span>
-                                </div>
-                                <ToggleCouponStatus id={coupon.id} isActive={coupon.isActive} />
-                            </div>
-
-                            {/* Value & Details */}
-                            <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100/50">
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-3xl font-black text-gray-900">
-                                        {coupon.discountType === 'PERCENTAGE' ? `${coupon.discountValue}%` : `₹${coupon.discountValue}`}
-                                    </span>
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Off</span>
-                                </div>
-                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 leading-relaxed">
-                                    Min Order: ₹{Number(coupon.minOrderAmount).toLocaleString()}
-                                    {coupon.maxDiscount && ` • Max Discount: ₹${Number(coupon.maxDiscount).toLocaleString()}`}
-                                </p>
-                            </div>
-
-                            {/* Usage & Expiry */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-1.5 text-gray-400">
-                                        <BarChart3 className="w-3.3 h-3.3" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest">Usage</span>
-                                    </div>
-                                    <p className="text-xs font-black text-gray-900">
-                                        {coupon.usedCount} {coupon.usageLimit ? `/ ${coupon.usageLimit}` : 'Redemptions'}
-                                    </p>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-1.5 text-gray-400">
-                                        <Calendar className="w-3.3 h-3.3" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest">Expiry</span>
-                                    </div>
-                                    <p className="text-xs font-black text-gray-900">
-                                        {coupon.expiryDate ? format(new Date(coupon.expiryDate), 'MMM dd, yyyy') : 'No Expiry'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="pt-4 border-t border-gray-50 flex justify-end">
-                                <DeleteCouponButton id={coupon.id} />
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {(!coupons || coupons.length === 0) && (
-                <div className="bg-white rounded-[2.5rem] border-2 border-dashed border-gray-100 p-20 text-center space-y-6">
-                    <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto">
-                        <Ticket className="w-10 h-10 text-gray-200" />
-                    </div>
-                    <div className="max-w-xs mx-auto space-y-2">
-                        <h3 className="text-lg font-black text-gray-900 uppercase italic tracking-tighter">No Active Campaigns</h3>
-                        <p className="text-sm font-medium text-gray-400">Start driving sales by creating your first promotional coupon code.</p>
-                    </div>
-                    <Link href="/admin/coupons/new" className="inline-block">
-                        <Button className="bg-black text-white px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-orange-600 transition-all shadow-xl">
-                            Create First Coupon
-                        </Button>
-                    </Link>
+            <div className="bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse min-w-[800px]">
+                        <thead className="bg-[#f8fafc]/50 border-b border-gray-50">
+                            <tr>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Code</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Discount</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Limits</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Usage</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Expiry</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
+                                <th className="px-6 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {coupons?.map((coupon: any) => (
+                                <tr key={coupon.id} className="hover:bg-gray-50/30 transition-colors group">
+                                    <td className="px-6 py-5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange-100 transition-colors">
+                                                <Ticket className="w-5 h-5 text-orange-600" />
+                                            </div>
+                                            <div>
+                                                <p className="font-black text-gray-900 group-hover:text-orange-600 transition-colors text-sm uppercase tracking-wider">{coupon.code}</p>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Promo Code</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-5">
+                                        <div className="flex flex-col">
+                                            <span className="text-lg font-black text-gray-900 italic">
+                                                {coupon.discountType === 'PERCENTAGE' ? `${coupon.discountValue}%` : `₹${coupon.discountValue}`}
+                                            </span>
+                                            <span className="text-[8px] text-gray-400 font-black uppercase tracking-tighter">
+                                                {coupon.discountType === 'PERCENTAGE' ? 'Percentage Off' : 'Fixed Amount'}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-5">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-xs font-black text-gray-900">
+                                                Min: ₹{Number(coupon.minOrderAmount).toLocaleString()}
+                                            </span>
+                                            {coupon.maxDiscount && (
+                                                <span className="text-xs font-black text-gray-900">
+                                                    Max: ₹{Number(coupon.maxDiscount).toLocaleString()}
+                                                </span>
+                                            )}
+                                            {!coupon.maxDiscount && (
+                                                <span className="text-[8px] text-gray-400 font-black uppercase">No Cap</span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-5">
+                                        <div className="flex flex-col">
+                                            <span className="text-xs font-black text-gray-900">
+                                                {coupon.usedCount} {coupon.usageLimit ? `/ ${coupon.usageLimit}` : ''}
+                                            </span>
+                                            <span className="text-[8px] text-gray-400 font-black uppercase tracking-tighter">
+                                                {coupon.usageLimit ? 'Uses' : 'Redemptions'}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-5">
+                                        <div className="flex flex-col">
+                                            <span className="text-xs font-black text-gray-900">
+                                                {coupon.expiryDate ? format(new Date(coupon.expiryDate), 'MMM dd, yyyy') : 'Never'}
+                                            </span>
+                                            <span className="text-[8px] text-gray-400 font-black uppercase tracking-tighter">
+                                                Expiry Date
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-5">
+                                        <ToggleCouponStatus id={coupon.id} isActive={coupon.isActive} />
+                                    </td>
+                                    <td className="px-6 py-5 text-right">
+                                        <div className="flex items-center justify-end gap-1">
+                                            <Link
+                                                href={`/admin/coupons/${coupon.id}`}
+                                                className="text-gray-300 hover:text-orange-500 p-3 hover:bg-orange-50 rounded-xl transition-all active:scale-90"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </Link>
+                                            <DeleteCouponButton id={coupon.id} />
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {(!coupons || coupons.length === 0) && (
+                                <tr>
+                                    <td colSpan={7} className="p-24 text-center text-gray-500">
+                                        <div className="flex flex-col items-center justify-center">
+                                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                                                <Ticket className="w-8 h-8 text-gray-300" />
+                                            </div>
+                                            <p className="font-black text-gray-900 uppercase tracking-widest text-xs">No Active Campaigns</p>
+                                            <p className="text-sm font-medium text-gray-400 mt-2">Start driving sales by creating your first promotional coupon code.</p>
+                                            <Link href="/admin/coupons/new" className="mt-6 inline-block">
+                                                <Button className="bg-black text-white px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-orange-600 transition-all shadow-xl">
+                                                    Create First Coupon
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
-            )}
+            </div>
         </div>
     );
 }

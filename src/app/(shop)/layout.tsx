@@ -5,6 +5,7 @@ import Footer from '@/components/shop/Footer';
 import { getCategoriesTree } from '@/lib/actions/category';
 import { getSession } from '@/lib/auth';
 import { getBanners } from '@/lib/actions/banner';
+import AIHeritageAssistant from '@/components/shop/AIHeritageAssistant';
 
 export default async function ShopLayout({
     children,
@@ -34,6 +35,7 @@ export default async function ShopLayout({
                 {children}
             </main>
             <Footer categories={categories || []} />
+            <AIHeritageAssistant />
         </div>
     );
 }

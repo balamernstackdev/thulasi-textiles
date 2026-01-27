@@ -59,7 +59,7 @@ export default function OrderDetailClient({ order }: { order: OrderDetail }) {
     const currentStepIndex = statusSteps.findIndex(s => s.key === order.status);
 
     return (
-        <div className="min-h-screen py-12 px-4 lg:px-8 bg-gray-50">
+        <div className="min-h-screen py-12 px-4 sm:px-8 md:px-12 lg:px-20 bg-gray-50">
             {/* Success Modal Popup */}
             {showSuccessModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

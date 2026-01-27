@@ -11,7 +11,7 @@ export default function LatestProducts({ products, session }: { products: any[],
 
     return (
         <section className="py-12 bg-white overflow-hidden">
-            <div className="max-w-[1700px] mx-auto px-6">
+            <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20">
                 <div className="flex flex-col md:flex-row items-baseline justify-between mb-8 gap-4">
                     <div className="space-y-1">
                         <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase italic leading-none">

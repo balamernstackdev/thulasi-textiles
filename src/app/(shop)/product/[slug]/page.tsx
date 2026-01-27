@@ -1,20 +1,18 @@
 import { getProductBySlug, getProducts } from '@/lib/actions/product';
-import { getSession } from '@/lib/auth';
-
-export const dynamic = 'force-dynamic';
-// import ProductCard from '@/components/shop/ProductCard';
-import Link from 'next/link';
-import { ChevronRight, ShieldCheck, Truck, RotateCcw, Star, ArrowRight, Sparkles, Scissors, MapPin, CheckCircle2, AlertCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import ProductInteraction from '@/components/shop/ProductInteraction';
-import ProductCarousel from '@/components/shop/ProductCarousel';
+import Link from 'next/link';
+import { ChevronRight, MapPin, Star, ShieldCheck, Scissors, RotateCcw, Package, Truck, Info, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react';
+import Image from 'next/image';
 import RelatedProducts from '@/components/shop/RelatedProducts';
 import ReviewForm from '@/components/shop/ReviewForm';
 import ReviewList from '@/components/shop/ReviewList';
+import ProductDetailedFeatures from '@/components/shop/ProductDetailedFeatures';
+import ComplementaryProducts from '@/components/shop/ComplementaryProducts';
 import { checkWishstatus } from '@/lib/actions/wishlist';
 import { getReviews } from '@/lib/actions/review';
 import { Metadata } from 'next';
+import { getSession } from '@/lib/auth';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
@@ -23,44 +21,47 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     if (!product) return { title: 'Product Not Found' };
 
     return {
-        title: product.metaTitle || `${product.name} | Thulasi Textiles`,
-        description: product.metaDescription || product.description.substring(0, 160),
+        title: `${product.name} | Thulasi Textiles`,
+        description: product.metaDescription || product.description.slice(0, 160),
     };
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
-    const { data: product } = await getProductBySlug(slug);
+    const [productResult, session] = await Promise.all([
+        getProductBySlug(slug),
+        getSession()
+    ]);
+
+    const product = productResult.success ? productResult.data : null;
 
     if (!product) {
         notFound();
     }
 
-    // Parallel fetching for remaining data
-    const [wishStatus, session, reviewsResult] = await Promise.all([
-        checkWishstatus(product.id),
-        getSession(),
-        getReviews(product.id)
-    ]);
+    const { isWishlisted } = await checkWishstatus(product.id);
+    const reviewsResult = await getReviews(product.id);
 
-    const isWishlisted = wishStatus.isWishlisted;
-
-    // Parse artisan images
-    const artisanImages = (() => {
-        if (!product.artisanImage) return [];
+    // Parse dedicated artisan images if they exist, otherwise fallback to product images
+    let artisanImages: string[] = [];
+    if (product.artisanImage) {
         try {
             const parsed = JSON.parse(product.artisanImage);
-            return Array.isArray(parsed) ? parsed : [product.artisanImage];
+            artisanImages = Array.isArray(parsed) ? parsed : [parsed];
         } catch (e) {
-            return [product.artisanImage];
+            artisanImages = [product.artisanImage];
         }
-    })();
+    }
+
+    if (artisanImages.length === 0) {
+        artisanImages = product.images.map((img: any) => img.url);
+    }
 
     return (
         <div className="bg-white min-h-screen">
             {/* Breadcrumbs - Static */}
             <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 relative z-40 transition-all duration-300 hidden lg:block">
-                <div className="max-w-[1700px] mx-auto px-6 py-1">
+                <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-1">
                     <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
                         <Link href="/" className="hover:text-orange-600 transition-colors">Home</Link>
                         <ChevronRight className="w-3.5 h-3.5 text-gray-200" />
@@ -82,28 +83,38 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
 
             <main className="pb-4 pt-1">
-                <div className="max-w-[1700px] mx-auto px-6 py-1 lg:py-2">
-                    {/* The 3-Column Grid is now inside ProductInteraction for better state control */}
-                    <ProductInteraction product={product} isWishlisted={isWishlisted} />
+                <div className="max-w-[1500px] mx-auto px-4 md:px-6 lg:px-8 py-1 lg:py-4">
+                    <ProductInteraction product={product} isWishlisted={isWishlisted} session={session} />
 
-                    {/* Dynamic Artisan Story Section (Full Width across Info/Images columns) */}
-                    <div className="grid grid-cols-1 lg:grid-cols-[7.5fr_2.5fr] gap-6">
-                        <div className="space-y-8">
+                    <div className="space-y-16 lg:space-y-24 mt-12 lg:mt-20">
+                        <div className="space-y-12">
                             {(product.artisanStory || artisanImages.length > 0) && (
-                                <section className="relative h-[400px] rounded-sm overflow-hidden group shadow-sm">
-                                    {/* For multiple images, we show the first one but acknowledge the "listing" by using a fade/carousel effect in the future. 
-                                        For now, we fulfill the "banners" requirement by supporting multiple uploads. */}
-                                    <Image
-                                        src={artisanImages[0] || "/placeholder-product.png"}
-                                        alt="The Artisan Story"
-                                        fill
-                                        className="object-cover transition-transform duration-[2000ms] group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/20 flex items-center p-12 lg:p-24">
+                                <section className="relative h-[400px] rounded-sm overflow-hidden group shadow-sm bg-black">
+                                    {product.videoUrl ? (
+                                        <div className="absolute inset-0 z-0">
+                                            <video
+                                                src={product.videoUrl}
+                                                autoPlay
+                                                muted
+                                                loop
+                                                playsInline
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-black/40" />
+                                        </div>
+                                    ) : (
+                                        <Image
+                                            src={artisanImages[0] || "/placeholder-product.png"}
+                                            alt="The Artisan Story"
+                                            fill
+                                            className="object-cover transition-transform duration-[2000ms] group-hover:scale-105"
+                                        />
+                                    )}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/20 flex items-center p-12 lg:p-24 z-10">
                                         <div className="max-w-2xl space-y-8">
                                             <div className="flex items-center gap-4">
                                                 <span className="text-orange-500 font-black uppercase tracking-[0.5em] text-xs">The Heritage Story</span>
-                                                {artisanImages.length > 1 && (
+                                                {artisanImages.length > 1 && !product.videoUrl && (
                                                     <span className="bg-orange-500/20 text-orange-500 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-orange-500/30">
                                                         {artisanImages.length} Fold Listing
                                                     </span>
@@ -117,11 +128,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                             </p>
                                         </div>
                                     </div>
-
-                                    {/* Multi-image indicator for "listing" feel */}
-                                    {artisanImages.length > 1 && (
+                                    {artisanImages.length > 1 && !product.videoUrl && (
                                         <div className="absolute bottom-12 right-12 flex gap-3 z-20">
-                                            {artisanImages.map((_, i) => (
+                                            {artisanImages.map((_: string, i: number) => (
                                                 <div key={i} className={`w-12 h-1 rounded-full ${i === 0 ? 'bg-orange-600' : 'bg-white/30'}`} />
                                             ))}
                                         </div>
@@ -202,42 +211,53 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                 </div>
                             </div>
                         </div>
-                        <div className="hidden lg:block h-full border-l border-gray-100 pl-12" />
+
+                        {/* Marketplace Strategy Sections */}
+                        <div className="pt-8">
+                            <ProductDetailedFeatures product={product} />
+                        </div>
+
+                        {/* Complete The Look */}
+                        {product.complementaryProducts && product.complementaryProducts.length > 0 && (
+                            <div className="pt-16 border-t border-gray-100">
+                                <ComplementaryProducts products={product.complementaryProducts} />
+                            </div>
+                        )}
+
+                        {/* Recommended Products */}
+                        <RelatedProducts
+                            productId={product.id}
+                            categoryId={product.category.id}
+                            fabric={product.fabric || undefined}
+                            session={session}
+                        />
+
+                        {/* Customer Reviews Section */}
+                        <section className="mt-16 pt-16 border-t border-gray-100">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12">
+                                <div>
+                                    <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Customer Reviews</h2>
+                                    <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-[0.2em] font-black">Authentication feedback from our community</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-[4fr_6fr] gap-12 items-start">
+                                <div>
+                                    {session ? (
+                                        <ReviewForm productId={product.id} />
+                                    ) : (
+                                        <div className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 text-center">
+                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">You must be logged in to leave a review.</p>
+                                            <Link href="/login" className="inline-block bg-black text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all hover:bg-orange-600">Login to Review</Link>
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <ReviewList reviews={reviewsResult.success ? reviewsResult.data : []} />
+                                </div>
+                            </div>
+                        </section>
                     </div>
-
-                    {/* Recommended Products */}
-                    <RelatedProducts
-                        productId={product.id}
-                        categoryId={product.category.id}
-                        fabric={product.fabric || undefined}
-                        session={session}
-                    />
-
-                    {/* Customer Reviews Section */}
-                    <section className="mt-24 pt-16 border-t border-gray-100">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12">
-                            <div>
-                                <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Customer Reviews</h2>
-                                <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-[0.2em] font-black">Authentication feedback from our community</p>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-[4fr_6fr] gap-12 items-start">
-                            <div>
-                                {session ? (
-                                    <ReviewForm productId={product.id} />
-                                ) : (
-                                    <div className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 text-center">
-                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">You must be logged in to leave a review.</p>
-                                        <Link href="/login" className="inline-block bg-black text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all hover:bg-orange-600">Login to Review</Link>
-                                    </div>
-                                )}
-                            </div>
-                            <div>
-                                <ReviewList reviews={reviewsResult.success ? reviewsResult.data : []} />
-                            </div>
-                        </div>
-                    </section>
                 </div>
             </main>
         </div>

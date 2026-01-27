@@ -50,7 +50,7 @@ export default function CountdownBanner({ banner }: CountdownBannerProps) {
     if (!timeLeft) return null;
 
     return (
-        <section className="my-16 px-4 lg:px-6">
+        <section className="my-16 px-4 sm:px-8 md:px-12 lg:px-20 space-y-12">
             <div
                 className="max-w-[1700px] mx-auto rounded-[3rem] overflow-hidden relative shadow-2xl border border-white/10"
                 style={{ backgroundColor: banner.backgroundColor || '#000000' }}

@@ -2,7 +2,7 @@
 export default function PrivacyPolicyPage() {
     return (
         <div className="bg-gray-50 min-h-screen py-12">
-            <div className="max-w-[1700px] mx-auto px-4 lg:px-6">
+            <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20">
                 <h1 className="text-4xl font-black text-gray-900 mb-8 border-b-4 border-orange-600 pb-4 inline-block">Privacy Policy</h1>
 
                 <div className="space-y-8 text-gray-600 leading-relaxed">

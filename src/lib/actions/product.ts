@@ -29,9 +29,15 @@ export async function createProduct(formData: FormData) {
 
     const metaTitle = formData.get('metaTitle') as string;
     const metaDescription = formData.get('metaDescription') as string;
+    const heritageTitle = formData.get('heritageTitle') as string;
+    const qualityAuditStr = formData.get('qualityAudit') as string;
+    const videoUrl = formData.get('videoUrl') as string;
+    const complementaryProductIdsStr = formData.get('complementaryProducts') as string;
 
     const images = imagesStr ? JSON.parse(imagesStr) : [];
     const variants = variantsStr ? JSON.parse(variantsStr) : [];
+    const qualityAudit = qualityAuditStr ? JSON.parse(qualityAuditStr) : null;
+    const complementaryProductIds = complementaryProductIdsStr ? JSON.parse(complementaryProductIdsStr) : [];
 
     if (!name || isNaN(price) || !categoryId) {
         throw new Error('Missing required fields');
@@ -59,8 +65,14 @@ export async function createProduct(formData: FormData) {
                 weave,
                 origin,
                 occasion,
-                // metaTitle, // Uncomment after running: npx prisma db push
-                // metaDescription,
+                heritageTitle,
+                qualityAudit,
+                metaTitle,
+                metaDescription,
+                videoUrl,
+                complementaryProducts: {
+                    connect: complementaryProductIds.map((id: string) => ({ id }))
+                },
                 images: {
                     create: images.map((url: string, index: number) => ({
                         url,
@@ -354,7 +366,13 @@ export const getProductBySlug = cache(async (slug: string) => {
                         reviews: {
                             where: { isPublic: true },
                             select: { rating: true }
-                        }
+                        },
+                        /* complementaryProducts: {
+                            include: {
+                                images: { take: 1 },
+                                variants: { take: 1 }
+                            }
+                        } */
                     }
                 });
                 if (!product) return { success: true, data: null };
@@ -373,7 +391,15 @@ export const getProductBySlug = cache(async (slug: string) => {
                         ...v,
                         price: Number(v.price),
                         discount: v.discount ? Number(v.discount) : 0
-                    }))
+                    })),
+                    /* complementaryProducts: product.complementaryProducts.map((p: any) => ({
+                        ...p,
+                        basePrice: Number(p.basePrice),
+                        variants: p.variants?.map((v: any) => ({
+                            ...v,
+                            price: Number(v.price)
+                        })) || []
+                    })) */
                 };
 
                 return { success: true, data: serializedProduct as any };
@@ -400,7 +426,13 @@ export const getProductById = cache(async (id: string) => {
                         reviews: {
                             where: { isPublic: true },
                             select: { rating: true }
-                        }
+                        },
+                        /* complementaryProducts: {
+                            select: {
+                                id: true,
+                                name: true
+                            }
+                        } */
                     }
                 });
                 if (!product) return { success: true, data: null };
@@ -454,9 +486,16 @@ export async function updateProduct(id: string, formData: FormData) {
     const origin = formData.get('origin') as string | null;
     const occasion = formData.get('occasion') as string | null;
     const metaTitle = formData.get('metaTitle') as string | null;
+    const metaDescription = formData.get('metaDescription') as string | null;
+    const heritageTitle = formData.get('heritageTitle') as string | null;
+    const qualityAuditStr = formData.get('qualityAudit') as string | null;
+    const videoUrl = formData.get('videoUrl') as string | null;
+    const complementaryProductIdsStr = formData.get('complementaryProducts') as string | null;
 
     const images = imagesStr ? JSON.parse(imagesStr) : [];
     const variants = variantsStr ? JSON.parse(variantsStr) : [];
+    const qualityAudit = qualityAuditStr ? JSON.parse(qualityAuditStr) : null;
+    const complementaryProductIds = complementaryProductIdsStr ? JSON.parse(complementaryProductIdsStr) : [];
 
     if (!name || isNaN(price) || !categoryId) {
         throw new Error('Missing required fields');
@@ -484,8 +523,15 @@ export async function updateProduct(id: string, formData: FormData) {
                 weave,
                 origin,
                 occasion,
-                // metaTitle, // Uncomment after running: npx prisma db push
-                // metaDescription,
+                heritageTitle,
+                qualityAudit,
+                metaTitle,
+                metaDescription,
+                videoUrl,
+                complementaryProducts: {
+                    set: [],
+                    connect: complementaryProductIds.map((id: string) => ({ id }))
+                },
                 images: {
                     deleteMany: {},
                     create: images.map((url: string, index: number) => ({
@@ -530,6 +576,147 @@ export async function deleteProduct(id: string) {
         return { success: false, error: 'Failed to delete product' };
     }
 }
+
+// ============================================
+// RELATED PRODUCTS ACTIONS
+// ============================================
+
+/**
+ * Get product with its related products included
+ */
+export async function getProductWithRelated(slug: string) {
+    try {
+        const product = await prismadb.product.findUnique({
+            where: { slug },
+            include: {
+                images: true,
+                variants: true,
+                category: true,
+                complementaryProducts: {
+                    where: { isActive: true },
+                    include: {
+                        images: {
+                            where: { isPrimary: true }
+                        },
+                        variants: {
+                            take: 1
+                        }
+                    },
+                    take: 6 // Limit to 6 related products
+                }
+            }
+        });
+
+        if (!product) {
+            return { success: false, error: 'Product not found' };
+        }
+
+        return { success: true, data: product };
+    } catch (error) {
+        console.error('Failed to fetch product with related:', error);
+        return { success: false, error: 'Failed to fetch product' };
+    }
+}
+
+/**
+ * Update related products for a given product
+ */
+export async function updateRelatedProducts(productId: string, relatedProductIds: string[]) {
+    try {
+        // Disconnect all existing relationships
+        await prismadb.product.update({
+            where: { id: productId },
+            data: {
+                complementaryProducts: {
+                    set: [] // Clear all existing relationships
+                }
+            }
+        });
+
+        // Connect new relationships
+        await prismadb.product.update({
+            where: { id: productId },
+            data: {
+                complementaryProducts: {
+                    connect: relatedProductIds.map(id => ({ id }))
+                }
+            }
+        });
+
+        revalidatePath('/admin/products', 'page');
+        revalidatePath('/', 'layout');
+        revalidateTag('products', 'default');
+        // revalidateTag('products', 'layout');
+
+        return { success: true, message: 'Related products updated successfully' };
+    } catch (error) {
+        console.error('Failed to update related products:', error);
+        return { success: false, error: 'Failed to update related products' };
+    }
+}
+
+/**
+ * Get available products that can be linked as related products
+ * Excludes the current product and already linked products
+ */
+export async function getAvailableRelatedProducts(productId: string, searchQuery?: string) {
+    try {
+        // First get the current product with its existing relationships
+        const currentProduct = await prismadb.product.findUnique({
+            where: { id: productId },
+            include: {
+                complementaryProducts: {
+                    select: { id: true }
+                }
+            }
+        });
+
+        if (!currentProduct) {
+            return { success: false, error: 'Product not found' };
+        }
+
+        // Get IDs of already linked products
+        const excludedIds = [
+            productId, // Exclude self
+            ...currentProduct.complementaryProducts.map(p => p.id)
+        ];
+
+        // Build search filter
+        const where: any = {
+            id: { notIn: excludedIds },
+            isActive: true
+        };
+
+        if (searchQuery) {
+            where.OR = [
+                { name: { contains: searchQuery, mode: 'insensitive' } },
+                { description: { contains: searchQuery, mode: 'insensitive' } }
+            ];
+        }
+
+        // Fetch available products
+        const availableProducts = await prismadb.product.findMany({
+            where,
+            include: {
+                images: {
+                    where: { isPrimary: true },
+                    take: 1
+                },
+                category: {
+                    select: { name: true }
+                }
+            },
+            take: 20, // Limit results for performance
+            orderBy: { name: 'asc' }
+        });
+
+        return { success: true, data: availableProducts };
+    } catch (error) {
+        console.error('Failed to fetch available related products:', error);
+        return { success: false, error: 'Failed to fetch available products' };
+    }
+}
+
 
 export const getQuickSearch = cache(async (query: string) => {
     if (!query || query.length < 2) return { success: true, data: [] };

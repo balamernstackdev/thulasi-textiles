@@ -8,7 +8,7 @@ import { Category } from '@prisma/client';
 export default function Footer({ categories }: { categories: any[] }) {
     return (
         <footer className="bg-[#131921] text-white pt-12 pb-6 mt-12">
-            <div className="max-w-[1700px] mx-auto px-6">
+            <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20">
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                     {/* Column 1: Brand & Contact */}

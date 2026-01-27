@@ -13,6 +13,8 @@ import { getCategoriesTree } from '@/lib/actions/category';
 import { getSession } from '@/lib/auth';
 import AnnouncementTicker from '@/components/shop/AnnouncementTicker';
 import CountdownBanner from '@/components/shop/CountdownBanner';
+import HeritageQuiz from '@/components/shop/HeritageQuiz';
+import HeritageChronicles from '@/components/shop/HeritageChronicles';
 
 // export const revalidate = 3600;
 
@@ -121,8 +123,12 @@ export default async function ShopHome() {
       {/* Announcement Bar moved to Navbar/Layout */}
 
       {/* Main Home Banners - High Priority */}
-      <div className="relative z-10 w-full">
-        <Banner banners={mainBanners} type="section" />
+      <div className="relative z-10 w-full px-4 sm:px-8 md:px-12 lg:px-20 pt-4">
+        <div className="max-w-[1700px] mx-auto">
+          <div className="rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-lg md:shadow-2xl">
+            <Banner banners={mainBanners} />
+          </div>
+        </div>
       </div>
 
       {/* Marketing Trust Bar */}
@@ -134,8 +140,11 @@ export default async function ShopHome() {
       {/* Visual Category Grid - Dynamic */}
       <CategoryGrid categories={topCategories} />
 
+      {/* Modern Style Quiz - Find Your Weave */}
+      <HeritageQuiz />
+
       {/* Featured Section with Sidebar Promos */}
-      <div className="max-w-[1700px] mx-auto px-4 lg:px-6 py-12">
+      <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
             {latestProducts.length > 0 && (
@@ -167,9 +176,12 @@ export default async function ShopHome() {
         <OfferSection session={session} />
       </Suspense>
 
+      {/* Heritage Stories Blog Preview */}
+      <HeritageChronicles />
+
       {/* Newsletter / Footer Promo */}
       <section className="bg-orange-600 py-24 mt-12 overflow-hidden relative">
-        <div className="max-w-[1700px] mx-auto px-4 lg:px-6 text-center relative z-10">
+        <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 text-center relative z-10">
           <h2 className="text-3xl md:text-5xl font-black text-white mb-4 uppercase tracking-tighter italic leading-none">Stay in the Loop</h2>
           <p className="text-white/80 font-medium mb-12 max-w-xl mx-auto">Subscribe for exclusive collection drops, artisan stories, and heritage weave updates.</p>
           <NewsletterForm />
