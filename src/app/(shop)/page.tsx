@@ -49,7 +49,7 @@ interface BannerItem {
 async function CategoryProductSections({ topCategories, session, bestSellerBanners, offerBanners }: any) {
   const categorySections = await Promise.all(
     topCategories.map(async (cat: any) => {
-      const { data: products } = await getProducts({ categorySlug: cat.slug, limit: 4 });
+      const { data: products } = await getProducts({ categorySlug: cat.slug, limit: 6 });
       return { category: cat, products: products || [] };
     })
   );
@@ -82,7 +82,7 @@ async function CategoryProductSections({ topCategories, session, bestSellerBanne
 
 // Separate component for streaming offers
 async function OfferSection({ session }: { session: any }) {
-  const { data: offerProducts } = await getProducts({ isOffer: true, limit: 4 });
+  const { data: offerProducts } = await getProducts({ isOffer: true, limit: 6 });
 
   if (!offerProducts || offerProducts.length === 0) return null;
 
@@ -105,7 +105,7 @@ export default async function ShopHome() {
   const topCategories = (categories || []).slice(0, 4);
 
   const { data: allBanners = [] } = await getBanners({ isActive: true, pageSize: 50 });
-  const { data: latestProducts = [] } = await getProducts({ isNew: true, limit: 10 });
+  const { data: latestProducts = [] } = await getProducts({ isNew: true, limit: 12 });
   const session = await getSession();
 
   const typedBanners = (allBanners as any[]) as BannerItem[];
@@ -151,9 +151,7 @@ export default async function ShopHome() {
 
         {/* Latest Products - Full Width */}
         {latestProducts.length > 0 && (
-          <div className="bg-white rounded-[2.5rem] p-4 md:p-10 shadow-sm border border-gray-100">
-            <LatestProducts products={latestProducts} session={session} />
-          </div>
+          <LatestProducts products={latestProducts} session={session} />
         )}
       </div>
 

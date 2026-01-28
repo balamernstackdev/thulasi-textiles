@@ -5,10 +5,13 @@ import Link from 'next/link';
 import { User, ShoppingBag, Heart, LogOut, ChevronDown, Settings } from 'lucide-react';
 import { logout } from '@/lib/actions/auth';
 import { useRouter } from 'next/navigation';
+import { useWishlistStore } from '@/lib/store/wishlist';
 
 export default function UserMenu({ session }: { session: any }) {
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
+    const { wishlistIds } = useWishlistStore();
+    const wishlistCount = wishlistIds.length;
 
     if (!session) {
         return (
@@ -50,6 +53,11 @@ export default function UserMenu({ session }: { session: any }) {
             {/* Wishlist Icon - Hidden on very small screens */}
             <Link href="/wishlist" className="relative p-1.5 sm:p-2 hover:bg-gray-50 rounded-lg sm:rounded-xl transition-colors group hidden xxs:block">
                 <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-orange-600 transition-colors" />
+                {wishlistCount > 0 && (
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-orange-600 text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-white">
+                        {wishlistCount}
+                    </span>
+                )}
             </Link>
 
             {/* User Dropdown */}

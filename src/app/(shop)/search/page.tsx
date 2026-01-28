@@ -44,7 +44,7 @@ export default async function SearchPage({
 
     const sort = params.sort;
     const categorySlug = params.category;
-    const pageSize = 12;
+    const pageSize = 15;
 
     const [productsResult, categoriesResult, filterAttributesResult, bannersResult, session] = await Promise.all([
         getProducts({
@@ -111,9 +111,12 @@ export default async function SearchPage({
                         {/* Title & Stats */}
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                             <div>
-                                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 uppercase italic tracking-tighter">
-                                    {query ? `Results for "${query}"` : 'All Products'}
+                                <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase italic leading-none mb-4">
+                                    {(query ? `Results for "${query}"` : 'All Products').split(' ')[0]} <span className="text-orange-600">{(query ? `Results for "${query}"` : 'All Products').split(' ').slice(1).join(' ')}</span>
                                 </h1>
+                                <p className="text-gray-500 font-bold uppercase tracking-[0.3em] text-[10px] mb-2">
+                                    Browse our extensive textile collection
+                                </p>
                                 <p className="text-sm text-gray-500 mt-1">
                                     {pagination?.total || 0} Products found
                                 </p>
@@ -127,7 +130,7 @@ export default async function SearchPage({
                         {/* Product Grid */}
                         {products && products.length > 0 ? (
                             <>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
                                     {products.map((product: any) => (
                                         <ProductCard key={product.id} product={product} session={session} />
                                     ))}

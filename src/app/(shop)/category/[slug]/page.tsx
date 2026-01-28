@@ -108,7 +108,14 @@ export default async function CategoryPage({
                         {/* Title & Sorting */}
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                             <div>
-                                <h1 className="text-3xl md:text-5xl font-serif text-gray-900 leading-none mb-2">{category?.name}</h1>
+                                <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase italic leading-none mb-4">
+                                    {(category?.name || 'Category').split(' ')[0]} <span className="text-orange-600">{(category?.name || 'Category').split(' ').slice(1).join(' ')}</span>
+                                </h1>
+                                {(category && 'description' in category && category.description) && (
+                                    <p className="text-gray-500 font-bold uppercase tracking-[0.3em] text-[10px] mb-2">
+                                        {category.description as string}
+                                    </p>
+                                )}
                                 <p className="text-sm text-gray-500 mt-1">
                                     {pagination?.total || 0} Products found
                                 </p>
@@ -122,7 +129,7 @@ export default async function CategoryPage({
                         {/* Product Grid */}
                         {products && products.length > 0 ? (
                             <>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-x-6 gap-y-12">
+                                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
                                     {products.map((product: any) => (
                                         <ProductCard key={product.id} product={product} session={session} />
                                     ))}

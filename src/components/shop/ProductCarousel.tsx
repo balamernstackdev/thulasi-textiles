@@ -99,7 +99,7 @@ export default function ProductCarousel({ products, title, session }: ProductCar
                 {products.map((product) => (
                     <div
                         key={product.id}
-                        className="min-w-[180px] md:min-w-[210px] lg:min-w-[230px] snap-start"
+                        className="min-w-[150px] md:min-w-[180px] lg:min-w-[200px] snap-start"
                     >
                         <ProductCard product={product} session={session} />
                     </div>

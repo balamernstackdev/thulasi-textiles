@@ -47,7 +47,7 @@ export default async function CollectionPage({
 
     const sParams = await searchParams;
     const page = parseInt(sParams.page || '1');
-    const pageSize = 12;
+    const pageSize = 15;
 
     const [productsResult, session] = await Promise.all([
         getProducts({
@@ -79,7 +79,12 @@ export default async function CollectionPage({
                     {/* Header */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-3xl font-extrabold text-gray-900 uppercase tracking-tighter italic">{config.title}</h1>
+                            <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase italic leading-none mb-4">
+                                {config.title.split(' ')[0]} <span className="text-orange-600">{config.title.split(' ').slice(1).join(' ')}</span>
+                            </h1>
+                            <p className="text-gray-500 font-bold uppercase tracking-[0.3em] text-[10px] mb-2">
+                                Curated Selection for {config.breadcrumb}
+                            </p>
                             <p className="text-sm text-gray-500 mt-1">
                                 {pagination?.total || 0} Products in this collection
                             </p>
@@ -95,7 +100,7 @@ export default async function CollectionPage({
                     {/* Product Grid */}
                     {products && products.length > 0 ? (
                         <>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6">
                                 {products.map((product: any) => (
                                     <ProductCard key={product.id} product={product} session={session} />
                                 ))}

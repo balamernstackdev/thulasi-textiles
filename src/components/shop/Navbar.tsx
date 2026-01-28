@@ -7,6 +7,8 @@ import { Search, ShoppingCart, Menu, User, MapPin, X, ChevronRight, ChevronDown,
 import { Category } from '@prisma/client';
 import UserMenu from './UserMenu';
 import { getQuickSearch } from '@/lib/actions/product';
+import { getWishlist } from '@/lib/actions/wishlist';
+import { useWishlistStore } from '@/lib/store/wishlist';
 import AnnouncementTicker from './AnnouncementTicker';
 
 type CategoryWithChildren = Category & { children: Category[] };
@@ -24,6 +26,23 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
     const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
+    const { setWishlist } = useWishlistStore();
+
+    // Sync Wishlist on mount/session change
+    useEffect(() => {
+        if (session) {
+            const syncWishlist = async () => {
+                const result = await getWishlist();
+                if (result.success && result.data) {
+                    const ids = result.data.map((item: any) => item.productId);
+                    setWishlist(ids);
+                }
+            };
+            syncWishlist();
+        } else {
+            setWishlist([]);
+        }
+    }, [session, setWishlist]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

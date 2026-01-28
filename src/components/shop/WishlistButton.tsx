@@ -5,22 +5,18 @@ import { Heart } from 'lucide-react';
 import { toggleWishlist } from '@/lib/actions/wishlist';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useWishlistStore } from '@/lib/store/wishlist';
 
 export default function WishlistButton({ productId, initialState }: { productId: string; initialState: boolean }) {
-    const [isWishlisted, setIsWishlisted] = useState(initialState);
+    const { toggleWishlist: toggleInStore, isInWishlist } = useWishlistStore();
+    const isWishlisted = isInWishlist(productId);
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
     const handleToggle = async () => {
-        // Optimistic update
-        const nextState = !isWishlisted;
-        setIsWishlisted(nextState);
-
         startTransition(async () => {
-            const result = await toggleWishlist(productId);
+            const result = await toggleInStore(productId);
             if (!result.success) {
-                // Revert on failure
-                setIsWishlisted(!nextState);
                 if (result.error === 'Not authenticated') {
                     toast.error('Please login to save your wishlist');
                     router.push('/login');
