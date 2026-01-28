@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Check, X, ChevronDown, ChevronUp } from 'lucide-react';
@@ -16,19 +16,20 @@ interface ProductFiltersProps {
     };
 }
 
-export default function ProductFilters({ categories = [], filterAttributes }: ProductFiltersProps) {
+export default function ProductFilters({ categories = [], filterAttributes, isMobile = false, onClose }: ProductFiltersProps & { isMobile?: boolean, onClose?: () => void }) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    // Parse initial values from URL
-    const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
-    const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
-    const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
-    const [selectedSizes, setSelectedSizes] = useState<string[]>(searchParams.get('sizes')?.split(',') || []);
-    const [selectedColors, setSelectedColors] = useState<string[]>(searchParams.get('colors')?.split(',') || []);
-    const [selectedMaterials, setSelectedMaterials] = useState<string[]>(searchParams.get('materials')?.split(',') || []);
-    const [selectedFabrics, setSelectedFabrics] = useState<string[]>(searchParams.get('fabrics')?.split(',') || []);
-    const [selectedOccasions, setSelectedOccasions] = useState<string[]>(searchParams.get('occasions')?.split(',') || []);
+    const [localFilters, setLocalFilters] = useState({
+        minPrice: searchParams.get('minPrice') || '',
+        maxPrice: searchParams.get('maxPrice') || '',
+        category: searchParams.get('category') || '',
+        sizes: searchParams.get('sizes')?.split(',').filter(Boolean) || [],
+        colors: searchParams.get('colors')?.split(',').filter(Boolean) || [],
+        materials: searchParams.get('materials')?.split(',').filter(Boolean) || [],
+        fabrics: searchParams.get('fabrics')?.split(',').filter(Boolean) || [],
+        occasions: searchParams.get('occasions')?.split(',').filter(Boolean) || []
+    });
 
     const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
         categories: true,
@@ -40,45 +41,44 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
         occasions: false
     });
 
-    // Sync state with URL
     useEffect(() => {
-        setMinPrice(searchParams.get('minPrice') || '');
-        setMaxPrice(searchParams.get('maxPrice') || '');
-        setSelectedCategory(searchParams.get('category') || '');
-        setSelectedSizes(searchParams.get('sizes')?.split(',').filter(Boolean) || []);
-        setSelectedColors(searchParams.get('colors')?.split(',').filter(Boolean) || []);
-        setSelectedMaterials(searchParams.get('materials')?.split(',').filter(Boolean) || []);
-        setSelectedFabrics(searchParams.get('fabrics')?.split(',').filter(Boolean) || []);
-        setSelectedOccasions(searchParams.get('occasions')?.split(',').filter(Boolean) || []);
+        setLocalFilters({
+            minPrice: searchParams.get('minPrice') || '',
+            maxPrice: searchParams.get('maxPrice') || '',
+            category: searchParams.get('category') || '',
+            sizes: searchParams.get('sizes')?.split(',').filter(Boolean) || [],
+            colors: searchParams.get('colors')?.split(',').filter(Boolean) || [],
+            materials: searchParams.get('materials')?.split(',').filter(Boolean) || [],
+            fabrics: searchParams.get('fabrics')?.split(',').filter(Boolean) || [],
+            occasions: searchParams.get('occasions')?.split(',').filter(Boolean) || []
+        });
     }, [searchParams]);
 
-    const updateUrl = useCallback((newParams: Record<string, string | string[] | null>) => {
+    const handleApplyFilters = () => {
         const params = new URLSearchParams(searchParams.toString());
 
-        Object.entries(newParams).forEach(([key, value]) => {
-            if (value === null || value === '' || (Array.isArray(value) && value.length === 0)) {
+        Object.entries(localFilters).forEach(([key, value]) => {
+            if (!value || (Array.isArray(value) && value.length === 0)) {
                 params.delete(key);
             } else if (Array.isArray(value)) {
                 params.set(key, value.join(','));
             } else {
-                params.set(key, value);
+                params.set(key, value as string);
             }
         });
 
         params.set('page', '1');
         router.push(`?${params.toString()}`);
-    }, [searchParams, router]);
-
-    const handleApplyPrice = () => {
-        updateUrl({ minPrice, maxPrice });
+        if (onClose) onClose();
     };
 
-    const toggleAttribute = (value: string, current: string[], setter: (val: string[]) => void, key: string) => {
+    const toggleAttribute = (value: string, key: keyof typeof localFilters) => {
+        const current = localFilters[key] as string[];
         const next = current.includes(value)
             ? current.filter(v => v !== value)
             : [...current, value];
-        setter(next);
-        updateUrl({ [key]: next });
+
+        setLocalFilters(prev => ({ ...prev, [key]: next }));
     };
 
     const toggleGroup = (group: string) => {
@@ -86,26 +86,40 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
     };
 
     const clearAll = () => {
+        setLocalFilters({
+            minPrice: '',
+            maxPrice: '',
+            category: '',
+            sizes: [],
+            colors: [],
+            materials: [],
+            fabrics: [],
+            occasions: []
+        });
         router.push(window.location.pathname);
+        if (onClose) onClose();
     };
 
     const hasActiveFilters = searchParams.toString().length > 0;
 
     return (
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+        <div className={`bg-white ${isMobile ? '' : 'p-6 rounded-3xl shadow-sm border border-gray-100 mb-8 max-h-[calc(100vh-120px)]'} overflow-y-auto custom-scrollbar flex flex-col h-full`}>
             <div className="flex items-center justify-between mb-8 sticky top-0 bg-white z-10 py-2">
-                <h3 className="text-xs font-black text-gray-600 uppercase tracking-[0.2em]">Filters</h3>
+                <div>
+                    <h3 className="text-xs font-black text-gray-600 uppercase tracking-[0.2em]">Matrix Filters</h3>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Refine your selection</p>
+                </div>
                 {hasActiveFilters && (
                     <button
                         onClick={clearAll}
-                        className="text-[10px] font-black text-orange-600 uppercase tracking-widest hover:underline flex items-center gap-1"
+                        className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline flex items-center gap-1"
                     >
-                        <X className="w-3 h-3" /> Clear All
+                        <X className="w-3 h-3" /> Reset
                     </button>
                 )}
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-8 flex-grow">
                 {/* Categories */}
                 {categories.length > 0 && (
                     <FilterGroup title="Categories" isExpanded={expandedGroups.categories} onToggle={() => toggleGroup('categories')}>
@@ -113,11 +127,11 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                             {categories.map((cat) => (
                                 <button
                                     key={cat.id}
-                                    onClick={() => updateUrl({ category: selectedCategory === cat.slug ? null : cat.slug })}
-                                    className={`w-full text-left flex items-center justify-between group py-2 px-3 rounded-xl transition-all ${selectedCategory === cat.slug ? 'text-orange-600 bg-orange-50 font-black' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 font-bold'}`}
+                                    onClick={() => setLocalFilters(prev => ({ ...prev, category: prev.category === cat.slug ? '' : cat.slug }))}
+                                    className={`w-full text-left flex items-center justify-between group py-2.5 px-3 rounded-xl transition-all ${localFilters.category === cat.slug ? 'text-orange-600 bg-orange-50 font-black scale-[1.02]' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 font-bold'}`}
                                 >
                                     <span className="text-[11px] uppercase tracking-wider">{cat.name}</span>
-                                    {selectedCategory === cat.slug && <Check className="w-3.5 h-3.5" />}
+                                    {localFilters.category === cat.slug && <Check className="w-3.5 h-3.5" />}
                                 </button>
                             ))}
                         </div>
@@ -133,8 +147,8 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                                 <input
                                     type="number"
                                     placeholder="Min"
-                                    value={minPrice}
-                                    onChange={(e) => setMinPrice(e.target.value)}
+                                    value={localFilters.minPrice}
+                                    onChange={(e) => setLocalFilters(prev => ({ ...prev, minPrice: e.target.value }))}
                                     className="w-full text-xs border border-gray-200 bg-white pl-7 pr-3 py-3 rounded-xl focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none font-black placeholder:text-gray-400 text-gray-900"
                                 />
                             </div>
@@ -144,18 +158,12 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                                 <input
                                     type="number"
                                     placeholder="Max"
-                                    value={maxPrice}
-                                    onChange={(e) => setMaxPrice(e.target.value)}
+                                    value={localFilters.maxPrice}
+                                    onChange={(e) => setLocalFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
                                     className="w-full text-xs border border-gray-200 bg-white pl-7 pr-3 py-3 rounded-xl focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none font-black placeholder:text-gray-400 text-gray-900"
                                 />
                             </div>
                         </div>
-                        <Button
-                            onClick={handleApplyPrice}
-                            className="w-full bg-black hover:bg-orange-600 text-white text-[10px] font-black uppercase tracking-widest py-3 rounded-xl transition-all"
-                        >
-                            Apply Price
-                        </Button>
                     </div>
                 </FilterGroup>
 
@@ -166,8 +174,8 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                             {filterAttributes.sizes.map(size => (
                                 <button
                                     key={size}
-                                    onClick={() => toggleAttribute(size, selectedSizes, setSelectedSizes, 'sizes')}
-                                    className={`py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${selectedSizes.includes(size) ? 'bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-gray-700 hover:border-orange-200 hover:text-orange-600'}`}
+                                    onClick={() => toggleAttribute(size, 'sizes')}
+                                    className={`py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${localFilters.sizes.includes(size) ? 'bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-gray-700 hover:border-orange-200 hover:text-orange-600'}`}
                                 >
                                     {size}
                                 </button>
@@ -183,8 +191,8 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                             {filterAttributes.colors.map(color => (
                                 <button
                                     key={color}
-                                    onClick={() => toggleAttribute(color, selectedColors, setSelectedColors, 'colors')}
-                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${selectedColors.includes(color) ? 'bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-gray-700 hover:border-orange-200 hover:text-orange-600'}`}
+                                    onClick={() => toggleAttribute(color, 'colors')}
+                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${localFilters.colors.includes(color) ? 'bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-100' : 'bg-white border-gray-200 text-gray-700 hover:border-orange-200 hover:text-orange-600'}`}
                                 >
                                     {color}
                                 </button>
@@ -200,8 +208,8 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                             {filterAttributes.materials.map(material => (
                                 <button
                                     key={material}
-                                    onClick={() => toggleAttribute(material, selectedMaterials, setSelectedMaterials, 'materials')}
-                                    className={`w-full text-left py-2 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${selectedMaterials.includes(material) ? 'text-orange-600 bg-orange-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
+                                    onClick={() => toggleAttribute(material, 'materials')}
+                                    className={`w-full text-left py-2 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${localFilters.materials.includes(material) ? 'text-orange-600 bg-orange-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
                                 >
                                     {material}
                                 </button>
@@ -217,8 +225,8 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                             {filterAttributes.fabrics.map(fabric => (
                                 <button
                                     key={fabric}
-                                    onClick={() => toggleAttribute(fabric, selectedFabrics, setSelectedFabrics, 'fabrics')}
-                                    className={`w-full text-left py-2 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${selectedFabrics.includes(fabric) ? 'text-orange-600 bg-orange-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
+                                    onClick={() => toggleAttribute(fabric, 'fabrics')}
+                                    className={`w-full text-left py-2 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${localFilters.fabrics.includes(fabric) ? 'text-orange-600 bg-orange-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
                                 >
                                     {fabric}
                                 </button>
@@ -234,8 +242,8 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                             {filterAttributes.occasions.map(occasion => (
                                 <button
                                     key={occasion}
-                                    onClick={() => toggleAttribute(occasion, selectedOccasions, setSelectedOccasions, 'occasions')}
-                                    className={`w-full text-left py-2 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${selectedOccasions.includes(occasion) ? 'text-orange-600 bg-orange-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
+                                    onClick={() => toggleAttribute(occasion, 'occasions')}
+                                    className={`w-full text-left py-2 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${localFilters.occasions.includes(occasion) ? 'text-orange-600 bg-orange-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
                                 >
                                     {occasion}
                                 </button>
@@ -243,6 +251,15 @@ export default function ProductFilters({ categories = [], filterAttributes }: Pr
                         </div>
                     </FilterGroup>
                 )}
+            </div>
+
+            <div className="mt-8 sticky bottom-0 bg-white pt-4 pb-2 border-t border-gray-50 z-20">
+                <Button
+                    onClick={handleApplyFilters}
+                    className="w-full bg-orange-600 hover:bg-black text-white py-6 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all shadow-xl shadow-orange-100"
+                >
+                    Apply Matrix Filters
+                </Button>
             </div>
         </div>
     );

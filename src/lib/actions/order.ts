@@ -4,6 +4,7 @@ import prismadb from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { subDays, startOfDay, endOfDay } from 'date-fns';
+import { sendEmail } from '@/lib/mail';
 
 export async function createOrder(formData: FormData) {
     const session = await getSession();
@@ -63,16 +64,49 @@ export async function createOrder(formData: FormData) {
             });
         }
 
-        // Update stock for each variant
+        // Update stock and check for alerts
+        const settings = await prismadb.storeSettings.findFirst();
+        const adminEmail = settings?.supportEmail || 'support@thulasitextiles.com';
+
         for (const item of cartItems) {
-            await prismadb.productVariant.update({
+            const updatedVariant = await prismadb.productVariant.update({
                 where: { id: item.id },
                 data: {
                     stock: {
                         decrement: item.quantity,
                     },
                 },
+                include: {
+                    product: true
+                }
             });
+
+            // Inventory Alert Trigger
+            if (updatedVariant.stock <= 5) {
+                await sendEmail({
+                    to: adminEmail,
+                    subject: `🚨 Inventory Alert: ${updatedVariant.product.name} is Low!`,
+                    html: `
+                        <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                            <h2 style="color: #e11d48; margin-top: 0;">Low Stock Alert</h2>
+                            <p>The following masterpiece is running out of stock:</p>
+                            <div style="background: #fff1f2; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                                <p style="margin: 0; font-weight: bold; color: #9f1239;">${updatedVariant.product.name}</p>
+                                <p style="margin: 5px 0 0 0; font-size: 14px; color: #e11d48;">
+                                    Remaining Stock: <strong>${updatedVariant.stock} units</strong>
+                                </p>
+                            </div>
+                            <p style="font-size: 13px; color: #666;">
+                                Please restock soon to avoid missing out on potential sales.
+                            </p>
+                            <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/products/${updatedVariant.product.id}/edit" 
+                               style="display: inline-block; background: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 12px; text-transform: uppercase;">
+                               Update Inventory
+                            </a>
+                        </div>
+                    `
+                });
+            }
         }
 
         revalidatePath('/orders');
@@ -159,6 +193,7 @@ export async function getOrderById(orderId: string) {
                                 product: {
                                     include: {
                                         images: { take: 1 },
+                                        artisan: true,
                                     },
                                 },
                             },
@@ -479,9 +514,6 @@ export async function getAdminOrderById(orderId: string) {
     }
 }
 
-import { sendEmail } from '@/lib/mail';
-import { getShippingNotificationTemplate } from '@/lib/mail-templates';
-
 export async function updateOrderStatus(orderId: string, status: string) {
     try {
         const order = await prismadb.order.update({
@@ -541,6 +573,8 @@ export async function updateOrderStatus(orderId: string, status: string) {
         return { success: false, error: 'Failed to update order status' };
     }
 }
+
+import { getShippingNotificationTemplate } from '@/lib/mail-templates';
 
 export async function updateUserRole(userId: string, role: 'ADMIN' | 'CUSTOMER') {
     const session = await getSession();

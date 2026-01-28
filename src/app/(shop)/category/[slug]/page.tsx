@@ -1,4 +1,4 @@
-import { getCategoryBySlug } from '@/lib/actions/category';
+import { getCategoryBySlug, getCategoriesTree } from '@/lib/actions/category';
 import { getProducts, getFilterValues } from '@/lib/actions/product';
 
 export const dynamic = 'force-dynamic';
@@ -10,6 +10,7 @@ import { notFound } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import ProductFilters from '@/components/shop/ProductFilters';
 import ProductSort from '@/components/shop/ProductSort';
+import FilterToggle from '@/components/shop/FilterToggle';
 
 export default async function CategoryPage({
     params,
@@ -30,6 +31,7 @@ export default async function CategoryPage({
 }) {
     const { slug } = await params;
     const isNewPage = slug === 'new-arrivals';
+    const isAllPage = slug === 'all';
     const sParams = await searchParams;
     const page = parseInt(sParams.page || '1');
     const minPrice = sParams.minPrice ? parseFloat(sParams.minPrice) : undefined;
@@ -44,15 +46,18 @@ export default async function CategoryPage({
 
     const pageSize = 15;
 
-    const [{ data: categoryData }, session, filterAttributesResult] = await Promise.all([
-        isNewPage ? Promise.resolve({ success: true, data: { name: 'New Arrivals', slug: 'new-arrivals', parent: null } }) : getCategoryBySlug(slug),
+    const [{ data: categoryData }, session, filterAttributesResult, categoriesTree] = await Promise.all([
+        (isNewPage || isAllPage)
+            ? Promise.resolve({ success: true, data: { name: isNewPage ? 'New Arrivals' : 'All Products', slug, parent: null, description: 'Explore our entire collection of heritage textiles' } })
+            : getCategoryBySlug(slug),
         getSession(),
-        getFilterValues()
+        getFilterValues(),
+        getCategoriesTree()
     ]);
 
     const category = categoryData;
 
-    if (!category && !isNewPage) {
+    if (!category && !isNewPage && !isAllPage) {
         notFound();
     }
 
@@ -122,6 +127,7 @@ export default async function CategoryPage({
                             </div>
 
                             <div className="flex items-center gap-3 self-end md:self-auto">
+                                <FilterToggle categories={categoriesTree?.data || []} filterAttributes={filterAttributes} />
                                 <ProductSort />
                             </div>
                         </div>

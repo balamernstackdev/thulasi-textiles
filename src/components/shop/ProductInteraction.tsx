@@ -6,6 +6,7 @@ import WishlistButton from './WishlistButton';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store/cart';
+import SizeGuideModal from './SizeGuideModal';
 
 interface Variant {
     id: string;
@@ -33,6 +34,7 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
     const [currentIdx, setCurrentIdx] = useState(0);
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
     const [brokenImages, setBrokenImages] = useState<string[]>([]);
+    const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
 
     const currentPrice = Math.round(selectedVariant ? Number(selectedVariant.price) : Number(product.basePrice));
     const originalPrice = Math.round(currentPrice * 1.5);
@@ -209,7 +211,12 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                     <div className="space-y-4 pt-4 border-t border-gray-100">
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-black text-gray-900 uppercase tracking-widest">Select Size</span>
-                            <button className="text-[10px] font-bold text-orange-600 uppercase tracking-widest hover:underline">Size Guide</button>
+                            <button
+                                onClick={() => setIsSizeGuideOpen(true)}
+                                className="text-[10px] font-bold text-orange-600 uppercase tracking-widest hover:underline"
+                            >
+                                Size Guide
+                            </button>
                         </div>
                         <div className="flex flex-wrap gap-3">
                             {ALL_SIZES.map(size => {
@@ -340,6 +347,11 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
 
                     <div className="pt-2 flex items-center justify-center">
                         <WishlistButton productId={product.id} initialState={isWishlisted} />
+                        <SizeGuideModal
+                            isOpen={isSizeGuideOpen}
+                            onClose={() => setIsSizeGuideOpen(false)}
+                            categoryName={product.category.name}
+                        />
                     </div>
                 </div>
             </div>

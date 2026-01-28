@@ -3,15 +3,19 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Trash2, Search, Check } from 'lucide-react';
-import { deleteProducts } from '@/lib/actions/product';
+import { deleteProducts, bulkUpdateProductPrice, bulkToggleProductVisibility } from '@/lib/actions/product';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import DeleteConfirmation from './DeleteConfirmation';
 import DeleteProductButton from './DeleteProductButton';
+import { ChevronDown, Eye, EyeOff, TrendingUp, TrendingDown } from 'lucide-react';
 
 export default function AdminProductTable({ products }: { products: any[] }) {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [pricePercentage, setPricePercentage] = useState(10);
+    const [showBulkMenu, setShowBulkMenu] = useState(false);
     const router = useRouter();
 
     const toggleSelectAll = () => {
@@ -46,6 +50,40 @@ export default function AdminProductTable({ products }: { products: any[] }) {
         }
     };
 
+    const handleBulkPriceUpdate = async (type: 'increase' | 'decrease') => {
+        setIsUpdating(true);
+        try {
+            const result = await bulkUpdateProductPrice(selectedIds, pricePercentage, type);
+            if (result.success) {
+                toast.success(`Prices ${type}d by ${pricePercentage}% for ${selectedIds.length} products`);
+                setSelectedIds([]);
+                router.refresh();
+            } else {
+                toast.error(result.error);
+            }
+        } finally {
+            setIsUpdating(false);
+            setShowBulkMenu(false);
+        }
+    };
+
+    const handleBulkVisibility = async (isActive: boolean) => {
+        setIsUpdating(true);
+        try {
+            const result = await bulkToggleProductVisibility(selectedIds, isActive);
+            if (result.success) {
+                toast.success(`Visibility updated for ${selectedIds.length} products`);
+                setSelectedIds([]);
+                router.refresh();
+            } else {
+                toast.error(result.error);
+            }
+        } finally {
+            setIsUpdating(false);
+            setShowBulkMenu(false);
+        }
+    };
+
     return (
         <div className="bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
             {selectedIds.length > 0 && (
@@ -58,16 +96,72 @@ export default function AdminProductTable({ products }: { products: any[] }) {
                             {selectedIds.length} Products Selected
                         </span>
                     </div>
-                    <DeleteConfirmation
-                        title={`Delete ${selectedIds.length} Products?`}
-                        description={`This action will permanently remove ${selectedIds.length} masterpieces from your collection. This cannot be undone.`}
-                        onConfirm={handleBulkDelete}
-                        trigger={
-                            <button className="flex items-center gap-2 bg-rose-50 text-rose-600 hover:bg-rose-100 px-4 py-2 rounded-xl transition-all font-black text-[10px] uppercase tracking-widest border border-rose-200/50 active:scale-95 disabled:opacity-50" disabled={isDeleting}>
-                                <Trash2 className="w-4 h-4" /> Delete Selected
+                    <div className="flex items-center gap-3">
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowBulkMenu(!showBulkMenu)}
+                                className="flex items-center gap-2 bg-white text-gray-900 px-4 py-2 rounded-xl transition-all font-black text-[10px] uppercase tracking-widest border border-gray-200 hover:border-black active:scale-95 shadow-sm"
+                            >
+                                Bulk Actions <ChevronDown className={`w-3 h-3 transition-transform ${showBulkMenu ? 'rotate-180' : ''}`} />
                             </button>
-                        }
-                    />
+
+                            {showBulkMenu && (
+                                <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-50 animate-in fade-in slide-in-from-top-2">
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Price Adjustment (%)</p>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="number"
+                                                    value={pricePercentage}
+                                                    onChange={(e) => setPricePercentage(Number(e.target.value))}
+                                                    className="w-20 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-xs font-black outline-none focus:border-teal-500"
+                                                />
+                                                <button
+                                                    onClick={() => handleBulkPriceUpdate('increase')}
+                                                    className="flex-1 bg-teal-50 text-teal-600 hover:bg-teal-500 hover:text-white px-3 py-2 rounded-lg text-[9px] font-black uppercase transition-all flex items-center justify-center gap-1"
+                                                >
+                                                    <TrendingUp className="w-3 h-3" /> Lift
+                                                </button>
+                                                <button
+                                                    onClick={() => handleBulkPriceUpdate('decrease')}
+                                                    className="flex-1 bg-orange-50 text-orange-600 hover:bg-orange-500 hover:text-white px-3 py-2 rounded-lg text-[9px] font-black uppercase transition-all flex items-center justify-center gap-1"
+                                                >
+                                                    <TrendingDown className="w-3 h-3" /> Cut
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-4 border-t border-gray-50 flex gap-2">
+                                            <button
+                                                onClick={() => handleBulkVisibility(true)}
+                                                className="flex-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded-lg text-[9px] font-black uppercase transition-all flex items-center justify-center gap-1"
+                                            >
+                                                <Eye className="w-3 h-3" /> Make Public
+                                            </button>
+                                            <button
+                                                onClick={() => handleBulkVisibility(false)}
+                                                className="flex-1 bg-gray-50 text-gray-400 hover:bg-gray-500 hover:text-white px-3 py-2 rounded-lg text-[9px] font-black uppercase transition-all flex items-center justify-center gap-1"
+                                            >
+                                                <EyeOff className="w-3 h-3" /> Go Private
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <DeleteConfirmation
+                            title={`Delete ${selectedIds.length} Products?`}
+                            description={`This action will permanently remove ${selectedIds.length} masterpieces from your collection. This cannot be undone.`}
+                            onConfirm={handleBulkDelete}
+                            trigger={
+                                <button className="flex items-center gap-2 bg-rose-50 text-rose-600 hover:bg-rose-100 px-4 py-2 rounded-xl transition-all font-black text-[10px] uppercase tracking-widest border border-rose-200/50 active:scale-95 disabled:opacity-50" disabled={isDeleting || isUpdating}>
+                                    <Trash2 className="w-4 h-4" /> Delete selected
+                                </button>
+                            }
+                        />
+                    </div>
                 </div>
             )}
 
@@ -79,8 +173,8 @@ export default function AdminProductTable({ products }: { products: any[] }) {
                                 <button
                                     onClick={toggleSelectAll}
                                     className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${selectedIds.length === products.length && products.length > 0
-                                            ? 'bg-teal-500 border-teal-500'
-                                            : 'border-gray-200 hover:border-teal-500'
+                                        ? 'bg-teal-500 border-teal-500'
+                                        : 'border-gray-200 hover:border-teal-500'
                                         }`}
                                 >
                                     {selectedIds.length === products.length && products.length > 0 && (
@@ -103,8 +197,8 @@ export default function AdminProductTable({ products }: { products: any[] }) {
                                     <button
                                         onClick={() => toggleSelect(product.id)}
                                         className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${selectedIds.includes(product.id)
-                                                ? 'bg-teal-500 border-teal-500'
-                                                : 'border-gray-200 hover:border-teal-500'
+                                            ? 'bg-teal-500 border-teal-500'
+                                            : 'border-gray-200 hover:border-teal-500'
                                             }`}
                                     >
                                         {selectedIds.includes(product.id) && (

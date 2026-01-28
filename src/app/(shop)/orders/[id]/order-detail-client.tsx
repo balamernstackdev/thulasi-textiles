@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Package, Clock, Truck, CheckCircle, XCircle, MapPin, CreditCard, ArrowLeft, Receipt, ShieldCheck } from 'lucide-react';
+import { Package, Clock, Truck, CheckCircle, XCircle, MapPin, CreditCard, ArrowLeft, Receipt, ShieldCheck, Award } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart';
 import { format } from 'date-fns';
 
@@ -102,7 +102,25 @@ export default function OrderDetailClient({ order }: { order: OrderDetail }) {
                             </p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
+                        {order.status !== 'CANCELLED' && (
+                            <Link
+                                href={`/orders/${order.id}/track`}
+                                className="bg-orange-600 hover:bg-black text-white px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl shadow-orange-100 transition-all flex items-center gap-2"
+                            >
+                                <Truck className="w-4 h-4" />
+                                Track Order
+                            </Link>
+                        )}
+                        {order.status === 'DELIVERED' && (
+                            <Link
+                                href={`/orders/certificates/${order.id}`}
+                                className="bg-emerald-600 hover:bg-black text-white px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl shadow-emerald-100 transition-all flex items-center gap-2"
+                            >
+                                <Award className="w-4 h-4" />
+                                Claim Heritage Certificate
+                            </Link>
+                        )}
                         <span className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-[0_10px_20px_-5px_rgba(0,0,0,0.1)] border ${order.status === 'PROCESSING' ? 'bg-orange-100 text-orange-700 border-orange-200' : config.color.replace('bg-', 'border-').replace('text-', 'bg-').split(' ')[0] + '/10'} ${order.status === 'PROCESSING' ? '' : config.color}`}>
                             <StatusIcon className="w-4 h-4" />
                             {config.label}

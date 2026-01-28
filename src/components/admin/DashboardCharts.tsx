@@ -26,9 +26,9 @@ export function RevenueTrendChart({ data }: { data: any[] }) {
     }));
 
     return (
-        <div className="h-[250px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={formattedData}>
+        <div className="h-[300px] w-full min-h-[300px]">
+            <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+                <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                     <defs>
                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#2dd4bf" stopOpacity={0.3} />
@@ -76,9 +76,9 @@ export function RevenueTrendChart({ data }: { data: any[] }) {
 
 export function TopProductsChart({ data }: { data: any[] }) {
     return (
-        <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data} layout="vertical" margin={{ left: 40 }}>
+        <div className="h-[350px] w-full min-h-[350px]">
+            <ResponsiveContainer width="100%" height="100%" minHeight={350}>
+                <BarChart data={data} layout="vertical" margin={{ left: 20, right: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
                     <XAxis type="number" hide />
                     <YAxis
@@ -114,8 +114,8 @@ export function TopProductsChart({ data }: { data: any[] }) {
 
 export function CategoryPieChart({ data }: { data: any[] }) {
     return (
-        <div className="h-[300px] w-full flex flex-col items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
+        <div className="h-[350px] w-full min-h-[350px] flex flex-col items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%" minHeight={300}>
                 <PieChart>
                     <Pie
                         data={data}

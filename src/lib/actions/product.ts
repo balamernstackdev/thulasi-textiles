@@ -135,7 +135,7 @@ export const getProducts = cache(async (options: {
                 if (options.isOffer) where.isOffer = true;
                 if (options.isNew) where.isNew = true;
 
-                if (options.categorySlug) {
+                if (options.categorySlug && options.categorySlug !== 'all') {
                     where.category = {
                         OR: [
                             { slug: options.categorySlug },
@@ -357,7 +357,25 @@ export const getProductBySlug = cache(async (slug: string) => {
             try {
                 const product = await prismadb.product.findUnique({
                     where: { slug, isActive: true },
-                    include: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        description: true,
+                        basePrice: true,
+                        fabric: true,
+                        weave: true,
+                        origin: true,
+                        occasion: true,
+                        artisanId: true,
+                        artisan: true,
+                        loomType: true,
+                        weavingHours: true,
+                        careInstructions: true,
+                        heritageTitle: true,
+                        metaTitle: true,
+                        metaDescription: true,
+                        videoUrl: true,
                         images: true,
                         category: {
                             include: {
@@ -793,3 +811,66 @@ export const getQuickSearch = cache(async (query: string) => {
         return { success: false, data: [] };
     }
 });
+
+// ============================================
+// BULK UPDATE ACTIONS
+// ============================================
+
+export async function bulkUpdateProductPrice(ids: string[], percentage: number, type: 'increase' | 'decrease') {
+    try {
+        const factor = type === 'increase' ? (1 + percentage / 100) : (1 - percentage / 100);
+
+        await prismadb.$transaction(
+            ids.map(id =>
+                prismadb.product.update({
+                    where: { id },
+                    data: {
+                        basePrice: {
+                            multiply: factor
+                        }
+                    }
+                })
+            )
+        );
+
+        revalidatePath('/admin/products');
+        revalidateTag('products', 'default');
+        return { success: true };
+    } catch (error) {
+        console.error('Bulk price update error:', error);
+        return { success: false, error: 'Failed to update prices' };
+    }
+}
+
+export async function bulkToggleProductVisibility(ids: string[], isActive: boolean) {
+    try {
+        await prismadb.product.updateMany({
+            where: { id: { in: ids } },
+            data: { isActive }
+        });
+
+        revalidatePath('/admin/products');
+        revalidateTag('products', 'default');
+        return { success: true };
+    } catch (error) {
+        console.error('Bulk visibility toggle error:', error);
+        return { success: false, error: 'Failed to update visibility' };
+    }
+}
+
+export async function bulkToggleCategoryVisibility(categoryId: string, isActive: boolean) {
+    try {
+        await prismadb.product.updateMany({
+            where: { categoryId },
+            data: { isActive }
+        });
+
+        revalidatePath('/admin/products');
+        revalidateTag('products', 'default');
+        revalidatePath('/', 'layout');
+        return { success: true };
+    } catch (error) {
+        console.error('Category visibility toggle error:', error);
+        return { success: false, error: 'Failed to update category products visibility' };
+    }
+}

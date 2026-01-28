@@ -9,6 +9,7 @@ import { getCategoriesTree } from '@/lib/actions/category';
 import { getBanners } from '@/lib/actions/banner';
 import AIHeritageAssistant from '@/components/shop/AIHeritageAssistant';
 import ScrollToTop from '@/components/ui/ScrollToTop';
+import MobileBottomNav from '@/components/shop/MobileBottomNav';
 
 export default async function ShopLayout({
     children,
@@ -35,6 +36,7 @@ export default async function ShopLayout({
             <Footer categories={categories || []} />
             <QuickViewModal />
             <AIHeritageAssistant />
+            <MobileBottomNav session={session} />
         </div>
     );
 }

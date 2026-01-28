@@ -15,6 +15,7 @@ import AnnouncementTicker from '@/components/shop/AnnouncementTicker';
 import CountdownBanner from '@/components/shop/CountdownBanner';
 import HeritageQuiz from '@/components/shop/HeritageQuiz';
 import HeritageChronicles from '@/components/shop/HeritageChronicles';
+import ThulasiWomenGallery from '@/components/shop/ThulasiWomenGallery';
 
 // export const revalidate = 3600;
 
@@ -169,6 +170,9 @@ export default async function ShopHome() {
       <Suspense fallback={<ProductSectionSkeleton />}>
         <OfferSection session={session} />
       </Suspense>
+
+      {/* Social Proof Gallery */}
+      <ThulasiWomenGallery />
 
       {/* Heritage Stories Blog Preview */}
       <HeritageChronicles />

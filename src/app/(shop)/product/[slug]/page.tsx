@@ -8,7 +8,8 @@ import RelatedProducts from '@/components/shop/RelatedProducts';
 import ReviewForm from '@/components/shop/ReviewForm';
 import ReviewList from '@/components/shop/ReviewList';
 import ProductDetailedFeatures from '@/components/shop/ProductDetailedFeatures';
-import ComplementaryProducts from '@/components/shop/ComplementaryProducts';
+import BundleWizard from '@/components/shop/BundleWizard';
+import ArtisanPreview from '@/components/shop/ArtisanPreview';
 import { checkWishstatus } from '@/lib/actions/wishlist';
 import { getReviews } from '@/lib/actions/review';
 import { Metadata } from 'next';
@@ -20,9 +21,38 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     if (!product) return { title: 'Product Not Found' };
 
+    const productPrice = `₹${Number(product.basePrice).toLocaleString('en-IN')}`;
+    const productDesc = product.metaDescription || product.description.slice(0, 160);
+    const heritageNote = product.weave ? `Authentic ${product.weave} weave.` : '';
+
+    const description = `${product.name} at ${productPrice}. ${heritageNote} ${productDesc}`;
+    const mainImage = product.images?.[0]?.url || '/logo.png';
+
     return {
         title: `${product.name} | Thulasi Textiles`,
-        description: product.metaDescription || product.description.slice(0, 160),
+        description: description,
+        openGraph: {
+            title: `${product.name} - Thulasi Textiles`,
+            description: description,
+            images: [
+                {
+                    url: mainImage,
+                    width: 1200,
+                    height: 630,
+                    alt: product.name,
+                },
+            ],
+            type: 'website',
+            siteName: 'Thulasi Textiles',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: product.name,
+            description: description,
+            images: [mainImage],
+            creator: '@thulasitextiles',
+        },
+        keywords: [product.name, product.fabric, product.weave, 'Thulasi Textiles', 'Handcrafted', 'Artisan'].filter(Boolean) as string[],
     };
 }
 
@@ -212,15 +242,56 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                             </div>
                         </div>
 
+                        {/* Artisan Traceability & Loom Details */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+                            <ArtisanPreview artisan={product.artisan} />
+
+                            <div className="bg-gray-900 rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group">
+                                <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
+                                <div className="relative space-y-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-white/10 rounded-2xl flex items-center justify-center text-orange-500 backdrop-blur-md">
+                                            <Scissors className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">Loom Audit</h3>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Loom Architecture</span>
+                                            <span className="text-sm font-bold text-white uppercase italic tracking-tight">{product.loomType || 'Traditional Pit Loom'}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Weaving Investment</span>
+                                            <span className="text-sm font-bold text-white uppercase italic tracking-tight">{product.weavingHours || '84'} Hand-Crafted Hours</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Trust Protocol</span>
+                                            <div className="flex items-center gap-2 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+                                                <ShieldCheck className="w-4 h-4" /> 100% Traceable
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p className="text-[10px] text-gray-500 font-medium leading-relaxed uppercase tracking-wider bg-white/5 p-4 rounded-2xl">
+                                        This piece is encoded with a unique heritage signature. Upon purchase, a digital Certificate of Authenticity will be generated in your vault.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Marketplace Strategy Sections */}
-                        <div className="pt-8">
+                        <div className="pt-16">
                             <ProductDetailedFeatures product={product} />
                         </div>
 
                         {/* Complete The Look */}
                         {product.complementaryProducts && product.complementaryProducts.length > 0 && (
                             <div className="pt-16 border-t border-gray-100">
-                                <ComplementaryProducts products={product.complementaryProducts} />
+                                <BundleWizard
+                                    mainProduct={product}
+                                    complementaryProducts={product.complementaryProducts}
+                                />
                             </div>
                         )}
 

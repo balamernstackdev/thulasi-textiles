@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import CartClient from './cart-client';
 import { getSession } from '@/lib/auth';
+import { getWishlist } from '@/lib/actions/wishlist';
 
 export const metadata: Metadata = {
     title: 'Shopping Cart | Thulasi Textiles',
@@ -9,11 +10,14 @@ export const metadata: Metadata = {
 
 export default async function CartPage() {
     const session = await getSession();
+    let wishlistItems = [];
 
-    // Optionally require authentication
-    // if (!session) {
-    //     redirect('/login?redirect=/cart');
-    // }
+    if (session) {
+        const result = await getWishlist();
+        if (result.success) {
+            wishlistItems = result.data;
+        }
+    }
 
-    return <CartClient session={session} />;
+    return <CartClient session={session} initialWishlist={wishlistItems} />;
 }

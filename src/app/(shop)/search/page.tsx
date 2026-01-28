@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ChevronRight, Filter, ShoppingBag } from 'lucide-react';
 import { getSession } from '@/lib/auth';
 import ProductSort from '@/components/shop/ProductSort';
+import FilterToggle from '@/components/shop/FilterToggle';
 import { getBanners } from '@/lib/actions/banner';
 import AnnouncementTicker from '@/components/shop/AnnouncementTicker';
 import Banner from '@/components/shop/Banner';
@@ -123,6 +124,7 @@ export default async function SearchPage({
                             </div>
 
                             <div className="flex items-center gap-3 self-end md:self-auto">
+                                <FilterToggle categories={categories} filterAttributes={filterAttributes} />
                                 <ProductSort />
                             </div>
                         </div>

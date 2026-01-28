@@ -74,9 +74,19 @@ export default function ReviewList({ reviews }: { reviews: any[] }) {
                                 ))}
                             </div>
                         </div>
-                        <p className="text-gray-600 font-medium leading-relaxed text-sm italic">
+                        <p className="text-gray-600 font-medium leading-relaxed text-sm italic mb-6">
                             "{review.comment}"
                         </p>
+
+                        {review.images && review.images.length > 0 && (
+                            <div className="flex gap-2 overflow-x-auto no-scrollbar pt-2">
+                                {review.images.map((img: any) => (
+                                    <div key={img.id} className="w-20 h-24 rounded-xl overflow-hidden shadow-sm border border-gray-100 shrink-0">
+                                        <img src={img.url} alt="Review attachment" className="w-full h-full object-cover transition-transform hover:scale-110" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

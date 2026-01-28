@@ -229,20 +229,31 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                     <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase italic mb-6 md:mb-8 text-center md:text-left">Checkout</h1>
 
                     {/* Progress Steps */}
-                    <div className="flex items-center justify-center w-full max-w-sm mx-auto md:max-w-none">
+                    <div className="flex items-center justify-between w-full max-w-4xl mx-auto mb-12">
                         {steps.map((s, idx) => (
-                            <div key={s.num} className="flex items-center flex-1 last:flex-none">
-                                <div className="flex flex-col items-center">
-                                    <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-black transition-all ${step >= s.num ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-400'
+                            <div key={s.num} className="flex items-center flex-1 last:flex-none relative">
+                                <div className="flex flex-col items-center relative z-10">
+                                    <div className={`w-12 h-12 md:w-16 md:h-16 rounded-3xl flex items-center justify-center font-black transition-all duration-500 shadow-lg ${step >= s.num
+                                        ? 'bg-orange-600 text-white shadow-orange-200 ring-4 ring-orange-50'
+                                        : 'bg-white text-gray-300 border border-gray-100'
                                         }`}>
-                                        {step > s.num ? <Check className="w-5 h-5 md:w-6 md:h-6" /> : <s.icon className="w-5 h-5 md:w-6 md:h-6" />}
+                                        {step > s.num ? <Check className="w-6 h-6 md:w-8 md:h-8" /> : <s.icon className="w-6 h-6 md:w-8 md:h-8" />}
                                     </div>
-                                    <span className={`text-[10px] md:text-xs font-black mt-2 ${step >= s.num ? 'text-orange-600' : 'text-gray-400'}`}>
-                                        {s.title}
-                                    </span>
+                                    <div className="absolute -bottom-8">
+                                        <span className={`text-[10px] md:text-xs font-black uppercase tracking-[0.2em] transition-colors duration-500 whitespace-nowrap ${step >= s.num ? 'text-orange-600' : 'text-gray-300'}`}>
+                                            {s.title}
+                                        </span>
+                                    </div>
                                 </div>
                                 {idx < steps.length - 1 && (
-                                    <div className={`flex-1 h-1 mx-2 md:mx-4 ${step > s.num ? 'bg-orange-600' : 'bg-gray-200'}`} />
+                                    <div className="flex-1 px-4">
+                                        <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-orange-600 transition-all duration-700 ease-out"
+                                                style={{ width: step > s.num ? '100%' : '0%' }}
+                                            />
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         ))}

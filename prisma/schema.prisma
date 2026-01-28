@@ -68,6 +68,13 @@ model Product {
   basePrice        Decimal          @default(0.00) @db.Decimal(10, 2)
   isOffer          Boolean          @default(false)
   isNew            Boolean          @default(false)
+  
+  // Artisan Details
+  artisanId        String?
+  artisan          Artisan?         @relation(fields: [artisanId], references: [id])
+  loomType         String?          // e.g., "Pit Loom", "Handloom"
+  weavingHours     Int?             // total hours spent weaving
+  
   artisanImage     String?
   artisanStory     String?          @db.Text
   careInstructions String?          @db.Text
@@ -89,6 +96,20 @@ model Product {
   reviews          Review[]
 
   @@index([categoryId], map: "Product_categoryId_fkey")
+  @@index([artisanId], map: "Product_artisanId_fkey")
+}
+
+model Artisan {
+  id              String    @id @default(cuid())
+  name            String
+  bio             String?   @db.Text
+  experienceYears Int?
+  village         String?
+  imageUrl        String?
+  specialty       String?
+  products        Product[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model Review {
@@ -102,9 +123,17 @@ model Review {
   updatedAt DateTime @updatedAt
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images    ReviewImage[]
 
   @@index([productId], map: "Review_productId_fkey")
   @@index([userId], map: "Review_userId_fkey")
+}
+
+model ReviewImage {
+  id        String @id @default(cuid())
+  url       String
+  reviewId  String
+  review    Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 }
 
 model ProductImage {

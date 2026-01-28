@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Star } from 'lucide-react';
+import { Star, Plus, X, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { addReview } from '@/lib/actions/review';
@@ -10,7 +10,20 @@ export default function ReviewForm({ productId, onReviewAdded }: { productId: st
     const [rating, setRating] = useState(5);
     const [hover, setHover] = useState(0);
     const [comment, setComment] = useState('');
+    const [images, setImages] = useState<string[]>([]);
+    const [imageUrl, setImageUrl] = useState('');
     const [isPending, setIsPending] = useState(false);
+
+    const addImageUrl = () => {
+        if (imageUrl && !images.includes(imageUrl)) {
+            setImages([...images, imageUrl]);
+            setImageUrl('');
+        }
+    };
+
+    const removeImage = (url: string) => {
+        setImages(images.filter(i => i !== url));
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -18,7 +31,7 @@ export default function ReviewForm({ productId, onReviewAdded }: { productId: st
 
         setIsPending(true);
         try {
-            const res = await addReview(productId, rating, comment);
+            const res = await addReview(productId, rating, comment, images);
             if (res.success) {
                 toast.success('Thank you for your feedback!');
                 setComment('');
@@ -73,6 +86,45 @@ export default function ReviewForm({ productId, onReviewAdded }: { productId: st
                         className="w-full bg-white border-2 border-gray-100 rounded-2xl p-4 text-sm font-bold text-gray-900 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all min-h-[120px] placeholder:text-gray-300"
                         required
                     />
+                </div>
+
+                <div>
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3">Add Visual Proof (Photo URLs)</p>
+                    <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar py-2">
+                        {images.map((url, idx) => (
+                            <div key={idx} className="relative w-20 h-20 rounded-xl overflow-hidden group shrink-0 border border-gray-100 shadow-sm">
+                                <img src={url} alt="Review" className="w-full h-full object-cover" />
+                                <button
+                                    type="button"
+                                    onClick={() => removeImage(url)}
+                                    className="absolute top-1 right-1 bg-black/60 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <X className="w-3 h-3" />
+                                </button>
+                            </div>
+                        ))}
+                        <div className="w-20 h-20 rounded-xl border-2 border-dashed border-gray-100 flex items-center justify-center text-gray-300 hover:border-orange-200 hover:text-orange-500 transition-all cursor-pointer shrink-0">
+                            <ImageIcon className="w-6 h-6" />
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={imageUrl}
+                            onChange={(e) => setImageUrl(e.target.value)}
+                            placeholder="Paste image URL here..."
+                            className="flex-1 bg-white border-2 border-gray-100 rounded-xl px-4 py-2 text-xs font-bold focus:border-orange-500 outline-none transition-all"
+                        />
+                        <button
+                            type="button"
+                            onClick={addImageUrl}
+                            className="bg-gray-100 hover:bg-orange-600 hover:text-white text-gray-500 px-4 rounded-xl transition-all"
+                        >
+                            <Plus className="w-4 h-4" />
+                        </button>
+                    </div>
+                    <p className="text-[9px] text-gray-400 mt-2 italic">* Visual proof establishes you as a true "Thulasi Woman" curator.</p>
                 </div>
 
                 <Button

@@ -8,11 +8,14 @@ import { Minus, Plus, Trash2, ArrowRight, Heart, ShoppingBag } from 'lucide-reac
 import { toggleWishlist } from '@/lib/actions/wishlist';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useWishlistStore } from '@/lib/store/wishlist';
 
-export default function CartClient({ session }: { session: any }) {
-    const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCartStore();
+export default function CartClient({ session, initialWishlist = [] }: { session: any, initialWishlist?: any[] }) {
+    const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, addItem } = useCartStore();
+    const { wishlistIds, toggleWishlist: toggleInStore } = useWishlistStore();
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
+    const [wishlistProducts, setWishlistProducts] = useState(initialWishlist);
 
     const handleRemove = (id: string, name: string) => {
         removeItem(id);
@@ -40,7 +43,7 @@ export default function CartClient({ session }: { session: any }) {
         }
 
         startTransition(async () => {
-            const result = await toggleWishlist(productId);
+            const result = await toggleInStore(productId);
             if (result.success) {
                 // Remove from cart after saving to wishlist
                 removeItem(itemId);
@@ -48,10 +51,31 @@ export default function CartClient({ session }: { session: any }) {
                     description: 'You can purchase it later from your profile.',
                     icon: <Heart className="w-4 h-4 fill-rose-500 text-rose-500" />
                 });
+
+                // Refresh wishlist data locally if possible or trigger a sync
+                router.refresh();
             } else {
                 toast.error('Failed to save for later');
             }
         });
+    };
+
+    const handleMoveToCart = (product: any) => {
+        addItem({
+            id: product.id,
+            productId: product.id,
+            productName: product.name,
+            productSlug: product.slug,
+            variantSku: 'default',
+            price: Number(product.basePrice),
+            image: product.images?.[0]?.url || '',
+            stock: 10,
+        });
+
+        // Remove from wishlist
+        toggleInStore(product.id);
+        toast.success(`${product.name} moved to cart!`);
+        router.refresh();
     };
 
     if (items.length === 0) {
@@ -225,6 +249,44 @@ export default function CartClient({ session }: { session: any }) {
                         </div>
                     </div>
                 </div>
+
+                {/* Saved for Later Section */}
+                {wishlistProducts.length > 0 && (
+                    <div className="mt-24">
+                        <div className="flex items-center gap-4 mb-8">
+                            <Heart className="w-6 h-6 text-rose-500 fill-rose-500" />
+                            <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Saved for Later</h2>
+                            <span className="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                                {wishlistProducts.length} Items
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {wishlistProducts.map((item: any) => (
+                                <div key={item.id} className="bg-white rounded-3xl p-4 shadow-lg hover:shadow-xl transition-all group border border-transparent hover:border-orange-100">
+                                    <div className="aspect-square bg-gray-100 rounded-2xl overflow-hidden relative mb-4">
+                                        <Image
+                                            src={item.product?.images?.[0]?.url || ''}
+                                            alt={item.product?.name}
+                                            fill
+                                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <h3 className="font-black text-gray-900 truncate uppercase tracking-tight text-sm">{item.product?.name}</h3>
+                                        <p className="text-orange-600 font-black">₹{Number(item.product?.basePrice).toLocaleString('en-IN')}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => handleMoveToCart(item.product)}
+                                        className="w-full mt-4 bg-gray-50 hover:bg-black hover:text-white text-gray-900 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all"
+                                    >
+                                        Move to Cart
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

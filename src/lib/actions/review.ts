@@ -5,7 +5,7 @@ import { getSession } from '@/lib/auth';
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { cache } from 'react';
 
-export async function addReview(productId: string, rating: number, comment: string) {
+export async function addReview(productId: string, rating: number, comment: string, images: string[] = []) {
     const session = await getSession();
     if (!session) {
         return { success: false, error: 'Please login to leave a review.' };
@@ -49,7 +49,10 @@ export async function addReview(productId: string, rating: number, comment: stri
                 comment,
                 userId: session.user.id,
                 productId,
-                isPublic: true // Default to public
+                isPublic: true,
+                images: {
+                    create: images.map(url => ({ url }))
+                }
             }
         });
 
@@ -77,7 +80,8 @@ export const getReviews = cache(async (productId: string) => {
                             select: {
                                 name: true
                             }
-                        }
+                        },
+                        images: true
                     },
                     orderBy: {
                         createdAt: 'desc'
@@ -164,3 +168,38 @@ export async function deleteReview(id: string) {
         return { success: false, error: 'Failed to delete review' };
     }
 }
+
+export const getGalleryReviews = cache(async () => {
+    return unstable_cache(
+        async () => {
+            try {
+                const reviews = await prismadb.review.findMany({
+                    where: {
+                        isPublic: true,
+                        images: {
+                            some: {} // Only reviews with at least one image
+                        }
+                    },
+                    select: {
+                        id: true,
+                        rating: true,
+                        comment: true,
+                        createdAt: true,
+                        user: { select: { name: true } },
+                        images: true,
+                        product: { select: { name: true, slug: true } }
+                    },
+                    orderBy: { createdAt: 'desc' },
+                    take: 12
+                });
+
+                return { success: true, data: reviews };
+            } catch (error) {
+                console.error('Get gallery reviews error:', error);
+                return { success: false, data: [] };
+            }
+        },
+        ['social-gallery'],
+        { tags: ['reviews'], revalidate: 3600 }
+    )();
+});
