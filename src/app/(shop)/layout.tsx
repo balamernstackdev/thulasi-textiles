@@ -1,11 +1,14 @@
 
-import React from 'react';
 import Navbar from '@/components/shop/Navbar';
 import Footer from '@/components/shop/Footer';
-import { getCategoriesTree } from '@/lib/actions/category';
+import AnnouncementTicker from '@/components/shop/AnnouncementTicker';
+import CountdownBanner from '@/components/shop/CountdownBanner';
+import QuickViewModal from '@/components/shop/QuickViewModal';
 import { getSession } from '@/lib/auth';
+import { getCategoriesTree } from '@/lib/actions/category';
 import { getBanners } from '@/lib/actions/banner';
 import AIHeritageAssistant from '@/components/shop/AIHeritageAssistant';
+import ScrollToTop from '@/components/ui/ScrollToTop';
 
 export default async function ShopLayout({
     children,
@@ -14,27 +17,23 @@ export default async function ShopLayout({
 }) {
     const { data: categories } = await getCategoriesTree();
     const { data: banners = [] } = await getBanners({ isActive: true });
-
-    // Filter announcements
-    const announcementBanners = (banners as any[]).filter(b => b.type === 'ANNOUNCEMENT');
-
-    console.log('[ShopLayout] Fetched categories:', categories?.length || 0);
-    if (categories?.length === 0) {
-        console.warn('[ShopLayout] WARNING: No categories found!');
-    }
     const session = await getSession();
 
+    // Filter banners
+    const announcementBanners = (banners as any[]).filter(b => b.type === 'ANNOUNCEMENT');
+    const countdownBanner = (banners as any[]).find(b => b.type === 'COUNTDOWN'); // Assuming logic for countdown
+
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col">
-            <Navbar
-                categories={categories || []}
-                session={session}
-                announcements={announcementBanners}
-            />
+        <div className="bg-white min-h-screen flex flex-col">
+            <ScrollToTop />
+            <AnnouncementTicker banners={announcementBanners} />
+            {countdownBanner && <CountdownBanner banner={countdownBanner} />}
+            <Navbar categories={categories || []} session={session} announcements={announcementBanners} />
             <main className="flex-grow">
                 {children}
             </main>
             <Footer categories={categories || []} />
+            <QuickViewModal />
             <AIHeritageAssistant />
         </div>
     );

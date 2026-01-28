@@ -12,12 +12,15 @@ async function main() {
 
     // Clean up existing data to prevent unique constraint violations
     console.log('Cleaning up database...');
+    await prisma.review.deleteMany({});
+    await prisma.wishlist.deleteMany({});
     await prisma.orderItem.deleteMany({});
+    await prisma.order.deleteMany({});
     await prisma.productVariant.deleteMany({});
     await prisma.productImage.deleteMany({});
     await prisma.product.deleteMany({});
-    // Optional: Delete categories if you want a fresh start, but upsert handles them well usually
-    // await prisma.category.deleteMany({});
+    await prisma.category.deleteMany({});
+    await prisma.banner.deleteMany({}); // Delete banners too for a fresh start
 
     const admin = await prisma.user.upsert({
         where: { email },
@@ -32,6 +35,108 @@ async function main() {
 
 
     console.log({ admin });
+
+    // Distinct images for subcategories
+    const imageMap: Record<string, Array<{ main: string, sec: string }>> = {
+        'Men-Shirts': [
+            { main: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1589310243388-15ee3317db67?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1603252109303-2751440ee693?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1621072118054-e6aa7b6f0b54?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Men-Trousers': [
+            { main: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1506629082955-511b1aa00272?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1517445312882-b413010b9156?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1506629082955-511b1aa00272?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Men-Jeans': [
+            { main: 'https://images.unsplash.com/photo-1542272617-08f08632047d?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1604176354204-9268737828c4?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1542272617-08f08632047d?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1582552938357-32b906df40cb?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1604176354204-9268737828c4?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1555689502-c1b20349458e?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1582552938357-32b906df40cb?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Men-Ethnic Wear': [
+            { main: 'https://images.unsplash.com/photo-1629814596359-2172778647bc?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1630327341506-613d94183884?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1589873041930-b5d259c0c16b?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1597983073493-88cd357a28e0?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1566952726756-3c07802875b1?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1563283344-93c0bc133c94?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1598555986884-69796e100366?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1629814596359-2172778647bc?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Men-T-Shirts': [
+            { main: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Men-Innerwear': [
+            { main: 'https://images.unsplash.com/photo-1517445312882-b413010b9156?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1517445312882-b413010b9156?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1588616335123-b6d3b9e4a3b7?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1588616335123-b6d3b9e4a3b7?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Women-Sarees': [
+            { main: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1629470937849-c0ae2f0aa7bb?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1583391726247-157d60591b7d?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1627885746761-9c8449c2560b?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1583391726247-157d60591b7d?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1610030469668-356c92d52366?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1627885746761-9c8449c2560b?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Women-Kurtas & Kurtis': [
+            { main: 'https://images.unsplash.com/photo-1589156229687-496a31ad1d1f?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1522851493011-8073a558557d?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1589156229687-496a31ad1d1f?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1522851493011-8073a558557d?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1550614000-4b9519e49c27?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Women-Lehengas': [
+            { main: 'https://images.unsplash.com/photo-1594963384734-d07eb024072f?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1610189012906-4c9102434027?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1594963384734-d07eb024072f?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1585966373809-5a4ea8290f65?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1610189012906-4c9102434027?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1585966373809-5a4ea8290f65?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Women-Jeans & Jeggings': [
+            { main: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1542272617-08f08632047d?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1584370848010-d7ccb2843de3?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1582552938357-32b906df40cb?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1584370848010-d7ccb2843de3?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1605763240004-7e93b172d754?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1582552938357-32b906df40cb?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Women-Tops & Tees': [
+            { main: 'https://images.unsplash.com/photo-1621335829175-95f437384d7c?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1503341455253-b2e72333dbdb?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1508609349935-18c475fe6eb5?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1621335829175-95f437384d7c?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1503341455253-b2e72333dbdb?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1503341455253-b2e72333dbdb?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Women-Lingerie': [
+            { main: 'https://images.unsplash.com/photo-1596489379963-3ec9f1f00994?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1596489379963-3ec9f1f00994?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Kids-Boys Clothing': [
+            { main: 'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1519238263496-61437a8ac686?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Kids-Girls Clothing': [
+            { main: 'https://images.unsplash.com/photo-1621452773781-0f992fd03d9d?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1526857846592-8877bc3db52a?auto=format&fit=crop&w=800&q=80' },
+            { main: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1526857846592-8877bc3db52a?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Kids-Infants': [
+            { main: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Kids-School Uniforms': [
+            { main: 'https://images.unsplash.com/photo-1604671801908-6f0c6a092c05?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1627552245715-77d79b199d91?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Home Linen-Bedsheets': [
+            { main: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Home Linen-Curtains': [
+            { main: 'https://images.unsplash.com/photo-1514894780063-580edbb32997?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1514894780063-580edbb32997?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Home Linen-Towels': [
+            { main: 'https://images.unsplash.com/photo-1583947581924-86ca00388902?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1583947581924-86ca00388902?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Home Linen-Blankets': [
+            { main: 'https://images.unsplash.com/photo-1580302200322-2244ae266859?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1580302200322-2244ae266859?auto=format&fit=crop&w=800&q=80' },
+        ],
+        'Home Linen-Cushion Covers': [
+            { main: 'https://images.unsplash.com/photo-1584100936595-c065db20db70?auto=format&fit=crop&w=800&q=80', sec: 'https://images.unsplash.com/photo-1584100936595-c065db20db70?auto=format&fit=crop&w=800&q=80' },
+        ]
+    };
 
     const categories = [
         {
@@ -49,7 +154,7 @@ async function main() {
         {
             name: 'Kids',
             slug: 'kids',
-            image: '/images/categories/category_kids.jpg', // Better kids traditional/festive image
+            image: '/images/categories/category_kids.jpg',
             subcategories: ['Boys Clothing', 'Girls Clothing', 'Infants', 'School Uniforms']
         },
         {
@@ -61,12 +166,8 @@ async function main() {
     ];
 
     for (const cat of categories) {
-        const parent = await prisma.category.upsert({
-            where: { slug: cat.slug },
-            update: {
-                image: cat.image // Ensure updating works if it exists
-            },
-            create: {
+        const parent = await prisma.category.create({
+            data: {
                 name: cat.name,
                 slug: cat.slug,
                 description: `All products for ${cat.name}`,
@@ -76,10 +177,8 @@ async function main() {
 
         for (const sub of cat.subcategories) {
             const subSlug = `${cat.slug}-${sub.toLowerCase().replace(/ /g, '-').replace(/&/g, 'and')}`;
-            const subCategory = await prisma.category.upsert({
-                where: { slug: subSlug },
-                update: {},
-                create: {
+            const subCategory = await prisma.category.create({
+                data: {
                     name: sub,
                     slug: subSlug,
                     parentId: parent.id,
@@ -87,98 +186,67 @@ async function main() {
                 }
             });
 
-            // Create 1 dummy product for each subcategory
-            for (let i = 1; i <= 1; i++) {
+            // Create 4 dummy products for each subcategory
+            console.log(`  Seeding ${sub}...`);
+            for (let i = 1; i <= 4; i++) {
                 const productName = `${cat.name} ${sub} Product ${i}`;
+                process.stdout.write(`    - ${productName}... `);
                 const productSlug = `${subSlug}-product-${i}`;
-                const price = Math.floor(Math.random() * 2000) + 500; // Random price between 500 and 2500
+                const price = Math.floor(Math.random() * 2000) + 500;
 
-                let mainImageUrl = 'https://images.unsplash.com/photo-1571513722275-4b41940f54b8?auto=format&fit=crop&w=800&q=80';
-                // Subcategory-specific image selection
-                if (sub === 'Shirts') mainImageUrl = '/images/products/product_men.jpg';
-                else if (sub === 'T-Shirts') mainImageUrl = '/images/products/product_men.jpg';
-                else if (sub === 'Jeans') mainImageUrl = '/images/products/product_men.jpg';
-                else if (sub === 'Trousers') mainImageUrl = '/images/products/product_men.jpg';
-                else if (sub === 'Ethnic Wear' && cat.name === 'Men') mainImageUrl = '/images/categories/category_men.jpg';
-                else if (sub === 'Innerwear') mainImageUrl = '/images/products/product_men.jpg';
-                else if (sub === 'Sarees') mainImageUrl = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Kurtas & Kurtis') mainImageUrl = 'https://images.unsplash.com/photo-1589156229687-496a31ad1d1f?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Lehengas') mainImageUrl = 'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Jeans & Jeggings') mainImageUrl = 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Tops & Tees') mainImageUrl = 'https://images.unsplash.com/photo-1564584217132-2271feaeb3c5?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Lingerie') mainImageUrl = 'https://images.unsplash.com/photo-1596483569428-2e0617300705?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Boys Clothing') mainImageUrl = 'https://images.unsplash.com/photo-1519750157634-b6d493a0f77c?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Girls Clothing') mainImageUrl = 'https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Infants') mainImageUrl = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'School Uniforms') mainImageUrl = 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Bedsheets') mainImageUrl = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Curtains') mainImageUrl = 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Towels') mainImageUrl = 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Blankets') mainImageUrl = 'https://images.unsplash.com/photo-1580584126903-c17d41830450?auto=format&fit=crop&w=800&q=80';
-                else if (sub === 'Cushion Covers') mainImageUrl = 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80';
-                else {
-                    // Category-level fallback
-                    if (cat.name === 'Men') mainImageUrl = '/images/categories/category_men.jpg';
-                    else if (cat.name === 'Women') mainImageUrl = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80';
-                    else if (cat.name === 'Kids') mainImageUrl = 'https://images.unsplash.com/photo-1519750157634-b6d493a0f77c?auto=format&fit=crop&w=800&q=80';
-                    else if (cat.name === 'Home Linen') mainImageUrl = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80';
+                // Get images
+                const key = `${cat.name}-${sub}`.trim();
+                let images = imageMap[key];
+
+                // Fallback if not mapped
+                if (!images) {
+                    if (cat.name === 'Men') images = imageMap['Men-Shirts'];
+                    else if (cat.name === 'Women') images = imageMap['Women-Sarees'];
+                    else if (cat.name === 'Kids') images = imageMap['Kids-Boys Clothing'];
+                    else if (cat.name === 'Home Linen') images = imageMap['Home Linen-Bedsheets'];
                 }
 
-                // Secondary image selection logic
-                let secondImageUrl = 'https://images.unsplash.com/photo-1560243563-062bfc001d68?auto=format&fit=crop&w=800&q=80';
-                if (cat.name === 'Men') secondImageUrl = '/images/products/product_men.jpg';
-                else if (cat.name === 'Women') secondImageUrl = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80';
-                else if (cat.name === 'Home Linen') secondImageUrl = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80';
+                // If STILL not found, use a safe default
+                if (!images) images = imageMap['Men-Shirts'];
 
-                const product = await prisma.product.upsert({
-                    where: { slug: productSlug },
-                    update: {},
-                    create: {
-                        name: productName,
-                        slug: productSlug,
-                        description: `This is a high-quality ${productName} made from premium materials. Perfect for any occasion.`,
+                // Cycle through images
+                const imgSet = images[(i - 1) % images.length] || images[0];
+
+                const product = await prisma.product.create({
+                    data: {
+                        name: productName.trim(),
+                        slug: productSlug.trim(),
+                        description: `Experience the finest ${productName}, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.`.trim(),
                         basePrice: price,
                         categoryId: subCategory.id,
                         isActive: true,
-                        isBestSeller: Math.random() > 0.5,
+                        isBestSeller: i === 1,
+                        isNew: i === 2,
                         images: {
                             create: [
                                 {
-                                    url: mainImageUrl,
-                                    altText: productName,
+                                    url: imgSet.main.replace(/\s+/g, ''),
+                                    altText: productName.trim(),
                                     isPrimary: true
                                 },
                                 {
-                                    url: secondImageUrl,
-                                    altText: `${productName} Secondary View`,
+                                    url: imgSet.sec.replace(/\s+/g, ''),
+                                    altText: `${productName} Secondary View`.trim(),
                                     isPrimary: false
                                 }
                             ]
                         },
                         variants: {
                             create: [
-                                {
-                                    sku: `${productSlug.toUpperCase()}-S`,
-                                    size: 'S',
-                                    stock: 10,
-                                    price: price
-                                },
-                                {
-                                    sku: `${productSlug.toUpperCase()}-M`,
-                                    size: 'M',
-                                    stock: 15,
-                                    price: price
-                                },
-                                {
-                                    sku: `${productSlug.toUpperCase()}-L`,
-                                    size: 'L',
-                                    stock: 5,
-                                    price: price + 100
-                                }
+                                { sku: `${productSlug.toUpperCase()}-S`.trim(), size: 'S', stock: 10, price: price },
+                                { sku: `${productSlug.toUpperCase()}-M`.trim(), size: 'M', stock: 15, price: price },
+                                { sku: `${productSlug.toUpperCase()}-L`.trim(), size: 'L', stock: 5, price: price + 100 },
+                                { sku: `${productSlug.toUpperCase()}-XL`.trim(), size: 'XL', stock: 8, price: price + 150 }
                             ]
                         }
                     }
                 });
+                console.log('Done');
             }
         }
     }
@@ -191,14 +259,30 @@ async function main() {
     // Main Hero Banners
     await prisma.banner.create({
         data: {
-            title: 'FESTIVE COLLECTION',
-            subtitle: 'Celebrate Tradition | Flat 40% Off on Silk Sarees',
+            title: 'Great Indian Festival',
+            subtitle: 'Up to 80% Off on Silk Sarees | Limited Time Deal',
             imageUrl: '/images/banners/banner_festive.jpg',
             type: 'HOME_MAIN',
             isActive: true,
             order: 1,
-            buttonText: 'SHOP NOW',
+            buttonText: 'Shop Now',
             link: '/category/women-sarees',
+            alignment: 'LEFT',
+            textColor: '#000000',
+            backgroundColor: '#ffffff'
+        }
+    });
+
+    await prisma.banner.create({
+        data: {
+            title: 'Mega Blockbuster Sale',
+            subtitle: 'Men\'s Ethnic Wear starting ₹499 | Free Shipping',
+            imageUrl: '/images/banners/banner_men.jpg',
+            type: 'HOME_MAIN',
+            isActive: true,
+            order: 2,
+            buttonText: 'View Offers',
+            link: '/category/men',
             alignment: 'LEFT',
             textColor: '#ffffff',
             backgroundColor: '#000000'
@@ -207,31 +291,15 @@ async function main() {
 
     await prisma.banner.create({
         data: {
-            title: 'PREMIUM HANDLOOMS',
-            subtitle: 'Direct from Master Weavers of Tamil Nadu',
+            title: 'Home Makeover Days',
+            subtitle: 'Premium Bedsheets & Curtains | Buy 1 Get 1 Free',
             imageUrl: '/images/banners/banner_handloom.jpg',
             type: 'HOME_MAIN',
             isActive: true,
-            order: 2,
-            buttonText: 'Explore Collection',
-            link: '/category/women',
-            alignment: 'CENTER',
-            textColor: '#ffffff',
-            backgroundColor: '#000000'
-        }
-    });
-
-    await prisma.banner.create({
-        data: {
-            title: 'MEN\'S ETHNIC WEAR',
-            subtitle: 'Kurtas & Sherwanis for Every Occasion',
-            imageUrl: '/images/banners/banner_men.jpg',
-            type: 'HOME_MAIN',
-            isActive: true,
             order: 3,
-            buttonText: 'Shop Men',
-            link: '/category/men',
-            alignment: 'RIGHT',
+            buttonText: 'Explore',
+            link: '/category/home-linen',
+            alignment: 'LEFT',
             textColor: '#ffffff',
             backgroundColor: '#000000'
         }
@@ -432,8 +500,8 @@ main()
         await prisma.$disconnect();
     })
     .catch(async (e) => {
-        console.error('Seed Error:', JSON.stringify(e, null, 2));
-        console.error(e);
+        console.error('Seed Error:', e.message);
+        console.error(e.stack);
         await prisma.$disconnect();
         process.exit(1);
     });

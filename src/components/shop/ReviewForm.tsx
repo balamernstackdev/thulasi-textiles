@@ -37,7 +37,7 @@ export default function ReviewForm({ productId, onReviewAdded }: { productId: st
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-gray-50/50 p-8 rounded-[2rem] border border-gray-100 mb-12">
+        <form onSubmit={handleSubmit} className="bg-gray-50/50 p-5 md:p-8 rounded-[2rem] border border-gray-100 mb-8 md:mb-12">
             <h3 className="text-xl font-black text-gray-900 uppercase italic tracking-tighter mb-6">Leave a Review</h3>
 
             <div className="space-y-6">

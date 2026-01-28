@@ -1,0 +1,16 @@
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Error: Prisma schema validation - (get-config wasm)
+Error code: P1012
+error: Error validating: This line is not a valid field or attribute definition.
+  -->  schema.prisma:292
+   | 
+291 | 
+292 | model ComplementaryProduct {
+293 |   id              String  @id @default(cuid())
+   | 
+
+Validation Error Count: 1
+[Context: getConfig]
+
+Prisma CLI Version : 5.10.2

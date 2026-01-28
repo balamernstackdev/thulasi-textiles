@@ -1,0 +1,214 @@
+[
+  {
+    "id": "cmkx1xpyi00bj3bu1s9reg714",
+    "name": "Kids Boys Clothing Product 1",
+    "slug": "kids-boys-clothing-product-1",
+    "description": "Experience the finest Kids Boys Clothing Product 1, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkwr2khv0035k5csx9ll0guu",
+    "isFeatured": false,
+    "isBestSeller": true,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:31:33.545Z",
+    "updatedAt": "2026-01-27T20:31:33.545Z",
+    "basePrice": "2466",
+    "isOffer": false,
+    "isNew": false,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx1xpyi00bk3bu134fbsspn",
+        "url": "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&w=800&q=80",
+        "altText": "Kids Boys Clothing Product 1",
+        "isPrimary": true,
+        "productId": "cmkx1xpyi00bj3bu1s9reg714"
+      },
+      {
+        "id": "cmkx1xpyi00bl3bu1uaf5906s",
+        "url": "https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=800&q=80",
+        "altText": "Kids Boys Clothing Product 1 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx1xpyi00bj3bu1s9reg714"
+      }
+    ],
+    "category": {
+      "id": "cmkwr2khv0035k5csx9ll0guu",
+      "name": "Boys Clothing",
+      "slug": "kids-boys-clothing",
+      "description": "Boys Clothing for Kids",
+      "image": null,
+      "parentId": "cmkwr2kb10033k5cssqq65kwv",
+      "createdAt": "2026-01-27T15:27:23.971Z",
+      "updatedAt": "2026-01-27T15:27:23.971Z"
+    }
+  },
+  {
+    "id": "cmkx1xqfx00br3bu1rw9f392p",
+    "name": "Kids Boys Clothing Product 2",
+    "slug": "kids-boys-clothing-product-2",
+    "description": "Experience the finest Kids Boys Clothing Product 2, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkwr2khv0035k5csx9ll0guu",
+    "isFeatured": false,
+    "isBestSeller": false,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:31:34.173Z",
+    "updatedAt": "2026-01-27T20:31:34.173Z",
+    "basePrice": "1634",
+    "isOffer": false,
+    "isNew": true,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx1xqfx00bs3bu1c73bzny0",
+        "url": "https://images.unsplash.com/photo-1519238263496-61437a8ac686?auto=format&fit=crop&w=800&q=80",
+        "altText": "Kids Boys Clothing Product 2",
+        "isPrimary": true,
+        "productId": "cmkx1xqfx00br3bu1rw9f392p"
+      },
+      {
+        "id": "cmkx1xqfx00bt3bu1f8c6q4p1",
+        "url": "https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=800&q=80",
+        "altText": "Kids Boys Clothing Product 2 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx1xqfx00br3bu1rw9f392p"
+      }
+    ],
+    "category": {
+      "id": "cmkwr2khv0035k5csx9ll0guu",
+      "name": "Boys Clothing",
+      "slug": "kids-boys-clothing",
+      "description": "Boys Clothing for Kids",
+      "image": null,
+      "parentId": "cmkwr2kb10033k5cssqq65kwv",
+      "createdAt": "2026-01-27T15:27:23.971Z",
+      "updatedAt": "2026-01-27T15:27:23.971Z"
+    }
+  },
+  {
+    "id": "cmkx1xqx700bz3bu1y1i0pwjb",
+    "name": "Kids Boys Clothing Product 3",
+    "slug": "kids-boys-clothing-product-3",
+    "description": "Experience the finest Kids Boys Clothing Product 3, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkwr2khv0035k5csx9ll0guu",
+    "isFeatured": false,
+    "isBestSeller": false,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:31:34.795Z",
+    "updatedAt": "2026-01-27T20:31:34.795Z",
+    "basePrice": "658",
+    "isOffer": false,
+    "isNew": false,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx1xqx700c03bu18crubnwy",
+        "url": "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&w=800&q=80",
+        "altText": "Kids Boys Clothing Product 3",
+        "isPrimary": true,
+        "productId": "cmkx1xqx700bz3bu1y1i0pwjb"
+      },
+      {
+        "id": "cmkx1xqx700c13bu15i3cl0bv",
+        "url": "https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=800&q=80",
+        "altText": "Kids Boys Clothing Product 3 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx1xqx700bz3bu1y1i0pwjb"
+      }
+    ],
+    "category": {
+      "id": "cmkwr2khv0035k5csx9ll0guu",
+      "name": "Boys Clothing",
+      "slug": "kids-boys-clothing",
+      "description": "Boys Clothing for Kids",
+      "image": null,
+      "parentId": "cmkwr2kb10033k5cssqq65kwv",
+      "createdAt": "2026-01-27T15:27:23.971Z",
+      "updatedAt": "2026-01-27T15:27:23.971Z"
+    }
+  },
+  {
+    "id": "cmkx1xrdw00c73bu175pg7o4n",
+    "name": "Kids Boys Clothing Product 4",
+    "slug": "kids-boys-clothing-product-4",
+    "description": "Experience the finest Kids Boys Clothing Product 4, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkwr2khv0035k5csx9ll0guu",
+    "isFeatured": false,
+    "isBestSeller": false,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:31:35.396Z",
+    "updatedAt": "2026-01-27T20:31:35.396Z",
+    "basePrice": "1157",
+    "isOffer": false,
+    "isNew": false,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx1xrdw00c83bu1zykqg5nf",
+        "url": "https://images.unsplash.com/photo-1519238263496-61437a8ac686?auto=format&fit=crop&w=800&q=80",
+        "altText": "Kids Boys Clothing Product 4",
+        "isPrimary": true,
+        "productId": "cmkx1xrdw00c73bu175pg7o4n"
+      },
+      {
+        "id": "cmkx1xrdw00c93bu1qm99ux0x",
+        "url": "https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=800&q=80",
+        "altText": "Kids Boys Clothing Product 4 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx1xrdw00c73bu175pg7o4n"
+      }
+    ],
+    "category": {
+      "id": "cmkwr2khv0035k5csx9ll0guu",
+      "name": "Boys Clothing",
+      "slug": "kids-boys-clothing",
+      "description": "Boys Clothing for Kids",
+      "image": null,
+      "parentId": "cmkwr2kb10033k5cssqq65kwv",
+      "createdAt": "2026-01-27T15:27:23.971Z",
+      "updatedAt": "2026-01-27T15:27:23.971Z"
+    }
+  }
+]

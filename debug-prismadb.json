@@ -1,0 +1,267 @@
+[
+  {
+    "id": "cmkx1x07o00053bu157f8cnhb",
+    "name": "Men Shirts Product 1",
+    "slug": "men-shirts-product-1",
+    "description": "Experience the finest Men Shirts Product 1, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkwr2d4m0003k5cs6ldx6fes",
+    "isFeatured": false,
+    "isBestSeller": true,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:31:00.180Z",
+    "updatedAt": "2026-01-27T20:31:00.180Z",
+    "basePrice": "2382",
+    "isOffer": false,
+    "isNew": false,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx1x07o00063bu16y9stypp",
+        "url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80",
+        "altText": "Men Shirts Product 1",
+        "isPrimary": true,
+        "productId": "cmkx1x07o00053bu157f8cnhb"
+      },
+      {
+        "id": "cmkx1x07o00073bu1xtkt1m5w",
+        "url": "https://images.unsplash.com/photo-1589310243388-15ee3317db67?auto=format&fit=crop&w=800&q=80",
+        "altText": "Men Shirts Product 1 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx1x07o00053bu157f8cnhb"
+      }
+    ],
+    "category": {
+      "id": "cmkwr2d4m0003k5cs6ldx6fes",
+      "name": "Shirts",
+      "slug": "men-shirts",
+      "description": "Shirts for Men",
+      "image": null,
+      "parentId": "cmkwr2ctn0001k5csj324kca2",
+      "createdAt": "2026-01-27T15:27:14.422Z",
+      "updatedAt": "2026-01-27T15:27:14.422Z"
+    }
+  },
+  {
+    "id": "cmkx1x0w1000d3bu1xyq9icsc",
+    "name": "Men Shirts Product 2",
+    "slug": "men-shirts-product-2",
+    "description": "Experience the finest Men Shirts Product 2, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkwr2d4m0003k5cs6ldx6fes",
+    "isFeatured": false,
+    "isBestSeller": false,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:31:01.057Z",
+    "updatedAt": "2026-01-27T20:31:01.057Z",
+    "basePrice": "933",
+    "isOffer": false,
+    "isNew": true,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx1x0w2000e3bu1ai7b0ryj",
+        "url": "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80",
+        "altText": "Men Shirts Product 2",
+        "isPrimary": true,
+        "productId": "cmkx1x0w1000d3bu1xyq9icsc"
+      },
+      {
+        "id": "cmkx1x0w2000f3bu1ihp0gygf",
+        "url": "https://images.unsplash.com/photo-1603252109303-2751440ee693?auto=format&fit=crop&w=800&q=80",
+        "altText": "Men Shirts Product 2 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx1x0w1000d3bu1xyq9icsc"
+      }
+    ],
+    "category": {
+      "id": "cmkwr2d4m0003k5cs6ldx6fes",
+      "name": "Shirts",
+      "slug": "men-shirts",
+      "description": "Shirts for Men",
+      "image": null,
+      "parentId": "cmkwr2ctn0001k5csj324kca2",
+      "createdAt": "2026-01-27T15:27:14.422Z",
+      "updatedAt": "2026-01-27T15:27:14.422Z"
+    }
+  },
+  {
+    "id": "cmkx1x1dh000l3bu15os8r92f",
+    "name": "Men Shirts Product 3",
+    "slug": "men-shirts-product-3",
+    "description": "Experience the finest Men Shirts Product 3, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkwr2d4m0003k5cs6ldx6fes",
+    "isFeatured": false,
+    "isBestSeller": false,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:31:01.685Z",
+    "updatedAt": "2026-01-27T20:31:01.685Z",
+    "basePrice": "2107",
+    "isOffer": false,
+    "isNew": false,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx1x1dh000m3bu1fkk47kio",
+        "url": "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=800&q=80",
+        "altText": "Men Shirts Product 3",
+        "isPrimary": true,
+        "productId": "cmkx1x1dh000l3bu15os8r92f"
+      },
+      {
+        "id": "cmkx1x1dh000n3bu1s753z06o",
+        "url": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80",
+        "altText": "Men Shirts Product 3 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx1x1dh000l3bu15os8r92f"
+      }
+    ],
+    "category": {
+      "id": "cmkwr2d4m0003k5cs6ldx6fes",
+      "name": "Shirts",
+      "slug": "men-shirts",
+      "description": "Shirts for Men",
+      "image": null,
+      "parentId": "cmkwr2ctn0001k5csj324kca2",
+      "createdAt": "2026-01-27T15:27:14.422Z",
+      "updatedAt": "2026-01-27T15:27:14.422Z"
+    }
+  },
+  {
+    "id": "cmkx1x1vc000t3bu115kxtyrt",
+    "name": "Men Shirts Product 4",
+    "slug": "men-shirts-product-4",
+    "description": "Experience the finest Men Shirts Product 4, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkwr2d4m0003k5cs6ldx6fes",
+    "isFeatured": false,
+    "isBestSeller": false,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:31:02.327Z",
+    "updatedAt": "2026-01-27T20:31:02.327Z",
+    "basePrice": "2373",
+    "isOffer": false,
+    "isNew": false,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx1x1vc000u3bu1h90elm0i",
+        "url": "https://images.unsplash.com/photo-1621072118054-e6aa7b6f0b54?auto=format&fit=crop&w=800&q=80",
+        "altText": "Men Shirts Product 4",
+        "isPrimary": true,
+        "productId": "cmkx1x1vc000t3bu115kxtyrt"
+      },
+      {
+        "id": "cmkx1x1vc000v3bu19lai9sh0",
+        "url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80",
+        "altText": "Men Shirts Product 4 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx1x1vc000t3bu115kxtyrt"
+      }
+    ],
+    "category": {
+      "id": "cmkwr2d4m0003k5cs6ldx6fes",
+      "name": "Shirts",
+      "slug": "men-shirts",
+      "description": "Shirts for Men",
+      "image": null,
+      "parentId": "cmkwr2ctn0001k5csj324kca2",
+      "createdAt": "2026-01-27T15:27:14.422Z",
+      "updatedAt": "2026-01-27T15:27:14.422Z"
+    }
+  },
+  {
+    "id": "cmkx1x2ig00133bu1zyz43h0l",
+    "name": "Men T-Shirts Product 1",
+    "slug": "men-t-shirts-product-1",
+    "description": "Experience the finest Men T-Shirts Product 1, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkwr2dx3000ck5csmvzjg4li",
+    "isFeatured": false,
+    "isBestSeller": true,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:31:03.160Z",
+    "updatedAt": "2026-01-27T20:31:03.160Z",
+    "basePrice": "1317",
+    "isOffer": false,
+    "isNew": false,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx1x2ig00143bu1x13u8uxy",
+        "url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+        "altText": "Men T-Shirts Product 1",
+        "isPrimary": true,
+        "productId": "cmkx1x2ig00133bu1zyz43h0l"
+      },
+      {
+        "id": "cmkx1x2ig00153bu1cytpyif0",
+        "url": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80",
+        "altText": "Men T-Shirts Product 1 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx1x2ig00133bu1zyz43h0l"
+      }
+    ],
+    "category": {
+      "id": "cmkwr2dx3000ck5csmvzjg4li",
+      "name": "T-Shirts",
+      "slug": "men-t-shirts",
+      "description": "T-Shirts for Men",
+      "image": null,
+      "parentId": "cmkwr2ctn0001k5csj324kca2",
+      "createdAt": "2026-01-27T15:27:15.448Z",
+      "updatedAt": "2026-01-27T15:27:15.448Z"
+    }
+  }
+]

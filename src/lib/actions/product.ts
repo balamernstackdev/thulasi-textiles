@@ -71,7 +71,9 @@ export async function createProduct(formData: FormData) {
                 metaDescription,
                 videoUrl,
                 complementaryProducts: {
-                    connect: complementaryProductIds.map((id: string) => ({ id }))
+                    create: complementaryProductIds.map((id: string) => ({
+                        complementary: { connect: { id } }
+                    }))
                 },
                 images: {
                     create: images.map((url: string, index: number) => ({
@@ -123,152 +125,145 @@ export const getProducts = cache(async (options: {
     pageSize?: number,
     limit?: number
 } = {}) => {
-    const key = JSON.stringify(options);
-    return unstable_cache(
-        async () => {
-            try {
-                let where: any = {};
-                if (options.isFeatured) where.isFeatured = true;
-                if (options.isBestSeller) where.isBestSeller = true;
-                if (options.isOffer) where.isOffer = true;
-                if (options.isNew) where.isNew = true;
+    try {
+        let where: any = {};
+        if (options.isFeatured) where.isFeatured = true;
+        if (options.isBestSeller) where.isBestSeller = true;
+        if (options.isOffer) where.isOffer = true;
+        if (options.isNew) where.isNew = true;
 
-                if (options.categorySlug) {
-                    where.category = {
-                        OR: [
-                            { slug: options.categorySlug },
-                            { parent: { slug: options.categorySlug } }
-                        ]
-                    };
-                }
+        if (options.categorySlug) {
+            where.category = {
+                OR: [
+                    { slug: options.categorySlug },
+                    { parent: { slug: options.categorySlug } }
+                ]
+            };
+        }
 
-                if (options.search) {
-                    where.OR = [
-                        { name: { contains: options.search } },
-                        { description: { contains: options.search } },
-                        { fabric: { contains: options.search } },
-                        { occasion: { contains: options.search } }
-                    ];
-                }
+        if (options.search) {
+            where.OR = [
+                { name: { contains: options.search } },
+                { description: { contains: options.search } },
+                { fabric: { contains: options.search } },
+                { occasion: { contains: options.search } }
+            ];
+        }
 
-                if (options.minPrice || options.maxPrice) {
-                    where.basePrice = {};
-                    if (options.minPrice) where.basePrice.gte = options.minPrice;
-                    if (options.maxPrice) where.basePrice.lte = options.maxPrice;
-                }
+        if (options.minPrice || options.maxPrice) {
+            where.basePrice = {};
+            if (options.minPrice) where.basePrice.gte = options.minPrice;
+            if (options.maxPrice) where.basePrice.lte = options.maxPrice;
+        }
 
-                // Attribute Filters
-                if (options.fabrics && options.fabrics.length > 0) {
-                    where.fabric = { in: options.fabrics };
-                }
-                if (options.occasions && options.occasions.length > 0) {
-                    where.occasion = { in: options.occasions };
-                }
+        // Attribute Filters
+        if (options.fabrics && options.fabrics.length > 0) {
+            where.fabric = { in: options.fabrics };
+        }
+        if (options.occasions && options.occasions.length > 0) {
+            where.occasion = { in: options.occasions };
+        }
 
-                // Variant Filters (Size, Color, Material)
-                if ((options.sizes && options.sizes.length > 0) ||
-                    (options.colors && options.colors.length > 0) ||
-                    (options.materials && options.materials.length > 0)) {
-                    where.variants = {
-                        some: {
-                            ...(options.sizes && options.sizes.length > 0 && { size: { in: options.sizes } }),
-                            ...(options.colors && options.colors.length > 0 && { color: { in: options.colors } }),
-                            ...(options.materials && options.materials.length > 0 && { material: { in: options.materials } }),
+        // Variant Filters (Size, Color, Material)
+        if ((options.sizes && options.sizes.length > 0) ||
+            (options.colors && options.colors.length > 0) ||
+            (options.materials && options.materials.length > 0)) {
+            where.variants = {
+                some: {
+                    ...(options.sizes && options.sizes.length > 0 && { size: { in: options.sizes } }),
+                    ...(options.colors && options.colors.length > 0 && { color: { in: options.colors } }),
+                    ...(options.materials && options.materials.length > 0 && { material: { in: options.materials } }),
+                }
+            };
+        }
+
+        where.isActive = true;
+
+        const page = options.page || 1;
+        const pageSize = options.pageSize || 10;
+        const skip = (page - 1) * pageSize;
+
+        let orderBy: any = { createdAt: 'desc' };
+        if (options.sort === 'price_asc') orderBy = { basePrice: 'asc' };
+        else if (options.sort === 'price_desc') orderBy = { basePrice: 'desc' };
+        else if (options.sort === 'newest') orderBy = { createdAt: 'desc' };
+
+        const [products, total] = await Promise.all([
+            prismadb.product.findMany({
+                where,
+                include: {
+                    images: {
+                        take: 2,
+                        select: {
+                            url: true,
+                            isPrimary: true,
                         }
-                    };
-                }
-
-                where.isActive = true;
-
-                const page = options.page || 1;
-                const pageSize = options.pageSize || 10;
-                const skip = (page - 1) * pageSize;
-
-                let orderBy: any = { createdAt: 'desc' };
-                if (options.sort === 'price_asc') orderBy = { basePrice: 'asc' };
-                else if (options.sort === 'price_desc') orderBy = { basePrice: 'desc' };
-                else if (options.sort === 'newest') orderBy = { createdAt: 'desc' };
-
-                const [products, total] = await Promise.all([
-                    prismadb.product.findMany({
-                        where,
-                        include: {
-                            images: {
-                                take: 2,
-                                select: {
-                                    url: true,
-                                    isPrimary: true,
-                                }
-                            },
-                            category: true,
-                            variants: {
-                                select: {
-                                    id: true,
-                                    size: true,
-                                    color: true,
-                                    material: true,
-                                    stock: true,
-                                    price: true
-                                }
-                            },
-                            reviews: {
-                                where: { isPublic: true },
-                                select: { rating: true }
-                            }
-                        } as any,
-                        take: options.limit || options.pageSize || 10,
-                        skip: options.limit ? 0 : skip,
-                        orderBy
-                    }),
-                    prismadb.product.count({ where })
-                ]);
-
-                const processedProducts = (products as any[]).map(product => {
-                    const reviewCount = product.reviews?.length || 0;
-                    const averageRating = reviewCount > 0
-                        ? product.reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviewCount
-                        : 0;
-
-                    return {
-                        ...product,
-                        basePrice: Number(product.basePrice),
-                        reviewCount,
-                        averageRating,
-                        variants: product.variants?.map((v: any) => ({
-                            ...v,
-                            price: Number(v.price)
-                        })) || []
-                    };
-                });
-
-                return {
-                    success: true,
-                    data: processedProducts,
-                    pagination: {
-                        total,
-                        page: options.page || 1,
-                        pageSize: options.pageSize || 10,
-                        totalPages: Math.ceil(total / (options.pageSize || 10))
-                    }
-                };
-            } catch (error) {
-                console.error('[DATABASE_ERROR] Failed to get products:', error);
-                return {
-                    success: false,
-                    data: [],
-                    pagination: {
-                        total: 0,
-                        page: options.page || 1,
-                        pageSize: options.pageSize || 10,
-                        totalPages: 0
                     },
-                    error: 'Failed to fetch products'
-                };
+                    category: true,
+                    variants: {
+                        select: {
+                            id: true,
+                            size: true,
+                            color: true,
+                            material: true,
+                            stock: true,
+                            price: true
+                        }
+                    },
+                    reviews: {
+                        where: { isPublic: true },
+                        select: { rating: true }
+                    }
+                } as any,
+                take: options.limit || options.pageSize || 10,
+                skip: options.limit ? 0 : skip,
+                orderBy
+            }),
+            prismadb.product.count({ where })
+        ]);
+
+        const processedProducts = (products as any[]).map(product => {
+            const reviewCount = product.reviews?.length || 0;
+            const averageRating = reviewCount > 0
+                ? product.reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviewCount
+                : 0;
+
+            return {
+                ...product,
+                basePrice: Number(product.basePrice),
+                reviewCount,
+                averageRating,
+                variants: product.variants?.map((v: any) => ({
+                    ...v,
+                    price: Number(v.price)
+                })) || []
+            };
+        });
+
+        return {
+            success: true,
+            data: processedProducts,
+            pagination: {
+                total,
+                page: options.page || 1,
+                pageSize: options.pageSize || 10,
+                totalPages: Math.ceil(total / (options.pageSize || 10))
             }
-        },
-        ['products-list', key],
-        { tags: ['products'], revalidate: 3600 }
-    )();
+        };
+    } catch (error) {
+        console.error('[DATABASE_ERROR] Failed to get products:', error);
+        return {
+            success: false,
+            data: [],
+            pagination: {
+                total: 0,
+                page: options.page || 1,
+                pageSize: options.pageSize || 10,
+                totalPages: 0
+            },
+            error: 'Failed to fetch products'
+        };
+    }
 });
 
 export const getFilterValues = cache(async () => {
@@ -367,12 +362,16 @@ export const getProductBySlug = cache(async (slug: string) => {
                             where: { isPublic: true },
                             select: { rating: true }
                         },
-                        /* complementaryProducts: {
+                        complementaryProducts: {
                             include: {
-                                images: { take: 1 },
-                                variants: { take: 1 }
+                                complementary: {
+                                    include: {
+                                        images: { take: 1 },
+                                        variants: { take: 1 }
+                                    }
+                                }
                             }
-                        } */
+                        }
                     }
                 });
                 if (!product) return { success: true, data: null };
@@ -392,14 +391,17 @@ export const getProductBySlug = cache(async (slug: string) => {
                         price: Number(v.price),
                         discount: v.discount ? Number(v.discount) : 0
                     })),
-                    /* complementaryProducts: product.complementaryProducts.map((p: any) => ({
-                        ...p,
-                        basePrice: Number(p.basePrice),
-                        variants: p.variants?.map((v: any) => ({
-                            ...v,
-                            price: Number(v.price)
-                        })) || []
-                    })) */
+                    complementaryProducts: product.complementaryProducts.map((cp: any) => {
+                        const p = cp.complementary;
+                        return {
+                            ...p,
+                            basePrice: Number(p.basePrice),
+                            variants: p.variants?.map((v: any) => ({
+                                ...v,
+                                price: Number(v.price)
+                            })) || []
+                        };
+                    })
                 };
 
                 return { success: true, data: serializedProduct as any };
@@ -427,12 +429,16 @@ export const getProductById = cache(async (id: string) => {
                             where: { isPublic: true },
                             select: { rating: true }
                         },
-                        /* complementaryProducts: {
-                            select: {
-                                id: true,
-                                name: true
+                        complementaryProducts: {
+                            include: {
+                                complementary: {
+                                    select: {
+                                        id: true,
+                                        name: true
+                                    }
+                                }
                             }
-                        } */
+                        }
                     }
                 });
                 if (!product) return { success: true, data: null };
@@ -451,7 +457,8 @@ export const getProductById = cache(async (id: string) => {
                         ...v,
                         price: Number(v.price),
                         discount: v.discount ? Number(v.discount) : 0
-                    }))
+                    })),
+                    complementaryProducts: product.complementaryProducts.map((cp: any) => cp.complementary)
                 };
 
                 return { success: true, data: serializedProduct as any };
@@ -529,8 +536,10 @@ export async function updateProduct(id: string, formData: FormData) {
                 metaDescription,
                 videoUrl,
                 complementaryProducts: {
-                    set: [],
-                    connect: complementaryProductIds.map((id: string) => ({ id }))
+                    deleteMany: {},
+                    create: complementaryProductIds.map((id: string) => ({
+                        complementary: { connect: { id } }
+                    }))
                 },
                 images: {
                     deleteMany: {},
@@ -577,6 +586,24 @@ export async function deleteProduct(id: string) {
     }
 }
 
+export async function deleteProducts(ids: string[]) {
+    try {
+        await prismadb.product.deleteMany({
+            where: {
+                id: {
+                    in: ids
+                }
+            }
+        });
+        revalidatePath('/admin/products');
+        revalidateTag('products', 'default');
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting products:', error);
+        return { success: false, error: 'Failed to delete products' };
+    }
+}
+
 // ============================================
 // RELATED PRODUCTS ACTIONS
 // ============================================
@@ -593,16 +620,20 @@ export async function getProductWithRelated(slug: string) {
                 variants: true,
                 category: true,
                 complementaryProducts: {
-                    where: { isActive: true },
+                    where: { complementary: { isActive: true } },
                     include: {
-                        images: {
-                            where: { isPrimary: true }
-                        },
-                        variants: {
-                            take: 1
+                        complementary: {
+                            include: {
+                                images: {
+                                    where: { isPrimary: true }
+                                },
+                                variants: {
+                                    take: 1
+                                }
+                            }
                         }
                     },
-                    take: 6 // Limit to 6 related products
+                    take: 6
                 }
             }
         });
@@ -611,7 +642,13 @@ export async function getProductWithRelated(slug: string) {
             return { success: false, error: 'Product not found' };
         }
 
-        return { success: true, data: product };
+        return {
+            success: true,
+            data: {
+                ...product,
+                complementaryProducts: product.complementaryProducts.map(cp => cp.complementary)
+            }
+        };
     } catch (error) {
         console.error('Failed to fetch product with related:', error);
         return { success: false, error: 'Failed to fetch product' };
@@ -623,22 +660,15 @@ export async function getProductWithRelated(slug: string) {
  */
 export async function updateRelatedProducts(productId: string, relatedProductIds: string[]) {
     try {
-        // Disconnect all existing relationships
+        // Create new relationships
         await prismadb.product.update({
             where: { id: productId },
             data: {
                 complementaryProducts: {
-                    set: [] // Clear all existing relationships
-                }
-            }
-        });
-
-        // Connect new relationships
-        await prismadb.product.update({
-            where: { id: productId },
-            data: {
-                complementaryProducts: {
-                    connect: relatedProductIds.map(id => ({ id }))
+                    deleteMany: {}, // Clear existing
+                    create: relatedProductIds.map(id => ({
+                        complementary: { connect: { id } }
+                    }))
                 }
             }
         });
@@ -666,7 +696,7 @@ export async function getAvailableRelatedProducts(productId: string, searchQuery
             where: { id: productId },
             include: {
                 complementaryProducts: {
-                    select: { id: true }
+                    select: { complementaryId: true }
                 }
             }
         });
@@ -678,7 +708,7 @@ export async function getAvailableRelatedProducts(productId: string, searchQuery
         // Get IDs of already linked products
         const excludedIds = [
             productId, // Exclude self
-            ...currentProduct.complementaryProducts.map(p => p.id)
+            ...currentProduct.complementaryProducts.map(p => p.complementaryId)
         ];
 
         // Build search filter

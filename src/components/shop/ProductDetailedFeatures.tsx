@@ -76,71 +76,71 @@ export default function ProductDetailedFeatures({ product }: { product: any }) {
     return (
         <section className="space-y-16 mt-16 mb-24">
             {/* The Thulasi Promise - Visual Banner */}
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-gray-950 p-8 md:p-16 group">
+            <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gray-950 p-6 md:p-16 group">
                 {/* Background Decoration */}
                 <div className="absolute top-0 right-0 w-96 h-96 bg-orange-600/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-orange-600/20 transition-all duration-1000" />
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-600/5 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/4" />
 
-                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
                     <div className="space-y-6">
-                        <div className="inline-flex items-center gap-2 bg-orange-600/20 px-4 py-2 rounded-full border border-orange-600/30">
-                            <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-                            <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">Quality Assurance</span>
+                        <div className="inline-flex items-center gap-2 bg-orange-600/20 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-orange-600/30">
+                            <Sparkles className="w-3 md:w-3.5 h-3 md:h-3.5 text-orange-500" />
+                            <span className="text-[9px] md:text-[10px] font-black text-orange-500 uppercase tracking-widest">Quality Assurance</span>
                         </div>
                         <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-white uppercase italic tracking-tighter leading-[0.9]">
                             {heritageTitle.split(' ').map((word: string, i: number) => (
                                 <span key={i} className={word.toLowerCase() === 'thulasi' ? 'text-orange-600' : ''}>
                                     {word}{' '}
-                                    {i === 1 && <br />}
+                                    {i === 1 && <br className="hidden md:block" />}
                                 </span>
                             ))}
                         </h2>
-                        <p className="text-gray-400 text-lg font-medium leading-relaxed max-w-lg">
+                        <p className="text-gray-400 text-sm md:text-lg font-medium leading-relaxed max-w-lg">
                             {heritageDesc}
                         </p>
-                        <div className="flex flex-wrap gap-4 pt-4">
-                            <div className="bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 flex items-center gap-4">
-                                <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
-                                    <ShieldCheck className="w-6 h-6 text-white" />
+                        <div className="flex flex-wrap gap-3 md:gap-4 pt-4">
+                            <div className="bg-white/5 backdrop-blur-md px-4 py-3 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/10 flex items-center gap-3 md:gap-4">
+                                <div className="w-8 h-8 md:w-10 md:h-10 bg-orange-600 rounded-full flex items-center justify-center">
+                                    <ShieldCheck className="w-4 h-4 md:w-6 md:h-6 text-white" />
                                 </div>
                                 <div>
-                                    <p className="text-white font-black uppercase text-xs">Silk Mark</p>
-                                    <p className="text-gray-500 text-[10px] font-bold">100% Certified</p>
+                                    <p className="text-white font-black uppercase text-[10px] md:text-xs">Silk Mark</p>
+                                    <p className="text-gray-500 text-[9px] md:text-[10px] font-bold">100% Certified</p>
                                 </div>
                             </div>
-                            <div className="bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 flex items-center gap-4">
-                                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                                    <Zap className="w-6 h-6 text-orange-500" />
+                            <div className="bg-white/5 backdrop-blur-md px-4 py-3 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/10 flex items-center gap-3 md:gap-4">
+                                <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-full flex items-center justify-center">
+                                    <Zap className="w-4 h-4 md:w-6 md:h-6 text-orange-500" />
                                 </div>
                                 <div>
-                                    <p className="text-white font-black uppercase text-xs">Handloom</p>
-                                    <p className="text-gray-500 text-[10px] font-bold">Artisan Made</p>
+                                    <p className="text-white font-black uppercase text-[10px] md:text-xs">Handloom</p>
+                                    <p className="text-gray-500 text-[9px] md:text-[10px] font-bold">Artisan Made</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="aspect-[4/5] bg-gray-900 rounded-2xl overflow-hidden relative border border-white/5 group-hover:border-orange-600/30 transition-colors">
+                    <div className="grid grid-cols-2 gap-3 md:gap-4">
+                        <div className="aspect-[4/5] bg-gray-900 rounded-xl md:rounded-2xl overflow-hidden relative border border-white/5 group-hover:border-orange-600/30 transition-colors">
                             <Image
                                 src="/auth_textile_bg.png"
                                 alt="Heritage Detail"
                                 fill
                                 className="object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-[2000ms]"
                             />
-                            <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-gray-950 to-transparent">
-                                <p className="text-white font-black text-[10px] uppercase tracking-widest">Premium Weave</p>
+                            <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 bg-gradient-to-t from-gray-950 to-transparent">
+                                <p className="text-white font-black text-[9px] md:text-[10px] uppercase tracking-widest">Premium Weave</p>
                             </div>
                         </div>
-                        <div className="aspect-[4/5] bg-gray-900 rounded-2xl overflow-hidden relative translate-y-8 border border-white/5 group-hover:border-orange-600/30 transition-colors">
+                        <div className="aspect-[4/5] bg-gray-900 rounded-xl md:rounded-2xl overflow-hidden relative translate-y-6 md:translate-y-8 border border-white/5 group-hover:border-orange-600/30 transition-colors">
                             <Image
                                 src="/placeholder-product.png"
                                 alt="Heritage Detail"
                                 fill
                                 className="object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-[2000ms]"
                             />
-                            <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-gray-950 to-transparent">
-                                <p className="text-white font-black text-[10px] uppercase tracking-widest">Handcrafted</p>
+                            <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 bg-gradient-to-t from-gray-950 to-transparent">
+                                <p className="text-white font-black text-[9px] md:text-[10px] uppercase tracking-widest">Handcrafted</p>
                             </div>
                         </div>
                     </div>
@@ -148,11 +148,11 @@ export default function ProductDetailedFeatures({ product }: { product: any }) {
             </div>
 
             {/* Quality Audit Section - Market Differentiation */}
-            <div className="bg-orange-600 rounded-[2.5rem] p-8 md:p-16 text-white relative overflow-hidden">
+            <div className="bg-orange-600 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-16 text-white relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
 
-                <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
-                    <div className="lg:max-w-xl space-y-6">
+                <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 md:gap-12">
+                    <div className="lg:max-w-xl space-y-4 md:space-y-6 text-center lg:text-left">
                         <h3 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter leading-none">
                             Our 5-Point <br /> <span className="text-black">Quality Audit</span>
                         </h3>
@@ -161,11 +161,11 @@ export default function ProductDetailedFeatures({ product }: { product: any }) {
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-4 justify-center">
+                    <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 md:gap-4 justify-center w-full lg:w-auto">
                         {auditData.map((audit: any, i: number) => (
-                            <div key={i} className="bg-black/20 backdrop-blur-xl border border-white/20 p-4 rounded-2xl min-w-[120px] text-center">
-                                <p className="text-[8px] font-black uppercase tracking-widest opacity-60 mb-1">{audit.label}</p>
-                                <p className="text-lg font-black italic">{audit.val}</p>
+                            <div key={i} className="bg-black/20 backdrop-blur-xl border border-white/20 p-3 md:p-4 rounded-xl md:rounded-2xl min-w-[100px] md:min-w-[120px] text-center last:col-span-2 last:md:col-span-1">
+                                <p className="text-[7px] md:text-[8px] font-black uppercase tracking-widest opacity-60 mb-1">{audit.label}</p>
+                                <p className="text-base md:text-lg font-black italic">{audit.val}</p>
                             </div>
                         ))}
                     </div>

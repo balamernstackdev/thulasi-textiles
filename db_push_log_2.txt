@@ -1,0 +1,12 @@
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": MySQL database "defaultdb" at "mysql-29cb632d-baladeveloper06-0348.h.aivencloud.com:26800"
+Error: Cannot add or update a child row: a foreign key constraint fails ("defaultdb"."#sql-c1_d2ec", CONSTRAINT "ProductImage_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product" ("id") ON DELETE CASCADE ON UPDATE CASCADE)
+   0: sql_schema_connector::apply_migration::migration_step
+           with step=AddForeignKey { foreign_key_id: ForeignKeyId(5) }
+             at schema-engine\connectors\sql-schema-connector\src\apply_migration.rs:21
+   1: sql_schema_connector::apply_migration::apply_migration
+             at schema-engine\connectors\sql-schema-connector\src\apply_migration.rs:10
+   2: schema_core::state::SchemaPush
+             at schema-engine\core\src\state.rs:433
+

@@ -42,7 +42,7 @@ export default async function CategoryPage({
     const occasions = sParams.occasions?.split(',').filter(Boolean);
     const sort = sParams.sort;
 
-    const pageSize = 12;
+    const pageSize = 15;
 
     const [{ data: categoryData }, session, filterAttributesResult] = await Promise.all([
         isNewPage ? Promise.resolve({ success: true, data: { name: 'New Arrivals', slug: 'new-arrivals', parent: null } }) : getCategoryBySlug(slug),
@@ -108,7 +108,7 @@ export default async function CategoryPage({
                         {/* Title & Sorting */}
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                             <div>
-                                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 uppercase italic tracking-tighter">{category?.name}</h1>
+                                <h1 className="text-3xl md:text-5xl font-serif text-gray-900 leading-none mb-2">{category?.name}</h1>
                                 <p className="text-sm text-gray-500 mt-1">
                                     {pagination?.total || 0} Products found
                                 </p>
@@ -122,7 +122,7 @@ export default async function CategoryPage({
                         {/* Product Grid */}
                         {products && products.length > 0 ? (
                             <>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-x-6 gap-y-12">
                                     {products.map((product: any) => (
                                         <ProductCard key={product.id} product={product} session={session} />
                                     ))}

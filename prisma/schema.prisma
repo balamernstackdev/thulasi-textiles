@@ -80,8 +80,8 @@ model Product {
   metaDescription  String?          @db.Text
   metaTitle        String?
   videoUrl         String?
-  complementaryProducts Product[] @relation("ComplementaryRelation")
-  complementedBy        Product[] @relation("ComplementaryRelation")
+  complementaryProducts ComplementaryProduct[] @relation("ProductToComplementary")
+  complementedBy        ComplementaryProduct[] @relation("ComplementaryToProduct")
   category         Category         @relation(fields: [categoryId], references: [id])
   images           ProductImage[]
   variants         ProductVariant[]
@@ -288,4 +288,19 @@ model Story {
   tags        String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
 }
+
+model ComplementaryProduct {
+  id              String  @id @default(cuid())
+  productId       String
+  complementaryId String
+
+  product       Product @relation("ProductToComplementary", fields: [productId], references: [id], onDelete: Cascade)
+  complementary Product @relation("ComplementaryToProduct", fields: [complementaryId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, complementaryId])
+  @@index([complementaryId])
+  @@index([productId])
+}
+

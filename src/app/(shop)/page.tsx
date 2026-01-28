@@ -49,7 +49,7 @@ interface BannerItem {
 async function CategoryProductSections({ topCategories, session, bestSellerBanners, offerBanners }: any) {
   const categorySections = await Promise.all(
     topCategories.map(async (cat: any) => {
-      const { data: products } = await getProducts({ categorySlug: cat.slug, limit: 5 });
+      const { data: products } = await getProducts({ categorySlug: cat.slug, limit: 4 });
       return { category: cat, products: products || [] };
     })
   );
@@ -82,7 +82,7 @@ async function CategoryProductSections({ topCategories, session, bestSellerBanne
 
 // Separate component for streaming offers
 async function OfferSection({ session }: { session: any }) {
-  const { data: offerProducts } = await getProducts({ isOffer: true, limit: 5 });
+  const { data: offerProducts } = await getProducts({ isOffer: true, limit: 4 });
 
   if (!offerProducts || offerProducts.length === 0) return null;
 
@@ -123,16 +123,12 @@ export default async function ShopHome() {
       {/* Announcement Bar moved to Navbar/Layout */}
 
       {/* Main Home Banners - High Priority */}
-      <div className="relative z-10 w-full px-4 sm:px-8 md:px-12 lg:px-20 pt-4">
-        <div className="max-w-[1700px] mx-auto">
-          <div className="rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-lg md:shadow-2xl">
-            <Banner banners={mainBanners} />
-          </div>
-        </div>
+      <div className="relative z-10 w-full pt-0">
+        <Banner banners={mainBanners} />
       </div>
 
-      {/* Marketing Trust Bar */}
-      <TrustBar />
+      {/* Marketing Trust Bar - REMOVED */}
+      {/* <TrustBar /> */}
 
       {/* Flash Sale / Countdown - Dynamic Positioning */}
       {countdownBanners.length > 0 && <CountdownBanner banner={countdownBanners[0]} />}
@@ -140,25 +136,25 @@ export default async function ShopHome() {
       {/* Visual Category Grid - Dynamic */}
       <CategoryGrid categories={topCategories} />
 
-      {/* Modern Style Quiz - Find Your Weave */}
-      <HeritageQuiz />
+      {/* Modern Style Quiz - Find Your Weave (Hidden for later) */}
+      {/* <HeritageQuiz /> */}
 
       {/* Featured Section with Sidebar Promos */}
-      <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-3">
-            {latestProducts.length > 0 && (
-              <div className="bg-white rounded-[2.5rem] p-4 md:p-10 shadow-sm border border-gray-100 h-full">
-                <LatestProducts products={latestProducts} session={session} />
-              </div>
-            )}
+      {/* Featured Section - Full Width */}
+      <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-12 space-y-12">
+        {/* Converted Sidebar Banners to Advanced Slider */}
+        {sidebarBanners.length > 0 && (
+          <div className="rounded-2xl overflow-hidden shadow-lg">
+            <Banner banners={sidebarBanners} type="section" />
           </div>
-          <div className="space-y-8">
-            {sidebarBanners.slice(0, 2).map((banner, i) => (
-              <SidebarPromo key={i} banner={banner} />
-            ))}
+        )}
+
+        {/* Latest Products - Full Width */}
+        {latestProducts.length > 0 && (
+          <div className="bg-white rounded-[2.5rem] p-4 md:p-10 shadow-sm border border-gray-100">
+            <LatestProducts products={latestProducts} session={session} />
           </div>
-        </div>
+        )}
       </div>
 
       {/* Streaming Category Sections */}

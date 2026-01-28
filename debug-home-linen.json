@@ -1,0 +1,214 @@
+[
+  {
+    "id": "cmkx25t9000j4jl4nppkxd33u",
+    "name": "Home Linen Cushion Covers Product 1",
+    "slug": "home-linen-cushion-covers-product-1",
+    "description": "Experience the finest Home Linen Cushion Covers Product 1, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkx25t2v00j2jl4ng6chu2s7",
+    "isFeatured": false,
+    "isBestSeller": true,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:37:51.060Z",
+    "updatedAt": "2026-01-27T20:37:51.060Z",
+    "basePrice": "1624",
+    "isOffer": false,
+    "isNew": false,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx25t9100j5jl4nwmypijwe",
+        "url": "https://images.unsplash.com/photo-1584100936595-c065db20db70?auto=format&fit=crop&w=800&q=80",
+        "altText": "Home Linen Cushion Covers Product 1",
+        "isPrimary": true,
+        "productId": "cmkx25t9000j4jl4nppkxd33u"
+      },
+      {
+        "id": "cmkx25t9100j6jl4nt8z3jt6p",
+        "url": "https://images.unsplash.com/photo-1584100936595-c065db20db70?auto=format&fit=crop&w=800&q=80",
+        "altText": "Home Linen Cushion Covers Product 1 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx25t9000j4jl4nppkxd33u"
+      }
+    ],
+    "category": {
+      "id": "cmkx25t2v00j2jl4ng6chu2s7",
+      "name": "Cushion Covers",
+      "slug": "home-linen-cushion-covers",
+      "description": "Cushion Covers for Home Linen",
+      "image": null,
+      "parentId": "cmkx25l8z00f8jl4n04j2oily",
+      "createdAt": "2026-01-27T20:37:50.839Z",
+      "updatedAt": "2026-01-27T20:37:50.839Z"
+    }
+  },
+  {
+    "id": "cmkx25toj00jcjl4nntmq3rgz",
+    "name": "Home Linen Cushion Covers Product 2",
+    "slug": "home-linen-cushion-covers-product-2",
+    "description": "Experience the finest Home Linen Cushion Covers Product 2, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkx25t2v00j2jl4ng6chu2s7",
+    "isFeatured": false,
+    "isBestSeller": false,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:37:51.620Z",
+    "updatedAt": "2026-01-27T20:37:51.620Z",
+    "basePrice": "2018",
+    "isOffer": false,
+    "isNew": true,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx25tok00jdjl4niw34x6ix",
+        "url": "https://images.unsplash.com/photo-1584100936595-c065db20db70?auto=format&fit=crop&w=800&q=80",
+        "altText": "Home Linen Cushion Covers Product 2",
+        "isPrimary": true,
+        "productId": "cmkx25toj00jcjl4nntmq3rgz"
+      },
+      {
+        "id": "cmkx25tok00jejl4n88sy1c6h",
+        "url": "https://images.unsplash.com/photo-1584100936595-c065db20db70?auto=format&fit=crop&w=800&q=80",
+        "altText": "Home Linen Cushion Covers Product 2 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx25toj00jcjl4nntmq3rgz"
+      }
+    ],
+    "category": {
+      "id": "cmkx25t2v00j2jl4ng6chu2s7",
+      "name": "Cushion Covers",
+      "slug": "home-linen-cushion-covers",
+      "description": "Cushion Covers for Home Linen",
+      "image": null,
+      "parentId": "cmkx25l8z00f8jl4n04j2oily",
+      "createdAt": "2026-01-27T20:37:50.839Z",
+      "updatedAt": "2026-01-27T20:37:50.839Z"
+    }
+  },
+  {
+    "id": "cmkx25u4000jkjl4n22vnap60",
+    "name": "Home Linen Cushion Covers Product 3",
+    "slug": "home-linen-cushion-covers-product-3",
+    "description": "Experience the finest Home Linen Cushion Covers Product 3, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkx25t2v00j2jl4ng6chu2s7",
+    "isFeatured": false,
+    "isBestSeller": false,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:37:52.176Z",
+    "updatedAt": "2026-01-27T20:37:52.176Z",
+    "basePrice": "1418",
+    "isOffer": false,
+    "isNew": false,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx25u4000jljl4nef2l3vsg",
+        "url": "https://images.unsplash.com/photo-1584100936595-c065db20db70?auto=format&fit=crop&w=800&q=80",
+        "altText": "Home Linen Cushion Covers Product 3",
+        "isPrimary": true,
+        "productId": "cmkx25u4000jkjl4n22vnap60"
+      },
+      {
+        "id": "cmkx25u4000jmjl4nxxttcf2b",
+        "url": "https://images.unsplash.com/photo-1584100936595-c065db20db70?auto=format&fit=crop&w=800&q=80",
+        "altText": "Home Linen Cushion Covers Product 3 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx25u4000jkjl4n22vnap60"
+      }
+    ],
+    "category": {
+      "id": "cmkx25t2v00j2jl4ng6chu2s7",
+      "name": "Cushion Covers",
+      "slug": "home-linen-cushion-covers",
+      "description": "Cushion Covers for Home Linen",
+      "image": null,
+      "parentId": "cmkx25l8z00f8jl4n04j2oily",
+      "createdAt": "2026-01-27T20:37:50.839Z",
+      "updatedAt": "2026-01-27T20:37:50.839Z"
+    }
+  },
+  {
+    "id": "cmkx25ujh00jsjl4nbu36mjzz",
+    "name": "Home Linen Cushion Covers Product 4",
+    "slug": "home-linen-cushion-covers-product-4",
+    "description": "Experience the finest Home Linen Cushion Covers Product 4, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.",
+    "categoryId": "cmkx25t2v00j2jl4ng6chu2s7",
+    "isFeatured": false,
+    "isBestSeller": false,
+    "isActive": true,
+    "createdAt": "2026-01-27T20:37:52.733Z",
+    "updatedAt": "2026-01-27T20:37:52.733Z",
+    "basePrice": "1533",
+    "isOffer": false,
+    "isNew": false,
+    "artisanImage": null,
+    "artisanStory": null,
+    "careInstructions": null,
+    "fabric": null,
+    "occasion": null,
+    "origin": null,
+    "weave": null,
+    "heritageTitle": null,
+    "qualityAudit": null,
+    "metaDescription": null,
+    "metaTitle": null,
+    "videoUrl": null,
+    "images": [
+      {
+        "id": "cmkx25ujh00jtjl4nq2jbwsyl",
+        "url": "https://images.unsplash.com/photo-1584100936595-c065db20db70?auto=format&fit=crop&w=800&q=80",
+        "altText": "Home Linen Cushion Covers Product 4",
+        "isPrimary": true,
+        "productId": "cmkx25ujh00jsjl4nbu36mjzz"
+      },
+      {
+        "id": "cmkx25ujh00jujl4ncor1yl4g",
+        "url": "https://images.unsplash.com/photo-1584100936595-c065db20db70?auto=format&fit=crop&w=800&q=80",
+        "altText": "Home Linen Cushion Covers Product 4 Secondary View",
+        "isPrimary": false,
+        "productId": "cmkx25ujh00jsjl4nbu36mjzz"
+      }
+    ],
+    "category": {
+      "id": "cmkx25t2v00j2jl4ng6chu2s7",
+      "name": "Cushion Covers",
+      "slug": "home-linen-cushion-covers",
+      "description": "Cushion Covers for Home Linen",
+      "image": null,
+      "parentId": "cmkx25l8z00f8jl4n04j2oily",
+      "createdAt": "2026-01-27T20:37:50.839Z",
+      "updatedAt": "2026-01-27T20:37:50.839Z"
+    }
+  }
+]

@@ -110,10 +110,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                             className="object-cover transition-transform duration-[2000ms] group-hover:scale-105"
                                         />
                                     )}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/20 flex items-center p-12 lg:p-24 z-10">
-                                        <div className="max-w-2xl space-y-8">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/20 flex items-center p-6 md:p-12 lg:p-24 z-10">
+                                        <div className="max-w-2xl space-y-4 md:space-y-8">
                                             <div className="flex items-center gap-4">
-                                                <span className="text-orange-500 font-black uppercase tracking-[0.5em] text-xs">The Heritage Story</span>
+                                                <span className="text-orange-500 font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-[10px] md:text-xs">The Heritage Story</span>
                                                 {artisanImages.length > 1 && !product.videoUrl && (
                                                     <span className="bg-orange-500/20 text-orange-500 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-orange-500/30">
                                                         {artisanImages.length} Fold Listing
@@ -123,8 +123,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white leading-none tracking-tighter uppercase italic">
                                                 Crafted with <span className="text-orange-500 text-shadow-lg">Love</span> & Tradition
                                             </h2>
-                                            <p className="text-white/80 text-xl font-medium leading-relaxed">
-                                                {product.artisanStory || "Every Thulasi Textile piece is born in the heart of traditional weaving clusters. We work directly with master artisans to bring you authentic weaves that celebrate the richness of Indian heritage while embracing modern aesthetics."}
+                                            <p className="text-white/80 text-sm md:text-xl font-medium leading-relaxed">
+                                                {product.artisanStory || "Every Thulasi Textile piece is born in the heart of traditional weaving clusters. We work directly with master artisans to bring you authentic weaves."}
                                             </p>
                                         </div>
                                     </div>

@@ -1,0 +1,12 @@
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": MySQL database "defaultdb" at "mysql-29cb632d-baladeveloper06-0348.h.aivencloud.com:26800"
+Error: Unable to create or change a table without a primary key, when the system variable 'sql_require_primary_key' is set. Add a primary key to the table or unset this variable to avoid this message. Note that tables without a primary key can cause performance problems in row-based replication, so please consult your DBA before changing this setting.
+   0: sql_schema_connector::apply_migration::migration_step
+           with step=CreateTable { table_id: TableId(14) }
+             at schema-engine\connectors\sql-schema-connector\src\apply_migration.rs:21
+   1: sql_schema_connector::apply_migration::apply_migration
+             at schema-engine\connectors\sql-schema-connector\src\apply_migration.rs:10
+   2: schema_core::state::SchemaPush
+             at schema-engine\core\src\state.rs:433
+
