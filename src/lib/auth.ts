@@ -36,7 +36,9 @@ export async function logout() {
     cookieStore.delete('session');
 }
 
-export async function getSession() {
+import { cache } from 'react';
+
+export const getSession = cache(async () => {
     const cookieStore = await cookies();
     const session = cookieStore.get('session')?.value;
     if (!session) return null;
@@ -45,7 +47,7 @@ export async function getSession() {
     } catch {
         return null;
     }
-}
+});
 
 export async function updateSession(request: NextRequest) {
     const session = request.cookies.get('session')?.value;

@@ -5,19 +5,11 @@ import { unstable_cache, revalidateTag, revalidatePath } from 'next/cache';
 import { cache } from 'react';
 
 export const getCategoriesTree = cache(async () => {
-    try {
-        const categories = await prisma.category.findMany({
-            where: { parentId: null },
-            select: {
-                id: true,
-                name: true,
-                slug: true,
-                description: true,
-                image: true,
-                parentId: true,
-                createdAt: true,
-                updatedAt: true,
-                children: {
+    return unstable_cache(
+        async () => {
+            try {
+                const categories = await prisma.category.findMany({
+                    where: { parentId: null },
                     select: {
                         id: true,
                         name: true,
@@ -27,17 +19,31 @@ export const getCategoriesTree = cache(async () => {
                         parentId: true,
                         createdAt: true,
                         updatedAt: true,
-                    }
-                }
-            },
-            orderBy: { name: 'asc' }
-        });
-        console.log(`[DATABASE_SUCCESS] Loaded ${categories.length} root categories.`);
-        return { success: true, data: categories };
-    } catch (error) {
-        console.error('[DATABASE_ERROR] Failed to load categories tree:', error);
-        return { success: false, error: 'Failed to load categories' };
-    }
+                        children: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                                description: true,
+                                image: true,
+                                parentId: true,
+                                createdAt: true,
+                                updatedAt: true,
+                            }
+                        }
+                    },
+                    orderBy: { name: 'asc' }
+                });
+                console.log(`[DATABASE_SUCCESS] Loaded ${categories.length} root categories.`);
+                return { success: true, data: categories };
+            } catch (error) {
+                console.error('[DATABASE_ERROR] Failed to load categories tree:', error);
+                return { success: false, error: 'Failed to load categories' };
+            }
+        },
+        ['categories-tree'],
+        { tags: ['categories'], revalidate: 3600 }
+    )();
 });
 
 export const getCategoryBySlug = cache(async (slug: string) => {

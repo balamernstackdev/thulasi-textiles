@@ -26,23 +26,31 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
     const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
-    const { setWishlist } = useWishlistStore();
+    const setWishlist = useWishlistStore(state => state.setWishlist);
+    const isSynced = useWishlistStore(state => state.isSynced);
+    const isHydrated = useWishlistStore(state => state.isHydrated);
+    const syncInProgress = useRef(false);
 
     // Sync Wishlist on mount/session change
     useEffect(() => {
-        if (session) {
+        if (session && !isSynced && isHydrated && !syncInProgress.current) {
             const syncWishlist = async () => {
-                const result = await getWishlist();
-                if (result.success && result.data) {
-                    const ids = result.data.map((item: any) => item.productId);
-                    setWishlist(ids);
+                syncInProgress.current = true;
+                try {
+                    const result = await getWishlist();
+                    if (result.success && result.data) {
+                        const ids = result.data.map((item: any) => item.productId);
+                        setWishlist(ids);
+                    }
+                } finally {
+                    syncInProgress.current = false;
                 }
             };
             syncWishlist();
-        } else {
+        } else if (!session) {
             setWishlist([]);
         }
-    }, [session, setWishlist]);
+    }, [session, setWishlist, isSynced, isHydrated]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

@@ -4,7 +4,10 @@ import { toggleWishlist as toggleWishlistAction } from '@/lib/actions/wishlist';
 
 interface WishlistStore {
     wishlistIds: string[];
+    isHydrated: boolean;
+    isSynced: boolean;
     setWishlist: (ids: string[]) => void;
+    setHydrated: () => void;
     toggleWishlist: (productId: string) => Promise<{ success: boolean; action?: string; error?: string }>;
     isInWishlist: (productId: string) => boolean;
 }
@@ -13,7 +16,10 @@ export const useWishlistStore = create<WishlistStore>()(
     persist(
         (set, get) => ({
             wishlistIds: [],
-            setWishlist: (ids) => set({ wishlistIds: ids }),
+            isHydrated: false,
+            isSynced: false,
+            setWishlist: (ids) => set({ wishlistIds: ids, isSynced: true }),
+            setHydrated: () => set({ isHydrated: true }),
             toggleWishlist: async (productId) => {
                 const result = await toggleWishlistAction(productId);
 
@@ -33,6 +39,9 @@ export const useWishlistStore = create<WishlistStore>()(
         {
             name: 'thulasi-wishlist',
             storage: createJSONStorage(() => localStorage),
+            onRehydrateStorage: () => (state) => {
+                state?.setHydrated();
+            },
         }
     )
 );

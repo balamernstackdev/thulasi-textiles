@@ -10,7 +10,7 @@ import { useWishlistStore } from '@/lib/store/wishlist';
 export default function UserMenu({ session }: { session: any }) {
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
-    const { wishlistIds } = useWishlistStore();
+    const wishlistIds = useWishlistStore(state => state.wishlistIds);
     const wishlistCount = wishlistIds.length;
 
     if (!session) {

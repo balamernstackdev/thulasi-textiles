@@ -19,8 +19,8 @@ export default function ProductCard({ product, session, priority = false }: { pr
     const [currentIdx, setCurrentIdx] = useState(0);
     const [isHovering, setIsHovering] = useState(false);
     const [imgError, setImgError] = useState(false);
-    const { toggleWishlist: toggleWishlistInStore, isInWishlist } = useWishlistStore();
-    const isWishlisted = isInWishlist(product.id);
+    const toggleWishlistInStore = useWishlistStore(state => state.toggleWishlist);
+    const isWishlisted = useWishlistStore(state => state.isInWishlist(product.id));
 
     // Filter out invalid images if needed (though Prisma types usually ensure URL)
     const validImages = product.images?.filter((img) => img.url) || [];

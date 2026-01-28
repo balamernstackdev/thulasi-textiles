@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 import { useWishlistStore } from '@/lib/store/wishlist';
 
 export default function WishlistButton({ productId, initialState }: { productId: string; initialState: boolean }) {
-    const { toggleWishlist: toggleInStore, isInWishlist } = useWishlistStore();
-    const isWishlisted = isInWishlist(productId);
+    const toggleInStore = useWishlistStore(state => state.toggleWishlist);
+    const isWishlisted = useWishlistStore(state => state.isInWishlist(productId));
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
