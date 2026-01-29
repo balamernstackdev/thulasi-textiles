@@ -51,11 +51,18 @@ export default async function ProductsPage({
                     <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Products</h1>
                     <p className="text-xs md:text-sm text-gray-500 mt-1 uppercase tracking-widest font-bold">Manage your product catalog</p>
                 </div>
-                <Link href="/admin/products/new" className="w-full sm:w-auto">
-                    <Button className="w-full sm:w-auto bg-[#2dd4bf] text-[#1e293b] hover:bg-[#2dd4bf]/90 font-black text-[10px] uppercase tracking-widest px-8 py-6 sm:py-2.5 rounded-xl shadow-lg shadow-teal-500/20">
-                        <Plus className="w-4 h-4 mr-2" /> Add Product
-                    </Button>
-                </Link>
+                <div className="flex gap-3 w-full sm:w-auto">
+                    <Link href="/admin/products/bulk">
+                        <Button variant="outline" className="w-full sm:w-auto border-2 border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-black font-black text-[10px] uppercase tracking-widest px-6 py-6 sm:py-2.5 rounded-xl">
+                            Bulk Edit
+                        </Button>
+                    </Link>
+                    <Link href="/admin/products/new">
+                        <Button className="w-full sm:w-auto bg-[#2dd4bf] text-[#1e293b] hover:bg-[#2dd4bf]/90 font-black text-[10px] uppercase tracking-widest px-8 py-6 sm:py-2.5 rounded-xl shadow-lg shadow-teal-500/20">
+                            <Plus className="w-4 h-4 mr-2" /> Add Product
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             <div className="bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">

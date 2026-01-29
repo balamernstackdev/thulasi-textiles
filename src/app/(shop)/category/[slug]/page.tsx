@@ -1,7 +1,40 @@
 import { getCategoryBySlug, getCategoriesTree } from '@/lib/actions/category';
 import { getProducts, getFilterValues } from '@/lib/actions/product';
 
+import { Metadata } from 'next';
+
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+
+    if (slug === 'new-arrivals') {
+        return {
+            title: 'New Arrivals | Thulasi Textiles',
+            description: 'Explore our latest collection of authentic handloom sarees and dhotis.',
+        };
+    }
+
+    if (slug === 'all') {
+        return {
+            title: 'All Products | Thulasi Textiles',
+            description: 'Browse our complete catalog of heritage textiles.',
+        }
+    }
+
+    const { data: category } = await getCategoryBySlug(slug);
+    if (!category) return { title: 'Category Not Found' };
+
+    return {
+        title: `${category.name} Collection | Thulasi Textiles`,
+        description: category.description || `Shop authentic ${category.name} at Thulasi Textiles. Handcrafted tradition.`,
+        openGraph: {
+            title: `${category.name} - Thulasi Textiles`,
+            description: category.description || `Shop authentic ${category.name}.`,
+            images: [category.image || '/logo.png']
+        }
+    };
+}
 import ProductCard from '@/components/shop/ProductCard';
 import Pagination from '@/components/shared/Pagination';
 import Link from 'next/link';
@@ -51,7 +84,7 @@ export default async function CategoryPage({
             ? Promise.resolve({ success: true, data: { name: isNewPage ? 'New Arrivals' : 'All Products', slug, parent: null, description: 'Explore our entire collection of heritage textiles' } })
             : getCategoryBySlug(slug),
         getSession(),
-        getFilterValues(),
+        getFilterValues(slug !== 'all' && slug !== 'new-arrivals' ? slug : undefined),
         getCategoriesTree()
     ]);
 
@@ -135,7 +168,7 @@ export default async function CategoryPage({
                         {/* Product Grid */}
                         {products && products.length > 0 ? (
                             <>
-                                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
+                                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                                     {products.map((product: any) => (
                                         <ProductCard key={product.id} product={product} session={session} />
                                     ))}

@@ -7,6 +7,10 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store/cart';
 import SizeGuideModal from './SizeGuideModal';
+import ProductImageZoom from './ProductImageZoom';
+import StickyAddToCart from './StickyAddToCart';
+import ChatWithArtisan from './ChatWithArtisan';
+import Price from '@/components/store/Price';
 
 interface Variant {
     id: string;
@@ -113,22 +117,13 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
 
                 {/* Main View */}
                 <div
-                    className="relative flex-1 w-full aspect-[3/4] rounded-[2rem] overflow-hidden bg-gray-100 shadow-2xl group cursor-zoom-in"
+                    className="relative flex-1 w-full aspect-[3/4] rounded-[2rem] overflow-hidden bg-gray-100 shadow-2xl group"
                     onMouseEnter={() => setIsAutoPlaying(false)}
                     onMouseLeave={() => setIsAutoPlaying(true)}
                 >
-                    <Image
+                    <ProductImageZoom
                         src={activeImage.startsWith('http') || activeImage.startsWith('/') ? activeImage : 'https://images.unsplash.com/photo-1560780552-ba54683cb963?auto=format&fit=crop&w=800&q=80'}
                         alt={product.name}
-                        fill
-                        className="object-cover transition-transform duration-[2000ms] group-hover:scale-110"
-                        priority
-                        onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            if (target.src !== 'https://images.unsplash.com/photo-1560780552-ba54683cb963?auto=format&fit=crop&w=800&q=80') {
-                                target.src = 'https://images.unsplash.com/photo-1560780552-ba54683cb963?auto=format&fit=crop&w=800&q=80';
-                            }
-                        }}
                     />
 
                     {/* Floating Indicators */}
@@ -198,7 +193,7 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                 <div className="grid grid-cols-2 gap-3">
                     <div className="p-4 rounded-xl bg-orange-50/50 border border-orange-100 flex flex-col justify-center transition-all hover:bg-orange-50 group">
                         <span className="text-[10px] font-black uppercase tracking-widest text-orange-400 group-hover:text-orange-600 mb-1">Bank Offer</span>
-                        <span className="text-xs font-bold text-gray-900">₹500 Instant Discount</span>
+                        <span className="text-xs font-bold text-gray-900"><Price amount={500} /> Instant Discount</span>
                     </div>
                     <div className="p-4 rounded-xl bg-gray-50/50 border border-gray-100 flex flex-col justify-center transition-all hover:bg-gray-100 group">
                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-900 mb-1">Payment</span>
@@ -268,9 +263,13 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                     <div className="absolute -top-20 -right-20 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
 
                     <div className="space-y-1 relative z-10">
-                        <span className="text-gray-400 font-medium text-sm line-through">₹{originalPrice.toLocaleString()}</span>
+                        <span className="text-gray-400 font-medium text-sm line-through">
+                            <Price amount={originalPrice} />
+                        </span>
                         <div className="flex items-center gap-3">
-                            <span className="text-4xl font-serif text-gray-900">₹{currentPrice.toLocaleString()}</span>
+                            <span className="text-4xl font-serif text-gray-900">
+                                <Price amount={currentPrice} />
+                            </span>
                             <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
                                 Save {Math.round((1 - currentPrice / originalPrice) * 100)}%
                             </span>
@@ -353,8 +352,14 @@ export default function ProductInteraction({ product, isWishlisted, session }: {
                             categoryName={product.category.name}
                         />
                     </div>
+
+                    <div className="pt-2 flex justify-center w-full">
+                        <ChatWithArtisan productName={product.name} />
+                    </div>
                 </div>
             </div>
+
+            <StickyAddToCart product={product} selectedVariant={selectedVariant} />
         </div>
     );
 }

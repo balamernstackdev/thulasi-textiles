@@ -1,17 +1,29 @@
 'use server';
 
-import prismadb from '@/lib/prisma';
+import prismadb from "@/lib/prisma";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
  * AI Heritage Assistant Action
  * 
  * This action handles user queries about products, fabrics, and heritage.
- * In a real-world scenario, this would interface with an LLM (like Google Gemini).
- * For this implementation, we provide a sophisticated "Knowledge Grounded" mock
- * that can be easily connected to Gemini.
+ * It uses Google Gemini Pro to provide expert responses grounded in Thulasi's catalog.
  */
 export async function askHeritageAssistant(query: string, productId?: string) {
     try {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            // Fallback to minimal response if API key is missing
+            return {
+                success: true,
+                data: "The Heritage Assistant is in offline mode. Please configure the GEMINI_API_KEY to enable full expert advice.",
+                isMock: true
+            };
+        }
+
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
         // 1. Fetch relevant context if a product ID is provided
         let context = "";
         if (productId) {
@@ -20,38 +32,47 @@ export async function askHeritageAssistant(query: string, productId?: string) {
                 include: { category: true }
             });
             if (product) {
-                context = `Relevant Product DNA: Name: ${product.name}, Fabric: ${product.fabric}, Weave: ${product.weave}, Origin: ${product.origin}. Story: ${product.artisanStory || 'N/A'}.`;
+                context = `
+                PRODUCT CONTEXT:
+                - Name: ${product.name}
+                - Fabric: ${product.fabric}
+                - Weave: ${product.weave}
+                - Origin: ${product.origin}
+                - Artisan Story: ${product.artisanStory || 'Not specified'}
+                - Care Instructions: ${product.careInstructions || 'Dry clean recommended'}
+                `;
             }
         }
 
-        // 2. Simulate AI Processing (Mock for now, easy to swap with Gemini)
-        // In a real implementation, you'd use: 
-        // const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-        // const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        // const result = await model.generateContent([systemPrompt, context, query]);
+        const systemPrompt = `
+        You are the "Thulasi Heritage Assistant", an expert textile historian and luxury style concierge for Thulasi Textiles.
+        Your tone is elegant, respectful of tradition, and highly knowledgeable.
+        
+        GOALS:
+        1. Answer customer queries about Indian heritage weaves, fabrics (Silk, Cotton, Linen), and styling.
+        2. If product context is provided, prioritize that specific information.
+        3. Advocate for artisanal craftsmanship and the "Heritage Promise" of Thulasi.
+        4. Provide fabric care advice (generally recommending professional dry cleaning for luxury pieces).
+        5. Encourage the wearer to feel like a "guardian of tradition".
+        
+        CONSTRAINTS:
+        - Keep responses concise but rich in detail (max 3-4 sentences).
+        - If you don't know a specific detail about a product not in context, speak generally about the heritage of its weave type.
+        - Avoid technical jargon unless explaining a weave technique (like zari or loom types).
+        `;
 
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate latency
+        const prompt = `${systemPrompt}\n\n${context}\n\nUSER QUERY: ${query}`;
 
-        const lowercaseQuery = query.toLowerCase();
-        let response = "";
-
-        if (lowercaseQuery.includes("wedding") || lowercaseQuery.includes("occasion")) {
-            response = "For weddings, I highly recommend our Kanchipuram or Banarasi silks. Their high weave density and pure gold/silver zari work make them ideal for grand ceremonies. If it's a summer wedding, consider our lightweight Gadwal silks which offer regal beauty without the weight.";
-        } else if (lowercaseQuery.includes("wash") || lowercaseQuery.includes("care")) {
-            response = "Most of our heritage weaves, especially Silks and fine Cottons, are delicate. I strongly recommend professional dry cleaning only. Store them in breathable cotton bags and avoid direct sunlight to preserve the vibrant heritage colors.";
-        } else if (lowercaseQuery.includes("authentic") || lowercaseQuery.includes("real")) {
-            response = "Authenticity is the soul of Thulasi. Every piece comes with a 'Heritage Promise'. You can check for the Silk Mark or Handloom Mark, and our weavers use traditional techniques passed down through generations. Notice the slight irregularities in the weave – that's the signature of a human hand, not a machine.";
-        } else {
-            response = `Interesting question about "${query}". At Thulasi Textiles, our expertise covers a vast range of Indian handlooms. This specific inquiry touches upon the technical aspects of our craft. Based on our Heritage DNA, our master weavers prioritize fabric purity and traditional weave density for every piece we create.`;
-        }
+        const result = await model.generateContent(prompt);
+        const response = result.response.text();
 
         return {
             success: true,
             data: response,
-            isMock: true // Flag to indicate this is currently in offline/mock mode
+            isMock: false
         };
     } catch (error) {
         console.error('AI Assistant Error:', error);
-        return { success: false, error: 'The Heritage Assistant is resting. Please try again later.' };
+        return { success: false, error: 'The Heritage Assistant is currently contemplating a complex weave. Please try again soon.' };
     }
 }

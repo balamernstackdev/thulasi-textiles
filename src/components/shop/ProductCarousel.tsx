@@ -54,16 +54,8 @@ export default function ProductCarousel({ products, title, session }: ProductCar
 
     return (
         <div className="relative group/carousel py-8">
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h2 className="text-xl font-bold text-gray-900 leading-tight">
-                        {title || "Products related to this item"}
-                    </h2>
-                    <p className="text-[11px] text-gray-500 uppercase tracking-widest font-black mt-1">
-                        Page 1 of {Math.ceil(products.length / 4)}
-                    </p>
-                </div>
-            </div>
+            {/* Header Removed */}
+
 
             {/* Navigation Arrows */}
             <div className="absolute top-1/2 -translate-y-1/2 left-0 z-20">
@@ -93,13 +85,13 @@ export default function ProductCarousel({ products, title, session }: ProductCar
             {/* Scrollable Container */}
             <div
                 ref={scrollContainerRef}
-                className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory touch-pan-x"
+                className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory touch-pan-x py-4"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {products.map((product) => (
                     <div
                         key={product.id}
-                        className="min-w-[150px] md:min-w-[180px] lg:min-w-[200px] snap-start"
+                        className="min-w-[160px] md:min-w-[240px] lg:min-w-[280px] snap-start"
                     >
                         <ProductCard product={product} session={session} />
                     </div>

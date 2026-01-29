@@ -20,7 +20,7 @@ export default async function CategoriesPage({
     const { data: categories, pagination } = await getCategories({ page, pageSize });
 
     return (
-        <div className="p-4 md:p-8">
+        <div className="p-4 md:p-8 w-full">
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-6">
                 <div>

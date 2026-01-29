@@ -15,6 +15,7 @@ interface BannerFormProps {
 export default function BannerForm({ initialData, onSuccess }: BannerFormProps) {
     const [bannerType, setBannerType] = useState(initialData?.type || 'HOME_MAIN');
     const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || '');
+    const [mobileImageUrl, setMobileImageUrl] = useState(initialData?.mobileImageUrl || '');
     const [videoUrl, setVideoUrl] = useState(initialData?.videoUrl || '');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,6 +24,7 @@ export default function BannerForm({ initialData, onSuccess }: BannerFormProps) 
         if (initialData) {
             setBannerType(initialData.type || 'HOME_MAIN');
             setImageUrl(initialData.imageUrl || '');
+            setMobileImageUrl(initialData.mobileImageUrl || '');
             setVideoUrl(initialData.videoUrl || '');
         }
     }, [initialData]);
@@ -41,6 +43,7 @@ export default function BannerForm({ initialData, onSuccess }: BannerFormProps) 
                 if (!initialData) {
                     // Reset if creating new
                     setImageUrl('');
+                    setMobileImageUrl('');
                     setVideoUrl('');
                     setBannerType('HOME_MAIN');
                     // Reset text inputs manually if needed or rely on form reset
@@ -75,6 +78,7 @@ export default function BannerForm({ initialData, onSuccess }: BannerFormProps) 
 
             <form id="banner-form" action={clientAction} className="space-y-8 h-full flex flex-col">
                 <input type="hidden" name="imageUrl" value={imageUrl} />
+                <input type="hidden" name="mobileImageUrl" value={mobileImageUrl} />
                 <input type="hidden" name="videoUrl" value={videoUrl} />
 
                 <div className="flex-1 overflow-y-auto pr-2 space-y-8">
@@ -140,7 +144,7 @@ export default function BannerForm({ initialData, onSuccess }: BannerFormProps) 
                             {/* Image Uploader */}
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">
-                                    Background Image
+                                    Desktop Banner
                                 </label>
                                 <CldUploadWidget
                                     signatureEndpoint="/api/cloudinary/sign"
@@ -159,7 +163,36 @@ export default function BannerForm({ initialData, onSuccess }: BannerFormProps) 
                                         >
                                             <div className="flex flex-col items-center gap-2">
                                                 <Upload className="w-6 h-6 text-gray-300" />
-                                                <span className="text-[10px]">{imageUrl ? 'Change' : 'Upload'} Image</span>
+                                                <span className="text-[10px]">{imageUrl ? 'Change' : 'Upload'} Desktop</span>
+                                            </div>
+                                        </Button>
+                                    )}
+                                </CldUploadWidget>
+                            </div>
+
+                            {/* Mobile Image Uploader */}
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">
+                                    Mobile Banner
+                                </label>
+                                <CldUploadWidget
+                                    signatureEndpoint="/api/cloudinary/sign"
+                                    uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'our-products'}
+                                    onSuccess={(result: any) => {
+                                        if (result.info?.secure_url) {
+                                            setMobileImageUrl(result.info.secure_url);
+                                        }
+                                    }}
+                                >
+                                    {({ open }: { open: any }) => (
+                                        <Button
+                                            type="button"
+                                            onClick={() => open()}
+                                            className="w-full bg-white hover:bg-gray-50 text-gray-900 border-2 border-dashed border-gray-200 hover:border-orange-500 py-8 h-auto rounded-2xl font-black uppercase tracking-widest transition-all shadow-sm"
+                                        >
+                                            <div className="flex flex-col items-center gap-2">
+                                                <Upload className="w-6 h-6 text-gray-300" />
+                                                <span className="text-[10px]">{mobileImageUrl ? 'Change' : 'Upload'} Mobile</span>
                                             </div>
                                         </Button>
                                     )}

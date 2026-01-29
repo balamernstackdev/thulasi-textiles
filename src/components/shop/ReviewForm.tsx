@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Star, Plus, X, Image as ImageIcon } from 'lucide-react';
+import { Star, Plus, X, Image as ImageIcon, Upload } from 'lucide-react';
+import { CldUploadWidget } from 'next-cloudinary';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { addReview } from '@/lib/actions/review';
@@ -109,20 +110,35 @@ export default function ReviewForm({ productId, onReviewAdded }: { productId: st
                     </div>
 
                     <div className="flex gap-2">
-                        <input
-                            type="text"
-                            value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
-                            placeholder="Paste image URL here..."
-                            className="flex-1 bg-white border-2 border-gray-100 rounded-xl px-4 py-2 text-xs font-bold focus:border-orange-500 outline-none transition-all"
-                        />
-                        <button
-                            type="button"
-                            onClick={addImageUrl}
-                            className="bg-gray-100 hover:bg-orange-600 hover:text-white text-gray-500 px-4 rounded-xl transition-all"
+                        <CldUploadWidget
+                            uploadPreset="thulasi_preset"
+                            options={{
+                                maxFiles: 3,
+                                sources: ['local', 'camera'],
+                                clientAllowedFormats: ['image'],
+                                maxFileSize: 5000000, // 5MB
+                            }}
+                            onSuccess={(result: any) => {
+                                if (result?.info?.secure_url) {
+                                    setImages([...images, result.info.secure_url]);
+                                    toast.success('Photo uploaded!');
+                                }
+                            }}
+                            onError={() => {
+                                toast.error('Upload failed. Please try again.');
+                            }}
                         >
-                            <Plus className="w-4 h-4" />
-                        </button>
+                            {({ open }: { open: any }) => (
+                                <button
+                                    type="button"
+                                    onClick={() => open()}
+                                    className="flex-1 bg-white border-2 border-dashed border-gray-200 hover:border-orange-500 hover:bg-orange-50 rounded-xl px-4 py-3 text-xs font-bold text-gray-500 hover:text-orange-600 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Upload className="w-4 h-4" />
+                                    <span>Upload Photo Proof</span>
+                                </button>
+                            )}
+                        </CldUploadWidget>
                     </div>
                     <p className="text-[9px] text-gray-400 mt-2 italic">* Visual proof establishes you as a true "Thulasi Woman" curator.</p>
                 </div>

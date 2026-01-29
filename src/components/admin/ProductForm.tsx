@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Upload, Plus, X, Image as ImageIcon, Trash2, Loader2, Video, Search, Check, ExternalLink } from 'lucide-react';
 import { CldUploadWidget } from 'next-cloudinary';
 import { createProduct, updateProduct, getProducts } from '@/lib/actions/product';
+import { getArtisans } from '@/lib/actions/artisan';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -30,6 +31,8 @@ export default function ProductForm({ categories, product }: { categories: any[]
     const [isOffer, setIsOffer] = useState(product?.isOffer || false);
     const [isNew, setIsNew] = useState(product?.isNew || false);
     const [isActive, setIsActive] = useState(product?.isActive ?? true);
+    const [artisans, setArtisans] = useState<any[]>([]);
+    const [selectedArtisanId, setSelectedArtisanId] = useState(product?.artisanId || '');
 
     // Parse artisan images (JSON array or single string)
     const [artisanImageUrls, setArtisanImageUrls] = useState<string[]>(() => {
@@ -93,6 +96,14 @@ export default function ProductForm({ categories, product }: { categories: any[]
         };
         fetchResults();
     }, [debouncedSearchQuery, product?.id]);
+
+    useEffect(() => {
+        const fetchArtisansList = async () => {
+            const res = await getArtisans();
+            if (res.success) setArtisans(res.data);
+        };
+        fetchArtisansList();
+    }, []);
 
     const toggleComplementaryProduct = (p: any) => {
         if (complementaryProductIds.includes(p.id)) {
@@ -176,6 +187,7 @@ export default function ProductForm({ categories, product }: { categories: any[]
         formData.set('heritageTitle', heritageTitle);
         formData.set('qualityAudit', JSON.stringify(qualityAudit));
         formData.set('videoUrl', videoUrl);
+        formData.set('artisanId', selectedArtisanId);
         formData.set('complementaryProducts', JSON.stringify(complementaryProductIds));
 
         if (newImageUrl.trim()) {
@@ -302,6 +314,27 @@ export default function ProductForm({ categories, product }: { categories: any[]
                                 </optgroup>
                             ))}
                         </select>
+                    </div>
+
+                    <div>
+                        <label htmlFor="artisanId" className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">
+                            Master Artisan
+                        </label>
+                        <select
+                            id="artisanId"
+                            name="artisanId"
+                            value={selectedArtisanId}
+                            onChange={(e) => setSelectedArtisanId(e.target.value)}
+                            className="w-full border-2 border-gray-100 rounded-2xl px-5 py-4 focus:border-orange-600 outline-none text-gray-900 bg-white transition-all font-bold"
+                        >
+                            <option value="">Link an artisan...</option>
+                            {artisans.map(artisan => (
+                                <option key={artisan.id} value={artisan.id}>{artisan.name} ({artisan.village})</option>
+                            ))}
+                        </select>
+                        <p className="text-[9px] text-gray-400 mt-2 font-bold uppercase tracking-widest">
+                            Linking a master artisan enables the "Artisan Story" feature in the shop.
+                        </p>
                     </div>
 
                     {/* Flags */}

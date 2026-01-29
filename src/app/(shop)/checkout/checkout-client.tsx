@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useCartStore } from '@/lib/store/cart';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Check, Plus, MapPin, CreditCard, Package } from 'lucide-react';
+import { Check, Plus, MapPin, CreditCard, Package, Star } from 'lucide-react';
 import { createOrder } from '@/lib/actions/order';
 import { createAddress } from '@/lib/actions/address';
 import { validateCoupon } from '@/lib/actions/coupon';
@@ -539,6 +539,14 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                                         : `You could save more with a coupon code`
                                     }
                                 </p>
+                            </div>
+
+                            <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 flex items-center gap-3">
+                                <Star className="w-5 h-5 text-emerald-600 fill-emerald-600" />
+                                <div>
+                                    <p className="text-[10px] font-black text-emerald-700 uppercase tracking-widest leading-none mb-1">Patron Points</p>
+                                    <p className="text-xs font-bold text-emerald-600">You will earn <span className="underline decoration-emerald-300 decoration-2 underline-offset-2">{Math.floor(finalTotal / 100)} points</span>!</p>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -87,8 +87,35 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         artisanImages = product.images.map((img: any) => img.url);
     }
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        image: artisanImages,
+        description: product.metaDescription || product.description,
+        sku: product.id, // Using ID as SKU for now
+        brand: {
+            '@type': 'Brand',
+            name: 'Thulasi Textiles',
+        },
+        offers: {
+            '@type': 'Offer',
+            url: `https://thulasitextiles.com/product/${product.slug}`, // Replace with env var in prod
+            priceCurrency: 'INR',
+            price: product.basePrice,
+            availability: product.variants.some((v: any) => v.stock > 0)
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock',
+            itemCondition: 'https://schema.org/NewCondition',
+        },
+    };
+
     return (
         <div className="bg-white min-h-screen">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             {/* Breadcrumbs - Static */}
             <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 relative z-40 transition-all duration-300 hidden lg:block">
                 <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-1">

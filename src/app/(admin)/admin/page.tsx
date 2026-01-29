@@ -1,14 +1,32 @@
-import { getDashboardStats } from '@/lib/actions/order';
-import { ShoppingBag, DollarSign, Package, Clock, TrendingUp, PieChart, BarChart3, Users, AlertTriangle } from 'lucide-react';
+import { Suspense } from 'react';
+import { getDashboardStats, getAdvancedAnalytics } from '@/lib/actions/order';
+import { getSalesAnalyticsData, getAdminDashboardStats, getInventoryHeatmapData } from '@/lib/actions/admin-analytics';
+import SalesAnalytics from '@/components/admin/SalesAnalytics';
+import { InventoryHeatmap } from '@/components/admin/AnalyticsCharts';
+import {
+  ShoppingBag,
+  DollarSign,
+  Package,
+  Clock,
+  TrendingUp,
+  PieChart,
+  Users,
+  AlertTriangle,
+  Zap,
+  Target,
+  Trophy
+} from 'lucide-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { RevenueTrendChart, TopProductsChart, CategoryPieChart } from '@/components/admin/DashboardCharts';
+import { SalesHeatmap, InventoryVelocityChart, VIPLeaderboard } from '@/components/admin/AnalyticsCharts';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminDashboard() {
-  const result = await getDashboardStats();
-  const statsData = (result?.success && result?.data) ? result.data : {
+async function StatsGrid() {
+  const statsResult = await getDashboardStats();
+  const statsData = (statsResult?.success && statsResult?.data) ? statsResult.data : {
     orderCount: 0,
     totalRevenue: 0,
     productCount: 0,
@@ -24,218 +42,262 @@ export default async function AdminDashboard() {
   };
 
   const stats = [
-    {
-      title: "Total Orders",
-      value: (statsData?.orderCount || 0).toString(),
-      change: "Lifetime cumulative",
-      icon: ShoppingBag,
-      color: "bg-blue-600",
-      textColor: "text-blue-600",
-      href: "/admin/orders"
-    },
-    {
-      title: "Total Revenue",
-      value: `₹${(statsData?.totalRevenue || 0).toLocaleString()}`,
-      change: "From paid orders",
-      icon: DollarSign,
-      color: "bg-orange-600",
-      textColor: "text-orange-600",
-      href: "/admin/orders"
-    },
-    {
-      title: "Total Products",
-      value: (statsData?.productCount || 0).toString(),
-      change: "Active in catalog",
-      icon: Package,
-      color: "bg-emerald-600",
-      textColor: "text-emerald-600",
-      href: "/admin/products"
-    },
-    {
-      title: "New Customers",
-      value: (statsData?.analytics?.salesTrend.reduce((sum: number, day: any) => sum + day.customers, 0) || 0).toString(),
-      change: "Last 30 days",
-      icon: Users,
-      color: "bg-indigo-600",
-      textColor: "text-indigo-600",
-      href: "/admin/customers"
-    },
-    {
-      title: "Pending Actions",
-      value: (statsData?.pendingOrdersCount || 0).toString(),
-      change: "Waiting for processing",
-      icon: Clock,
-      color: "bg-rose-600",
-      textColor: "text-rose-600",
-      href: "/admin/orders?status=PENDING"
-    }
+    { title: "Total Orders", value: (statsData?.orderCount || 0).toString(), change: "Lifetime cumulative", icon: ShoppingBag, color: "bg-blue-600", href: "/admin/orders" },
+    { title: "Total Revenue", value: `₹${(statsData?.totalRevenue || 0).toLocaleString()}`, change: "From paid orders", icon: DollarSign, color: "bg-orange-600", href: "/admin/orders" },
+    { title: "Total Products", value: (statsData?.productCount || 0).toString(), change: "Active in catalog", icon: Package, color: "bg-emerald-600", href: "/admin/products" },
+    { title: "New Customers", value: (statsData?.analytics?.salesTrend.reduce((sum: number, day: any) => sum + day.customers, 0) || 0).toString(), change: "Last 30 days", icon: Users, color: "bg-indigo-600", href: "/admin/customers" },
+    { title: "Pending Actions", value: (statsData?.pendingOrdersCount || 0).toString(), change: "Waiting for fulfillment", icon: Clock, color: "bg-rose-600", href: "/admin/inventory/fulfillment" }
   ];
 
   return (
-    <div className="p-4 md:p-8 space-y-6 max-w-[1600px] mx-auto">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase tracking-tighter">Dashboard Overview</h1>
-          <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-[0.2em] font-black">Live metrics & store health insights</p>
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      {stats.map((stat, index) => (
+        <Link
+          key={index}
+          href={stat.href}
+          className="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col justify-between group hover:border-black hover:shadow-2xl transition-all active:scale-95 relative overflow-hidden"
+        >
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`w-10 h-10 rounded-2xl ${stat.color} flex items-center justify-center shadow-lg`}>
+                <stat.icon className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-gray-400 font-black text-[10px] uppercase tracking-widest leading-none text-wrap line-clamp-1">{stat.title}</p>
+            </div>
+            <h3 className="text-3xl font-black text-gray-900 truncate tracking-tight italic">
+              {stat.value}
+            </h3>
+            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter mt-2">
+              {stat.change}
+            </p>
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+async function IntelligenceHub() {
+  const advancedResult = await getAdvancedAnalytics();
+  const advancedData = (advancedResult?.success && advancedResult?.data) ? advancedResult.data : {
+    heatmap: [],
+    velocity: [],
+    vips: []
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="lg:col-span-2 bg-white p-8 rounded-[3rem] shadow-xl shadow-gray-200/50 border border-gray-100">
+        <div className="flex items-center gap-3 mb-8">
+          <Target className="w-5 h-5 text-orange-500" />
+          <h3 className="font-black text-gray-900 uppercase tracking-tighter text-sm">Purchase Behavior Heatmap</h3>
         </div>
-        <div className="hidden md:flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100">
-          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Sync Active</span>
-        </div>
+        <SalesHeatmap data={advancedData.heatmap} />
       </div>
 
-      {/* Primary Stats Grid - Optimized for 5 items */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {stats.map((stat, index) => (
-          <Link
-            key={index}
-            href={stat.href}
-            className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between group hover:border-orange-500 hover:shadow-xl transition-all active:scale-95 relative overflow-hidden"
-          >
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`w-8 h-8 rounded-xl ${stat.color} flex items-center justify-center`}>
-                  <stat.icon className="w-4 h-4 text-white" />
-                </div>
-                <p className="text-gray-400 font-black text-[9px] uppercase tracking-widest">{stat.title}</p>
-              </div>
-              <h3 className="text-2xl font-black text-gray-900 truncate">{stat.value}</h3>
-              <p className="text-[8px] font-bold text-gray-400 uppercase tracking-tighter mt-1">
-                {stat.change}
+      <div className="bg-white p-8 rounded-[3rem] shadow-xl shadow-gray-200/50 border border-gray-100">
+        <div className="flex items-center gap-3 mb-8">
+          <Trophy className="w-5 h-5 text-yellow-500" />
+          <h3 className="font-black text-gray-900 uppercase tracking-tighter text-sm">Patron VIPs (CLV)</h3>
+        </div>
+        <VIPLeaderboard vips={advancedData.vips} />
+      </div>
+
+      <div className="lg:col-span-2 bg-white p-8 rounded-[3rem] shadow-xl shadow-gray-200/50 border border-gray-100">
+        <div className="flex items-center gap-3 mb-8">
+          <TrendingUp className="w-5 h-5 text-emerald-500" />
+          <h3 className="font-black text-gray-900 uppercase tracking-tighter text-sm">Inventory Velocity</h3>
+        </div>
+        <InventoryVelocityChart data={advancedData.velocity} />
+      </div>
+
+      <div className="bg-[#1e293b] p-8 rounded-[3rem] shadow-2xl flex flex-col justify-between group">
+        <div>
+          <div className="flex items-center gap-3 mb-8">
+            <Users className="w-5 h-5 text-teal-400" />
+            <h3 className="font-black text-white uppercase tracking-tighter text-sm">Performance Tips</h3>
+          </div>
+          <div className="space-y-4">
+            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+              <p className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1">Stock Tip</p>
+              <p className="text-xs text-gray-300 font-medium leading-relaxed italic line-clamp-2">
+                "{advancedData.velocity[0]?.name || 'Your top weaver'}" has the highest velocity.
               </p>
             </div>
-          </Link>
-        ))}
-      </div>
-
-      {/* Analytics Visualization Row */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="font-black text-gray-900 uppercase tracking-tighter flex items-center gap-2 text-sm">
-              <TrendingUp className="w-4 h-4 text-emerald-500" /> Sales Trend (30D)
-            </h3>
-            <span className="text-[9px] font-black text-gray-400 bg-gray-50 px-2 py-1 rounded-lg uppercase tracking-widest">Revenue Flow</span>
-          </div>
-          <RevenueTrendChart data={statsData?.analytics?.salesTrend || []} />
-        </div>
-
-        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6 flex flex-col justify-center">
-          <div className="flex items-center justify-between">
-            <h3 className="font-black text-gray-900 uppercase tracking-tighter flex items-center gap-2 text-sm">
-              <PieChart className="w-4 h-4 text-orange-500" /> Revenue Split
-            </h3>
-          </div>
-          <CategoryPieChart data={statsData?.analytics?.categoryData || []} />
-        </div>
-      </div>
-
-      {/* Secondary Data Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100">
-          <h3 className="font-black text-gray-900 uppercase tracking-tighter mb-6 flex items-center gap-2 text-sm">
-            <BarChart3 className="w-4 h-4 text-blue-500" /> Top Performing Products
-          </h3>
-          <TopProductsChart data={statsData?.analytics?.topSellingProducts || []} />
-        </div>
-
-        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="font-black text-gray-900 uppercase tracking-tighter flex items-center gap-2 text-sm">
-              <Clock className="w-4 h-4 text-purple-500" /> Recent Transactions
-            </h3>
-            <Link href="/admin/orders" className="text-[10px] font-black text-orange-600 uppercase hover:underline">View All</Link>
-          </div>
-          <div className="space-y-3">
-            {statsData?.recentOrders && statsData.recentOrders.length > 0 ? (
-              statsData.recentOrders.map((order: any) => (
-                <div key={order.id} className="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 transition-all border border-gray-100/50 group">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 group-hover:text-orange-500 transition-colors">
-                      <ShoppingBag className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="font-black text-gray-900 text-xs">#{order.id.slice(-6).toUpperCase()}</p>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{order.user?.name || 'Guest'}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-black text-gray-900 text-xs">₹{order.total.toLocaleString()}</p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase">{format(new Date(order.createdAt), 'MMM dd')}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="h-32 flex items-center justify-center text-gray-300 text-[10px] font-black uppercase tracking-widest italic bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100">
-                No active cycles
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Third Row: Inventory & Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-3 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="font-black text-gray-900 uppercase tracking-tighter flex items-center gap-2 text-sm">
-              <AlertTriangle className="w-4 h-4 text-rose-500" /> Low Stock Alerts
-            </h3>
-            <Link href="/admin/inventory" className="text-[10px] font-black text-rose-600 uppercase hover:underline">Manage All</Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {statsData?.lowStockProducts && statsData.lowStockProducts.length > 0 ? (
-              statsData.lowStockProducts.map((product: any) => (
-                <div key={product.id} className="p-4 rounded-2xl bg-rose-50/30 border border-rose-100 flex flex-col justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-rose-500 shadow-sm shrink-0">
-                      <Package className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="font-black text-gray-900 text-[11px] leading-tight line-clamp-2">{product.name}</p>
-                      <p className="text-[9px] font-black text-rose-600 uppercase tracking-widest mt-1">
-                        {product.variants.reduce((sum: number, v: any) => sum + v.stock, 0)} units left
-                      </p>
-                    </div>
-                  </div>
-                  <Link href={`/admin/products/${product.id}/edit`}>
-                    <button className="w-full bg-white text-gray-700 border border-gray-200 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all">
-                      Restock Now
-                    </button>
-                  </Link>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full h-24 flex items-center justify-center text-gray-300 text-[10px] font-black uppercase tracking-widest italic bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100">
-                Optimal Inventory Levels
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-[#1e293b] p-6 md:p-8 rounded-3xl shadow-2xl flex flex-col justify-between gap-6">
-          <div>
-            <h3 className="font-black text-white uppercase tracking-tighter flex items-center gap-2 text-sm mb-6">
-              <TrendingUp className="w-4 h-4 text-teal-400" /> Quick Actions
-            </h3>
-            <div className="space-y-3">
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex justify-between items-center">
-                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active Store Items</span>
-                <span className="text-sm font-black text-white">{statsData?.productCount || 0}</span>
-              </div>
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex justify-between items-center">
-                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Product Categories</span>
-                <span className="text-sm font-black text-white">{statsData?.categoryCount || 0}</span>
-              </div>
+            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+              <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-1">Peak Sales</p>
+              <p className="text-xs text-gray-300 font-medium leading-relaxed italic line-clamp-2">
+                Customers are most active during weekend evenings.
+              </p>
             </div>
           </div>
-          <Link href="/admin/inventory">
-            <button className="w-full bg-teal-400 text-[#1e293b] py-3.5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white transition-all shadow-xl shadow-teal-500/20">
-              Launch Inventory Suite
-            </button>
-          </Link>
+        </div>
+        <Link href="/admin/inventory/fulfillment" className="mt-8">
+          <button className="w-full bg-teal-400 text-slate-900 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-white transition-all">
+            Optimize Operations
+          </button>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+async function SalesTrendRow() {
+  const [stats, salesData] = await Promise.all([
+    getAdminDashboardStats(),
+    getSalesAnalyticsData('30d')
+  ]);
+
+  if (!stats) return null;
+
+  return (
+    <div className="grid grid-cols-1 gap-8">
+      <div className="bg-white p-8 rounded-[3rem] shadow-xl shadow-gray-200/50 border border-gray-100">
+        <div className="flex items-center gap-3 mb-6">
+          <TrendingUp className="w-6 h-6 text-orange-600" />
+          <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight italic">Real-time Performance</h3>
+        </div>
+        <SalesAnalytics data={salesData} summary={stats} />
+      </div>
+    </div>
+  );
+}
+
+async function InventoryAndLedger() {
+  const [stats, inventoryData] = await Promise.all([
+    getAdminDashboardStats(),
+    getInventoryHeatmapData()
+  ]);
+
+  const statsData = stats || null;
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="bg-white p-8 rounded-[3rem] shadow-xl shadow-gray-200/50 border border-gray-100">
+        <div className="flex items-center justify-between mb-8">
+          <h3 className="font-black text-gray-900 uppercase tracking-tighter flex items-center gap-2 text-sm">
+            <AlertTriangle className="w-4 h-4 text-rose-500" /> Stock Health
+          </h3>
+          <Link href="/admin/inventory" className="text-[10px] font-black text-rose-600 uppercase hover:underline tracking-widest">Manage All</Link>
+        </div>
+
+        {/* Inventory Heatmap */}
+        <div className="mb-8">
+          <InventoryHeatmap data={inventoryData} />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {statsData?.lowStockProducts && statsData.lowStockProducts.length > 0 ? (
+            statsData.lowStockProducts.map((product: any) => (
+              <div key={product.id} className="p-5 rounded-3xl bg-rose-50/30 border border-rose-100 flex flex-col justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-rose-500 shadow-sm shrink-0">
+                    <Package className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="font-black text-gray-900 text-xs leading-tight line-clamp-2">{product.name}</p>
+                    <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest mt-1">
+                      {product.stock} units left
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full h-24 flex items-center justify-center text-gray-300 text-[10px] font-black uppercase tracking-widest italic bg-gray-50/20 rounded-3xl border-2 border-dashed border-gray-100">
+              Inventory Balanced
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="bg-white p-8 rounded-[3rem] shadow-xl shadow-gray-200/50 border border-gray-100">
+        <div className="flex items-center justify-between mb-8">
+          <h3 className="font-black text-gray-900 uppercase tracking-tighter flex items-center gap-2 text-sm">
+            <Clock className="w-4 h-4 text-purple-500" /> Recent Ledger
+          </h3>
+          <Link href="/admin/orders" className="text-[10px] font-black text-orange-600 uppercase hover:underline tracking-widest">View All</Link>
+        </div>
+        <div className="space-y-4">
+          {statsData?.recentOrders?.map((order: any) => (
+            <div key={order.id} className="flex items-center justify-between p-5 rounded-3xl hover:bg-gray-50 transition-all border border-gray-100/50 group">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-orange-500 shadow-inner">
+                  <ShoppingBag className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="font-black text-gray-900 text-sm tracking-tight italic">#{order.id.slice(-6).toUpperCase()}</p>
+                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-0.5">{order.user?.name || 'Guest'}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="font-black text-gray-900 text-sm italic">₹{order.total.toLocaleString()}</p>
+                <p className="text-[9px] font-bold text-gray-400 uppercase mt-1">{format(new Date(order.createdAt), 'MMM dd')}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 }
+
+export default function AdminDashboard() {
+  return (
+    <div className="p-4 md:p-8 space-y-12 w-full pb-24">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl md:text-5xl font-black text-gray-900 uppercase tracking-tighter italic">Command Center</h1>
+          <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-[0.3em] font-black">Strategic business intelligence & heritage operations</p>
+        </div>
+        <div className="hidden md:flex items-center gap-3 bg-black px-6 py-3 rounded-2xl shadow-xl shadow-black/10">
+          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-white">Market Intel Live</span>
+        </div>
+      </div>
+
+      {/* Primary Stats Grid */}
+      <Suspense fallback={<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-32 rounded-[2.5rem]" />)}
+      </div>}>
+        <StatsGrid />
+      </Suspense>
+
+      {/* Advanced Intelligence Hub */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-teal-500 flex items-center justify-center text-white shadow-lg">
+            <Zap className="w-5 h-5 fill-white" />
+          </div>
+          <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight italic">Advanced Intelligence Hub</h2>
+        </div>
+
+        <Suspense fallback={<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <Skeleton className="lg:col-span-2 h-[400px] rounded-[3rem]" />
+          <Skeleton className="h-[400px] rounded-[3rem]" />
+          <Skeleton className="lg:col-span-2 h-[400px] rounded-[3rem]" />
+          <Skeleton className="h-[400px] rounded-[3rem]" />
+        </div>}>
+          <IntelligenceHub />
+        </Suspense>
+      </div>
+
+      {/* Sales Trend Row */}
+      <Suspense fallback={<div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <Skeleton className="xl:col-span-2 h-[450px] rounded-[3rem]" />
+        <Skeleton className="h-[450px] rounded-[3rem]" />
+      </div>}>
+        <SalesTrendRow />
+      </Suspense>
+
+      {/* Inventory & Transactions */}
+      <Suspense fallback={<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Skeleton className="h-[400px] rounded-[3rem]" />
+        <Skeleton className="h-[400px] rounded-[3rem]" />
+      </div>}>
+        <InventoryAndLedger />
+      </Suspense>
+    </div>
+  );
+}
+

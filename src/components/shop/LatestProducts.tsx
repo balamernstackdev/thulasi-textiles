@@ -1,10 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { ChevronRight, ArrowRight } from 'lucide-react';
-
-import ProductCard from './ProductCard';
+import { ArrowRight } from 'lucide-react';
+import ProductCarousel from './ProductCarousel';
 
 export default function LatestProducts({ products, session }: { products: any[], session?: any }) {
     if (!products || products.length === 0) return null;
@@ -30,11 +28,7 @@ export default function LatestProducts({ products, session }: { products: any[],
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6">
-                        {products.slice(0, 6).map((product, index) => (
-                            <ProductCard key={product.id} product={product} session={session} priority={index < 6} />
-                        ))}
-                    </div>
+                    <ProductCarousel products={products.slice(0, 12)} session={session} />
                 </div>
             </div>
         </section>

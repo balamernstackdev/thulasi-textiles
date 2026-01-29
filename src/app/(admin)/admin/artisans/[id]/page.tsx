@@ -1,0 +1,34 @@
+import { getArtisanById } from '@/lib/actions/artisan';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+import ArtisanForm from '@/components/admin/ArtisanForm';
+
+export default async function EditArtisanPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const res = await getArtisanById(id);
+
+    if (!res.success || !res.data) {
+        notFound();
+    }
+
+    return (
+        <div className="space-y-8 max-w-[1200px] mx-auto pb-20">
+            <div className="flex items-center gap-6">
+                <Link href="/admin/artisans">
+                    <button className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-all shadow-sm">
+                        <ArrowLeft className="w-5 h-5 text-gray-400" />
+                    </button>
+                </Link>
+                <div>
+                    <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase tracking-tighter italic">Edit Dossier</h1>
+                    <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-[0.2em] font-black">Updating profile for {res.data.name}</p>
+                </div>
+            </div>
+
+            <div className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm">
+                <ArtisanForm artisan={res.data} />
+            </div>
+        </div>
+    );
+}

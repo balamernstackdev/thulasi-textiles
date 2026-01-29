@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { useCartStore } from '@/lib/store/cart';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Minus, Plus, Trash2, ArrowRight, Heart, ShoppingBag } from 'lucide-react';
+import { Minus, Plus, Trash2, ArrowRight, Heart, ShoppingBag, Star } from 'lucide-react';
 import { toggleWishlist } from '@/lib/actions/wishlist';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -222,6 +222,14 @@ export default function CartClient({ session, initialWishlist = [] }: { session:
                             <div className="flex justify-between text-2xl font-black text-gray-900">
                                 <span>Total</span>
                                 <span>₹{finalTotal.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
+                            </div>
+
+                            <div className="bg-emerald-50 border-2 border-emerald-100 rounded-2xl p-4 flex items-center gap-3">
+                                <Star className="w-5 h-5 text-emerald-600 fill-emerald-600" />
+                                <div>
+                                    <p className="text-[10px] font-black text-emerald-700 uppercase tracking-widest leading-none mb-1">Patron Points</p>
+                                    <p className="text-xs font-bold text-emerald-600">You will earn <span className="underline decoration-emerald-300 decoration-2 underline-offset-2">{Math.floor(finalTotal / 100)} points</span> from this order!</p>
+                                </div>
                             </div>
 
                             {shipping > 0 && (

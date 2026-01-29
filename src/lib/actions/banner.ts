@@ -62,6 +62,7 @@ export async function createBanner(formData: FormData) {
     const order = parseInt(formData.get('order') as string) || 0;
 
     const videoUrl = formData.get('videoUrl') as string;
+    const mobileImageUrl = formData.get('mobileImageUrl') as string;
     const countdownEndDate = formData.get('countdownEndDate') as string;
     const backgroundColor = formData.get('backgroundColor') as string;
     const textColor = formData.get('textColor') as string;
@@ -75,6 +76,7 @@ export async function createBanner(formData: FormData) {
         await prismadb.banner.create({
             data: {
                 imageUrl,
+                mobileImageUrl: mobileImageUrl || null,
                 videoUrl: videoUrl || null,
                 title: title || null,
                 subtitle: subtitle || null,
@@ -109,6 +111,7 @@ export async function updateBanner(id: string, formData: FormData) {
     const order = parseInt(formData.get('order') as string) || 0;
 
     const videoUrl = formData.get('videoUrl') as string;
+    const mobileImageUrl = formData.get('mobileImageUrl') as string;
     const countdownEndDate = formData.get('countdownEndDate') as string;
     const backgroundColor = formData.get('backgroundColor') as string;
     const textColor = formData.get('textColor') as string;
@@ -119,6 +122,7 @@ export async function updateBanner(id: string, formData: FormData) {
             where: { id },
             data: {
                 imageUrl,
+                mobileImageUrl: mobileImageUrl || null,
                 videoUrl: videoUrl || null,
                 title: title || null,
                 subtitle: subtitle || null,

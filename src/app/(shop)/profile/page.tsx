@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { getUserOrders } from '@/lib/actions/order';
 import { getUserAddresses } from '@/lib/actions/address';
 import { getWishlist } from '@/lib/actions/wishlist';
+import { getLoyaltyData } from '@/lib/actions/loyalty';
 
 export const metadata: Metadata = {
     title: 'My Profile | Thulasi Textiles',
@@ -19,10 +20,11 @@ export default async function ProfilePage() {
     }
 
     // Fetch all required data for the dashboard
-    const [ordersResult, addressesResult, wishlistResult] = await Promise.all([
+    const [ordersResult, addressesResult, wishlistResult, loyaltyResult] = await Promise.all([
         getUserOrders(),
         getUserAddresses(),
-        getWishlist()
+        getWishlist(),
+        getLoyaltyData()
     ]);
 
     return (
@@ -31,6 +33,7 @@ export default async function ProfilePage() {
             initialOrders={ordersResult.data || []}
             initialAddresses={addressesResult.data || []}
             initialWishlist={wishlistResult.data || []}
+            initialLoyaltyData={loyaltyResult.data || { points: 0, history: [] }}
         />
     );
 }

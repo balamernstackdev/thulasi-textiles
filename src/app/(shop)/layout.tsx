@@ -10,6 +10,7 @@ import { getBanners } from '@/lib/actions/banner';
 import AIHeritageAssistant from '@/components/shop/AIHeritageAssistant';
 import ScrollToTop from '@/components/ui/ScrollToTop';
 import MobileBottomNav from '@/components/shop/MobileBottomNav';
+import RecentlyPurchased from '@/components/shop/RecentlyPurchased';
 
 export default async function ShopLayout({
     children,
@@ -36,6 +37,7 @@ export default async function ShopLayout({
             <Footer categories={categories || []} />
             <QuickViewModal />
             <AIHeritageAssistant />
+            <RecentlyPurchased />
             <MobileBottomNav session={session} />
         </div>
     );

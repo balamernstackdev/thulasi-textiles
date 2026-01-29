@@ -8,11 +8,13 @@ import { toast } from 'sonner';
 import { useCartStore } from '@/lib/store/cart';
 import { useUIStore } from '@/lib/store/ui';
 import { useWishlistStore } from '@/lib/store/wishlist';
-import { Product, ProductImage, Category } from '@prisma/client';
+import { Product, ProductImage, Category, ProductVariant } from '@prisma/client';
+import Price from '@/components/store/Price';
 
 interface ProductWithData extends Product {
     images: ProductImage[];
     category: Category;
+    variants: ProductVariant[];
 }
 
 export default function ProductCard({ product, session, priority = false }: { product: ProductWithData, session?: any, priority?: boolean }) {
@@ -99,6 +101,17 @@ export default function ProductCard({ product, session, priority = false }: { pr
                                 New
                             </span>
                         )}
+                        {(() => {
+                            const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0;
+                            if (totalStock > 0 && totalStock <= 5) {
+                                return (
+                                    <span className="bg-rose-600 text-white text-[10px] uppercase font-bold px-2.5 py-1 rounded shadow-sm tracking-wider animate-pulse">
+                                        Only {totalStock} Left
+                                    </span>
+                                );
+                            }
+                            return null;
+                        })()}
                     </div>
 
                     {/* Discount Badge */}
@@ -144,61 +157,104 @@ export default function ProductCard({ product, session, priority = false }: { pr
                 </div>
 
                 {/* Content Details */}
-                <div className="flex flex-col flex-1 p-2 md:p-3 space-y-1 md:space-y-1.5">
-                    <span className="text-[8px] md:text-[9px] font-bold text-orange-600 uppercase tracking-widest truncate">
+                <div className="flex flex-col flex-1 p-3 md:p-4 space-y-2 md:space-y-3">
+                    <span className="text-[10px] md:text-xs font-bold text-orange-600 uppercase tracking-widest truncate">
                         {product.category?.name || 'Collection'}
                     </span>
 
-                    <h3 className="text-[11px] md:text-xs font-semibold text-gray-900 leading-tight line-clamp-2 h-7 md:h-8 group-hover:text-orange-600 transition-colors">
+                    <h3 className="text-xs md:text-base font-bold text-gray-900 leading-tight line-clamp-2 h-8 md:h-10 group-hover:text-orange-600 transition-colors">
                         {product.name}
                     </h3>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                         <div className="flex items-center text-yellow-400">
                             {[1, 2, 3, 4, 5].map(s => (
-                                <Star key={s} className="w-2 h-2 md:w-2.5 md:h-2.5 fill-current" />
+                                <Star key={s} className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 fill-current" />
                             ))}
                         </div>
-                        <span className="text-[8px] md:text-[9px] font-medium text-gray-400 number-font">(127)</span>
+                        <span className="text-[9px] md:text-xs font-medium text-gray-400 number-font">(127)</span>
                     </div>
 
-                    <div className="mt-auto pt-1.5 flex items-baseline gap-1.5 border-t border-gray-50">
-                        <span className="text-xs md:text-base font-bold text-gray-900">₹{priceValue.toLocaleString()}</span>
+                    <div className="mt-auto pt-2 flex items-baseline gap-2 border-t border-gray-50">
+                        <span className="text-sm md:text-xl font-black text-gray-900">
+                            <Price amount={priceValue} />
+                        </span>
                         {originalPrice > priceValue && (
-                            <span className="text-[9px] md:text-xs text-gray-400 line-through decoration-gray-300">₹{originalPrice.toLocaleString()}</span>
+                            <span className="text-[10px] md:text-sm text-gray-400 line-through decoration-gray-300">
+                                <Price amount={originalPrice} />
+                            </span>
                         )}
                     </div>
                 </div>
             </Link>
 
             {/* Action Footer */}
-            <div className="px-2 pb-2 md:px-3 md:pb-3">
+            <div className="px-3 pb-3 md:px-4 md:pb-4">
                 <button
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+
                         if (!session) {
                             toast.error('Please login to shop');
                             return;
                         }
+
+                        // If multiple variants, open quick view
+                        if (product.variants.length > 1) {
+                            openQuickView(product);
+                            return;
+                        }
+
+                        // Single variant (or none), add to cart
+                        // Assuming first variant or default
+                        const variant = product.variants[0];
+                        const price = variant ? Number(variant.price) : priceValue;
+                        const stock = variant ? variant.stock : 0;
+
+                        if (stock === 0) {
+                            toast.error('Out of stock');
+                            return;
+                        }
+
                         addItem({
                             id: product.id,
                             productId: product.id,
                             productName: product.name,
                             productSlug: product.slug,
-                            variantSku: 'default',
-                            price: priceValue,
+                            variantSku: variant ? variant.sku : 'default',
+                            price: price,
                             image: displayImage,
-                            stock: 10,
+                            stock: stock,
                         });
                         toast.success('Added to cart');
                     }}
-                    className="w-full bg-gray-900 hover:bg-black text-white py-1.5 md:py-2 rounded-md text-[9px] md:text-[10px] uppercase font-bold tracking-wider transition-all duration-300 flex items-center justify-center gap-1 md:gap-1.5 group-hover:shadow-lg hover:-translate-y-0.5"
+                    disabled={(() => {
+                        const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0;
+                        return totalStock === 0;
+                    })()}
+                    className="w-full bg-gray-900 hover:bg-black disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 md:py-3.5 rounded-xl text-[10px] md:text-xs uppercase font-black tracking-widest transition-all duration-300 flex items-center justify-center gap-1.5 md:gap-2 group-hover:shadow-lg hover:-translate-y-0.5"
                 >
-                    <ShoppingCart className="w-2.5 h-2.5 md:w-3 md:h-3" />
-                    <span>Add to Cart</span>
+                    {product.variants.length > 1 ? (
+                        <>
+                            <Eye className="w-3 h-3 md:w-4 md:h-4" />
+                            <span>Select Options</span>
+                        </>
+                    ) : (
+                        (() => {
+                            const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0;
+                            if (totalStock === 0) return <span>Out of Stock</span>;
+                            return (
+                                <>
+                                    <ShoppingCart className="w-3 h-3 md:w-4 md:h-4" />
+                                    <span>Add to Cart</span>
+                                </>
+                            );
+                        })()
+                    )}
                 </button>
             </div>
         </div>
     );
 }
+

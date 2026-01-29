@@ -5,6 +5,12 @@ import { getSession } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { subDays, startOfDay, endOfDay } from 'date-fns';
 import { sendEmail } from '@/lib/mail';
+import { grantPointsForOrder } from '@/lib/actions/loyalty';
+import { createNotification, notifyAdmins } from '@/lib/actions/notification';
+import { WhatsappService } from '@/lib/services/whatsapp';
+
+
+
 
 export async function createOrder(formData: FormData) {
     const session = await getSession();
@@ -64,7 +70,36 @@ export async function createOrder(formData: FormData) {
             });
         }
 
+        // Notify User: Order Placed
+        await createNotification({
+            userId: session.user.id,
+            title: 'Order Confirmed! 🎉',
+            message: `Your order #${order.id.slice(-6).toUpperCase()} has been placed successfully.`,
+            type: 'ORDER_NEW',
+            link: `/orders/${order.id}`
+        });
+
+        // Notify User: WhatsApp Confirmation (Fire & Forget)
+        if (session.user.email) {
+            const phone = '919876543210'; // In a real app, use the phone from Address
+            console.log('Use Whatsapp Service', phone, order.id, total, session.user.name);
+            try {
+                await WhatsappService.sendOrderConfirmation(phone, order.id, total, session.user.name || 'Valued Customer');
+            } catch (e) {
+                console.error('Failed to send WhatsApp:', e);
+            }
+        }
+
+        // Notify Admins: New Sale
+        await notifyAdmins({
+            title: 'New Sale Alert! 💰',
+            message: `New order #${order.id.slice(-6).toUpperCase()} received from ${session.user.name}. Value: ₹${total}`,
+            type: 'ORDER_NEW',
+            link: `/admin/orders`
+        });
+
         // Update stock and check for alerts
+
         const settings = await prismadb.storeSettings.findFirst();
         const adminEmail = settings?.supportEmail || 'support@thulasitextiles.com';
 
@@ -106,8 +141,17 @@ export async function createOrder(formData: FormData) {
                         </div>
                     `
                 });
+
+                // Notify Admins: Low Stock
+                await notifyAdmins({
+                    title: 'Low Stock Alert ⚠️',
+                    message: `${updatedVariant.product.name} is running low (${updatedVariant.stock} left).`,
+                    type: 'SYSTEM',
+                    link: `/admin/products/${updatedVariant.product.id}/edit`
+                });
             }
         }
+
 
         revalidatePath('/orders');
         return { success: true, data: order };
@@ -551,6 +595,34 @@ export async function updateOrderStatus(orderId: string, status: string) {
             }
         }
 
+        // Grant loyalty points if delivered
+        if (status === 'DELIVERED') {
+            await grantPointsForOrder(orderId);
+
+            // Notify User: Points Earned
+            if (order.user) {
+                await createNotification({
+                    userId: order.user.id,
+                    title: 'Rewards Unlocked! 💎',
+                    message: `You earned loyalty points for your recent purchase.`,
+                    type: 'PROMOTION',
+                    link: `/profile/rewards`
+                });
+            }
+        }
+
+        // Notify User: Status Update
+        if (order.user) {
+            await createNotification({
+                userId: order.user.id,
+                title: `Order Update: ${status}`,
+                message: getStatusMessage(status, orderId),
+                type: 'ORDER_STATUS',
+                link: `/orders/${orderId}`
+            });
+        }
+
+
         // If cancelled, restore stock
         if (status === 'CANCELLED') {
             for (const item of order.items) {
@@ -607,10 +679,262 @@ export async function updateOrderTracking(orderId: string, courierName: string, 
         });
         revalidatePath('/admin/orders');
         revalidatePath(`/admin/orders/${orderId}`);
+        revalidatePath(`/admin/orders/${orderId}`);
         revalidatePath('/orders');
+
+        // Trigger WhatsApp Update
+        try {
+            // Fetch order to get user details
+            const order = await prismadb.order.findUnique({
+                where: { id: orderId },
+                include: { user: true, address: true }
+            });
+            if (order && (order.address?.phone || '919876543210')) {
+                await WhatsappService.sendShippingUpdate(order.address?.phone || '919876543210', orderId, trackingNumber, courierName);
+            }
+        } catch (e) {
+            console.error('WhatsApp Shipping Update Failed:', e);
+        }
+
         return { success: true };
     } catch (error) {
         console.error('Error updating order tracking:', error);
         return { success: false, error: 'Failed to update tracking' };
+    }
+}
+
+export async function getRecentPublicOrders() {
+    try {
+        const orders = await prismadb.order.findMany({
+            where: {
+                status: { not: 'CANCELLED' },
+                paymentStatus: 'PAID'
+            },
+            take: 10,
+            orderBy: { createdAt: 'desc' },
+            include: {
+                items: {
+                    take: 1,
+                    include: {
+                        variant: {
+                            include: {
+                                product: {
+                                    include: {
+                                        images: { take: 1 }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                address: true
+            }
+        });
+
+        return {
+            success: true,
+            data: orders.map(order => ({
+                id: order.id,
+                city: order.address.city,
+                productName: order.items[0]?.variant.product.name,
+                productImage: order.items[0]?.variant.product.images[0]?.url,
+                createdAt: order.createdAt
+            }))
+        };
+    } catch (error) {
+        console.error('Fetch public orders error:', error);
+        return { success: false, error: 'Failed' };
+    }
+}
+
+export async function getFulfillmentOrders() {
+    try {
+        const orders = await prismadb.order.findMany({
+            where: {
+                status: { in: ['PENDING', 'PROCESSING'] }
+            },
+            include: {
+                user: true,
+                address: true,
+                items: {
+                    include: {
+                        variant: {
+                            include: {
+                                product: true
+                            }
+                        }
+                    }
+                }
+            },
+            orderBy: { createdAt: 'asc' } // Oldest first for fulfillment
+        });
+
+        const serialized = (orders as any[]).map(order => ({
+            ...order,
+            total: Number(order.total),
+            daysOpen: Math.floor((new Date().getTime() - new Date(order.createdAt).getTime()) / (1000 * 3600 * 24)),
+            items: order.items.map((item: any) => ({
+                ...item,
+                price: Number(item.price),
+                variant: {
+                    ...item.variant,
+                    price: Number(item.variant.price)
+                }
+            }))
+        }));
+
+        return { success: true, data: JSON.parse(JSON.stringify(serialized)) };
+    } catch (error) {
+        console.error('Fulfillment fetch error:', error);
+        return { success: false, error: 'Failed to fetch fulfillment orders' };
+    }
+}
+
+export async function bulkUpdateOrders(orderIds: string[], status: string) {
+    const session = await getSession();
+    if (!session || session.user.role !== 'ADMIN') {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    try {
+        // We use the existing updateOrderStatus to leverage its triggers (emails, loyalty, stock)
+        const results = await Promise.all(
+            orderIds.map(id => updateOrderStatus(id, status))
+        );
+
+        const allSuccess = results.every(r => r.success);
+
+        revalidatePath('/admin/inventory/fulfillment');
+        revalidatePath('/admin/orders');
+
+        return {
+            success: allSuccess,
+            message: allSuccess ? 'All orders updated' : 'Some orders failed to update'
+        };
+    } catch (error) {
+        console.error('Bulk update error:', error);
+        return { success: false, error: 'Failed to perform bulk update' };
+    }
+}
+
+export async function getAdvancedAnalytics() {
+    const session = await getSession();
+    if (!session || session.user.role !== 'ADMIN') {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    try {
+        const ninetyDaysAgo = subDays(new Date(), 90);
+
+        const [orders, users, allProducts] = await Promise.all([
+            prismadb.order.findMany({
+                where: {
+                    status: { not: 'CANCELLED' },
+                    paymentStatus: 'PAID',
+                    createdAt: { gte: ninetyDaysAgo }
+                },
+                include: {
+                    items: {
+                        include: {
+                            variant: {
+                                include: { product: true }
+                            }
+                        }
+                    },
+                    user: true
+                }
+            }),
+            prismadb.user.findMany({
+                where: { role: 'CUSTOMER' },
+                include: {
+                    orders: {
+                        where: { paymentStatus: 'PAID' }
+                    }
+                }
+            }),
+            prismadb.product.findMany({
+                include: {
+                    variants: true
+                }
+            })
+        ]);
+
+        // 1. Sales Heatmap (Day vs Hour)
+        const heatmapData = Array.from({ length: 7 }, (_, day) => ({
+            day,
+            hours: Array.from({ length: 24 }, (_, hour) => ({ hour, count: 0, revenue: 0 }))
+        }));
+
+        orders.forEach(order => {
+            const date = new Date(order.createdAt);
+            const day = date.getDay();
+            const hour = date.getHours();
+            heatmapData[day].hours[hour].count += 1;
+            heatmapData[day].hours[hour].revenue += Number(order.total);
+        });
+
+        // 2. Inventory Velocity (Sales per day / current stock)
+        const productPerformance: Record<string, { name: string, sold: number, stock: number }> = {};
+
+        allProducts.forEach(p => {
+            const totalStock = p.variants.reduce((sum, v) => sum + v.stock, 0);
+            productPerformance[p.id] = { name: p.name, sold: 0, stock: totalStock };
+        });
+
+        orders.forEach(order => {
+            order.items.forEach(item => {
+                const productId = item.variant.product.id;
+                if (productPerformance[productId]) {
+                    productPerformance[productId].sold += item.quantity;
+                }
+            });
+        });
+
+        const velocityData = Object.values(productPerformance)
+            .map(p => ({
+                ...p,
+                velocity: p.stock > 0 ? (p.sold / 90) / p.stock : p.sold > 0 ? 1 : 0
+            }))
+            .sort((a, b) => b.velocity - a.velocity)
+            .slice(0, 10);
+
+        // 3. VIP Patrons (CLV)
+        const vipPatrons = users.map(user => {
+            const u = user as any;
+            const totalSpent = u.orders.reduce((sum: number, o: any) => sum + Number(o.total), 0);
+            return {
+                id: u.id,
+                name: u.name || u.email,
+                email: u.email,
+                totalSpent,
+                orderCount: u.orders.length,
+                points: u.loyaltyPoints || 0
+            };
+        })
+            .sort((a, b) => b.totalSpent - a.totalSpent)
+            .slice(0, 10);
+
+        return {
+            success: true,
+            data: {
+                heatmap: heatmapData,
+                velocity: velocityData,
+                vips: vipPatrons
+            }
+        };
+    } catch (error) {
+        console.error('Advanced analytics error:', error);
+        return { success: false, error: 'Failed' };
+    }
+}
+
+function getStatusMessage(status: string, orderId: string) {
+    const id = orderId.slice(-6).toUpperCase();
+    switch (status) {
+        case 'PROCESSING': return `We are preparing your order #${id} for shipment.`;
+        case 'SHIPPED': return `Order #${id} is on its way! Track it now.`;
+        case 'DELIVERED': return `Order #${id} has been delivered. Enjoy!`;
+        case 'CANCELLED': return `Order #${id} was cancelled.`;
+        default: return `Order #${id} status updated to ${status}.`;
     }
 }

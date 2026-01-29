@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import Link from 'next/link';
 
 // Memoized Row Component to prevent redundant re-renders
 const InventoryItemRow = React.memo(({
@@ -174,15 +175,23 @@ export default function InventoryPage() {
     }
 
     return (
-        <div className="space-y-8 max-w-[1600px] mx-auto pb-32">
+        <div className="space-y-8 w-full pb-32">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase tracking-tighter">Inventory Suite</h1>
                     <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-[0.2em] font-black">Performance-ready bulk operations</p>
                 </div>
-                <div className="bg-white px-5 py-3 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
-                    <Layers className="w-4 h-4 text-orange-500" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-900">{items.length} Variants</span>
+                <div className="flex items-center gap-4">
+                    <Link href="/admin/inventory/bulk">
+                        <Button className="h-12 px-6 rounded-2xl bg-[#1e293b] text-white hover:bg-orange-600 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-orange-500/10 transition-all group">
+                            Launch Matrix Editor
+                            <div className="ml-3 w-1.5 h-1.5 rounded-full bg-orange-400 group-hover:scale-150 transition-transform" />
+                        </Button>
+                    </Link>
+                    <div className="bg-white px-5 py-3 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+                        <Layers className="w-4 h-4 text-orange-500" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-900">{items.length} Variants</span>
+                    </div>
                 </div>
             </div>
 

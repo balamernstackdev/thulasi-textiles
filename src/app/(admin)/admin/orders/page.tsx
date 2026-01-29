@@ -20,7 +20,7 @@ export default async function OrdersPage({
     const pagination = result.pagination;
 
     return (
-        <div className="p-4 md:p-8 space-y-6">
+        <div className="p-4 md:p-8 space-y-6 w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Orders</h1>

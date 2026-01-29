@@ -4,6 +4,8 @@ import Pagination from '@/components/shared/Pagination';
 import { getCustomers } from '@/lib/actions/customer';
 import { format } from 'date-fns';
 import RoleSelector from '@/components/admin/RoleSelector';
+import PointsAdjuster from '@/components/admin/PointsAdjuster';
+import { Star } from 'lucide-react';
 
 export default async function CustomersPage({
     searchParams
@@ -17,7 +19,7 @@ export default async function CustomersPage({
     const pagination = result.success ? result.pagination : null;
 
     return (
-        <div className="p-4 md:p-8 space-y-6">
+        <div className="p-4 md:p-8 space-y-6 w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">User Management</h1>
@@ -55,6 +57,7 @@ export default async function CustomersPage({
                                     <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">User</th>
                                     <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Email Address</th>
                                     <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Joined On</th>
+                                    <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Points</th>
                                     <th className="px-6 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Access Level</th>
                                 </tr>
                             </thead>
@@ -83,6 +86,9 @@ export default async function CustomersPage({
                                                 <Calendar className="w-3.5 h-3.5 text-gray-300" />
                                                 {format(new Date(customer.createdAt), 'MMM dd, yyyy')}
                                             </div>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            <PointsAdjuster userId={customer.id} currentPoints={customer.loyaltyPoints || 0} />
                                         </td>
                                         <td className="px-6 py-5">
                                             <div className="flex justify-end">

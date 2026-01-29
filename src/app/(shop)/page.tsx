@@ -32,6 +32,7 @@ export const metadata: Metadata = {
 interface BannerItem {
   id: string;
   imageUrl: string;
+  mobileImageUrl: string | null;
   videoUrl: string | null;
   title: string | null;
   subtitle: string | null;
@@ -121,10 +122,11 @@ export default async function ShopHome() {
 
   return (
     <div className="flex flex-col min-h-screen pb-10 bg-[#F2F2F2]">
+
       {/* Announcement Bar moved to Navbar/Layout */}
 
       {/* Main Home Banners - High Priority */}
-      <div className="relative z-10 w-full pt-0">
+      <div className="w-full">
         <Banner banners={mainBanners} />
       </div>
 
@@ -142,19 +144,20 @@ export default async function ShopHome() {
 
       {/* Featured Section with Sidebar Promos */}
       {/* Featured Section - Full Width */}
-      <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-12 space-y-12">
-        {/* Converted Sidebar Banners to Advanced Slider */}
-        {sidebarBanners.length > 0 && (
+      {/* Featured Section with Sidebar Promos */}
+      {sidebarBanners.length > 0 && (
+        <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-12 space-y-12">
           <div className="rounded-2xl overflow-hidden shadow-lg">
             <Banner banners={sidebarBanners} type="section" />
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Latest Products - Full Width */}
-        {latestProducts.length > 0 && (
-          <LatestProducts products={latestProducts} session={session} />
-        )}
-      </div>
+      {/* Latest Products - Full Width */}
+      {latestProducts.length > 0 && (
+        <LatestProducts products={latestProducts} session={session} />
+      )}
+
 
       {/* Streaming Category Sections */}
       <Suspense fallback={<><ProductSectionSkeleton /><ProductSectionSkeleton /></>}>
@@ -178,15 +181,19 @@ export default async function ShopHome() {
       <HeritageChronicles />
 
       {/* Newsletter / Footer Promo */}
-      <section className="bg-orange-600 py-24 mt-12 overflow-hidden relative">
-        <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 text-center relative z-10">
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-4 uppercase tracking-tighter italic leading-none">Stay in the Loop</h2>
-          <p className="text-white/80 font-medium mb-12 max-w-xl mx-auto">Subscribe for exclusive collection drops, artisan stories, and heritage weave updates.</p>
-          <NewsletterForm />
-        </div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl opacity-20" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl opacity-20" />
-      </section>
+      <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 mt-12">
+        <section className="bg-[#E8510D] py-20 pb-24 rounded-[3rem] md:rounded-[5rem] overflow-hidden relative shadow-2xl">
+          <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 uppercase tracking-[-0.05em] italic leading-tight drop-shadow-sm">STAY IN THE LOOP</h2>
+            <p className="text-white/95 text-sm md:text-base font-normal mb-10 max-w-2xl mx-auto leading-relaxed">Subscribe for exclusive collection drops, artisan stories, and heritage weave updates.</p>
+            <div className="max-w-2xl mx-auto">
+              <NewsletterForm />
+            </div>
+          </div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl opacity-20" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl opacity-20" />
+        </section>
+      </div>
     </div>
   );
 }

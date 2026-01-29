@@ -4,6 +4,7 @@
 import prismadb from '@/lib/prisma';
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { cache } from 'react';
 
 export async function createProduct(formData: FormData) {
     const name = formData.get('name') as string;
@@ -13,6 +14,7 @@ export async function createProduct(formData: FormData) {
 
     const imagesStr = formData.get('images') as string;
     const variantsStr = formData.get('variants') as string;
+    const artisanId = formData.get('artisanId') as string;
     const isFeatured = formData.get('isFeatured') === 'true';
     const isBestSeller = formData.get('isBestSeller') === 'true';
     const isOffer = formData.get('isOffer') === 'true';
@@ -70,6 +72,7 @@ export async function createProduct(formData: FormData) {
                 metaTitle,
                 metaDescription,
                 videoUrl,
+                artisanId: artisanId || null,
                 complementaryProducts: {
                     create: complementaryProductIds.map((id: string) => ({
                         complementary: { connect: { id } }
@@ -103,8 +106,6 @@ export async function createProduct(formData: FormData) {
 
     redirect('/admin/products');
 }
-
-import { cache } from 'react';
 
 export const getProducts = cache(async (options: {
     categorySlug?: string,
@@ -273,16 +274,58 @@ export const getProducts = cache(async (options: {
     )();
 });
 
-export const getFilterValues = cache(async () => {
+export const getFilterValues = cache(async (categorySlug?: string) => {
+    const key = `filter-values-${categorySlug || 'all'}`;
     return unstable_cache(
         async () => {
             try {
+                const categoryFilter = categorySlug ? {
+                    category: {
+                        OR: [
+                            { slug: categorySlug },
+                            { parent: { slug: categorySlug } }
+                        ]
+                    }
+                } : {};
+
+                const variantWhere = {
+                    product: {
+                        ...categoryFilter,
+                        isActive: true
+                    }
+                };
+
+                const productWhere = {
+                    ...categoryFilter,
+                    isActive: true
+                };
+
                 const [sizes, colors, materials, fabrics, occasions] = await Promise.all([
-                    prismadb.productVariant.findMany({ select: { size: true }, distinct: ['size'] }),
-                    prismadb.productVariant.findMany({ select: { color: true }, distinct: ['color'] }),
-                    prismadb.productVariant.findMany({ select: { material: true }, distinct: ['material'] }),
-                    prismadb.product.findMany({ select: { fabric: true }, distinct: ['fabric'] }),
-                    prismadb.product.findMany({ select: { occasion: true }, distinct: ['occasion'] }),
+                    prismadb.productVariant.findMany({
+                        where: variantWhere,
+                        select: { size: true },
+                        distinct: ['size']
+                    }),
+                    prismadb.productVariant.findMany({
+                        where: variantWhere,
+                        select: { color: true },
+                        distinct: ['color']
+                    }),
+                    prismadb.productVariant.findMany({
+                        where: variantWhere,
+                        select: { material: true },
+                        distinct: ['material']
+                    }),
+                    prismadb.product.findMany({
+                        where: productWhere,
+                        select: { fabric: true },
+                        distinct: ['fabric']
+                    }),
+                    prismadb.product.findMany({
+                        where: productWhere,
+                        select: { occasion: true },
+                        distinct: ['occasion']
+                    }),
                 ]);
 
                 return {
@@ -300,7 +343,7 @@ export const getFilterValues = cache(async () => {
                 return { success: false, data: { sizes: [], colors: [], materials: [], fabrics: [], occasions: [] } };
             }
         },
-        ['filter-values'],
+        [key],
         { tags: ['products'], revalidate: 3600 }
     )();
 });
@@ -327,6 +370,16 @@ export const getRelatedProducts = cache(async (productId: string, categoryId: st
                         images: {
                             where: { isPrimary: true },
                             take: 1
+                        },
+                        variants: {
+                            select: {
+                                id: true,
+                                sku: true,
+                                price: true,
+                                stock: true,
+                                size: true,
+                                color: true
+                            }
                         }
                     },
                     orderBy: {
@@ -338,7 +391,11 @@ export const getRelatedProducts = cache(async (productId: string, categoryId: st
                     success: true,
                     data: products.map(p => ({
                         ...p,
-                        basePrice: Number(p.basePrice)
+                        basePrice: Number(p.basePrice),
+                        variants: p.variants.map(v => ({
+                            ...v,
+                            price: Number(v.price)
+                        }))
                     }))
                 };
             } catch (error) {
@@ -522,6 +579,7 @@ export async function updateProduct(id: string, formData: FormData) {
     const heritageTitle = formData.get('heritageTitle') as string | null;
     const qualityAuditStr = formData.get('qualityAudit') as string | null;
     const videoUrl = formData.get('videoUrl') as string | null;
+    const artisanId = formData.get('artisanId') as string | null;
     const complementaryProductIdsStr = formData.get('complementaryProducts') as string | null;
 
     const images = imagesStr ? JSON.parse(imagesStr) : [];
@@ -560,6 +618,7 @@ export async function updateProduct(id: string, formData: FormData) {
                 metaTitle,
                 metaDescription,
                 videoUrl,
+                artisanId: artisanId || null,
                 complementaryProducts: {
                     deleteMany: {},
                     create: complementaryProductIds.map((id: string) => ({
@@ -812,25 +871,24 @@ export const getQuickSearch = cache(async (query: string) => {
     }
 });
 
-// ============================================
-// BULK UPDATE ACTIONS
-// ============================================
-
-export async function bulkUpdateProductPrice(ids: string[], percentage: number, type: 'increase' | 'decrease') {
+export async function bulkUpdateProductPrice(productIds: string[], percentage: number, type: 'increase' | 'decrease') {
     try {
-        const factor = type === 'increase' ? (1 + percentage / 100) : (1 - percentage / 100);
+        const products = await prismadb.product.findMany({
+            where: { id: { in: productIds } },
+            select: { id: true, basePrice: true }
+        });
 
         await prismadb.$transaction(
-            ids.map(id =>
-                prismadb.product.update({
-                    where: { id },
-                    data: {
-                        basePrice: {
-                            multiply: factor
-                        }
-                    }
-                })
-            )
+            products.map(p => {
+                const currentPrice = Number(p.basePrice);
+                const adjustment = (currentPrice * percentage) / 100;
+                const newPrice = type === 'increase' ? currentPrice + adjustment : currentPrice - adjustment;
+
+                return prismadb.product.update({
+                    where: { id: p.id },
+                    data: { basePrice: newPrice }
+                });
+            })
         );
 
         revalidatePath('/admin/products');
@@ -842,35 +900,81 @@ export async function bulkUpdateProductPrice(ids: string[], percentage: number, 
     }
 }
 
-export async function bulkToggleProductVisibility(ids: string[], isActive: boolean) {
+export async function bulkToggleProductVisibility(productIds: string[], isActive: boolean) {
     try {
         await prismadb.product.updateMany({
-            where: { id: { in: ids } },
-            data: { isActive }
+            where: {
+                id: { in: productIds }
+            },
+            data: {
+                isActive
+            }
         });
-
         revalidatePath('/admin/products');
         revalidateTag('products', 'default');
         return { success: true };
     } catch (error) {
-        console.error('Bulk visibility toggle error:', error);
+        console.error('Bulk visibility update error:', error);
         return { success: false, error: 'Failed to update visibility' };
     }
 }
 
-export async function bulkToggleCategoryVisibility(categoryId: string, isActive: boolean) {
-    try {
-        await prismadb.product.updateMany({
-            where: { categoryId },
-            data: { isActive }
-        });
+export const getTrendingProducts = cache(async () => {
+    return unstable_cache(
+        async () => {
+            try {
+                // Fetch best sellers or just recent products if no best sellers
+                const products = await prismadb.product.findMany({
+                    where: {
+                        isActive: true,
+                        isBestSeller: true
+                    },
+                    take: 4,
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        basePrice: true,
+                        images: {
+                            where: { isPrimary: true },
+                            take: 1,
+                            select: { url: true }
+                        },
+                        category: { select: { name: true } }
+                    },
+                    orderBy: {
+                        updatedAt: 'desc'
+                    }
+                });
 
-        revalidatePath('/admin/products');
-        revalidateTag('products', 'default');
-        revalidatePath('/', 'layout');
-        return { success: true };
-    } catch (error) {
-        console.error('Category visibility toggle error:', error);
-        return { success: false, error: 'Failed to update category products visibility' };
-    }
-}
+                // Fallback if no best sellers
+                if (products.length === 0) {
+                    const recent = await prismadb.product.findMany({
+                        where: { isActive: true },
+                        take: 4,
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                            basePrice: true,
+                            images: { where: { isPrimary: true }, take: 1, select: { url: true } },
+                            category: { select: { name: true } }
+                        },
+                        orderBy: { createdAt: 'desc' }
+                    });
+                    return { success: true, data: recent.map(p => ({ ...p, basePrice: Number(p.basePrice) })) };
+                }
+
+                return {
+                    success: true,
+                    data: products.map(p => ({ ...p, basePrice: Number(p.basePrice) }))
+                };
+            } catch (error) {
+                console.error('Trend fetch error:', error);
+                return { success: false, data: [] };
+            }
+        },
+        ['trending-search'],
+        { tags: ['products'], revalidate: 3600 }
+    )();
+});

@@ -10,19 +10,25 @@ import AddressesClient from './addresses/addresses-client';
 import WishlistClient from '../wishlist/wishlist-client';
 import SettingsClient from './settings-client';
 import { format } from 'date-fns';
+import RewardsClient from './rewards-client';
+import DigitalWardrobe from '@/components/account/DigitalWardrobe';
+import ReferralCard from '@/components/account/ReferralCard';
+import WalletCard from '@/components/account/WalletCard';
 
-type Tab = 'overview' | 'orders' | 'addresses' | 'wishlist' | 'settings';
+type Tab = 'overview' | 'orders' | 'addresses' | 'wishlist' | 'rewards' | 'settings';
 
 export default function ProfileClient({
     session,
     initialOrders = [],
     initialAddresses = [],
-    initialWishlist = []
+    initialWishlist = [],
+    initialLoyaltyData = { points: 0, history: [] }
 }: {
     session: any,
     initialOrders?: any[],
     initialAddresses?: any[],
-    initialWishlist?: any[]
+    initialWishlist?: any[],
+    initialLoyaltyData?: any
 }) {
     const { user } = session;
     const router = useRouter();
@@ -49,6 +55,7 @@ export default function ProfileClient({
         { id: 'orders', icon: Package, label: 'My Orders', description: 'Track ongoing orders' },
         { id: 'addresses', icon: MapPin, label: 'Addresses', description: 'Manage delivery locations' },
         { id: 'wishlist', icon: Heart, label: 'Wishlist', description: 'Your saved items' },
+        // { id: 'rewards', icon: Star, label: 'Rewards', description: 'Your Patron Points' },
         { id: 'settings', icon: Settings, label: 'Settings', description: 'Password & Security' },
     ];
 
@@ -117,6 +124,20 @@ export default function ProfileClient({
                         {/* OVERVIEW TAB */}
                         {activeTab === 'overview' && (
                             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+                                {/* Loyalty & Wallet Grid - HIDDEN FOR NOW */}
+                                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="h-full">
+                                        <WalletCard user={user} />
+                                    </div>
+                                    <div className="h-full">
+                                        <ReferralCard user={user} />
+                                    </div>
+                                </div> */}
+
+                                {/* Digital Wardrobe */}
+                                <DigitalWardrobe orders={initialOrders} />
+
                                 {/* Recent Orders Preview (Showing 5) */}
                                 <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 shadow-xl">
                                     <div className="flex items-center justify-between mb-6 sm:mb-8">
@@ -278,6 +299,15 @@ export default function ProfileClient({
                                             </button>
                                         </div>
                                     )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* REWARDS TAB */}
+                        {activeTab === 'rewards' && (
+                            <div className="animate-in fade-in zoom-in-95 duration-300">
+                                <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 shadow-xl min-h-[500px] md:min-h-[600px]">
+                                    <RewardsClient loyaltyData={initialLoyaltyData} />
                                 </div>
                             </div>
                         )}

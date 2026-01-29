@@ -83,3 +83,11 @@ export async function logout() {
     await destroySession();
     redirect('/');
 }
+
+import { getSession } from '@/lib/auth';
+
+export async function getSessionUser() {
+    const session = await getSession();
+    return session?.user || null;
+}
+

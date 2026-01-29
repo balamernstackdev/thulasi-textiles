@@ -17,21 +17,47 @@ import {
     Ticket,
     Box,
     Star,
+    Truck,
     Settings
 } from 'lucide-react';
+import PageTransition from '@/components/admin/PageTransition';
+import AdminNotificationWrapper from '@/components/admin/AdminNotificationWrapper';
+
+
 
 const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, color: 'text-teal-400' },
     { href: '/admin/categories', label: 'Categories', icon: Menu, color: 'text-[#2dd4bf]' },
     { href: '/admin/products', label: 'Products', icon: Package, color: 'text-purple-400' },
     { href: '/admin/orders', label: 'Orders', icon: ShoppingBag, color: 'text-orange-400' },
+    { href: '/admin/inventory/fulfillment', label: 'Fulfillment', icon: Truck, color: 'text-emerald-500' },
     { href: '/admin/customers', label: 'Customers', icon: Users, color: 'text-blue-400' },
     { href: '/admin/banners', label: 'Banners', icon: ImageIcon, color: 'text-pink-400' },
     { href: '/admin/coupons', label: 'Coupons', icon: Ticket, color: 'text-orange-500' },
+    { href: '/admin/artisans', label: 'Artisans', icon: Users, color: 'text-emerald-400' },
     { href: '/admin/inventory', label: 'Inventory', icon: Box, color: 'text-teal-500' },
     { href: '/admin/reviews', label: 'Reviews', icon: Star, color: 'text-yellow-500' },
     { href: '/admin/settings', label: 'Settings', icon: Settings, color: 'text-gray-400' },
 ];
+
+const NavLink = React.memo(({ item, isActive, onClick }: { item: any, isActive: boolean, onClick: () => void }) => {
+    const Icon = item.icon;
+    return (
+        <Link
+            href={item.href}
+            onClick={onClick}
+            className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all group ${isActive
+                ? 'bg-[#2dd4bf] text-[#1e293b] font-black shadow-xl shadow-teal-500/30'
+                : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                }`}
+        >
+            <Icon className={`w-5 h-5 transition-colors ${isActive ? 'text-[#1e293b]' : `group-hover:${item.color}`}`} />
+            <span className={isActive ? 'font-black' : 'font-bold'}>{item.label}</span>
+        </Link>
+    );
+});
+
+NavLink.displayName = 'NavLink';
 
 export default function AdminLayout({
     children,
@@ -85,28 +111,17 @@ export default function AdminLayout({
                     </div>
                 </div>
 
-                <div className="p-4 flex-1 overflow-y-auto space-y-1 custom-scrollbar-thin">
-                    <p className="px-5 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3 mt-6">Main Menu</p>
+                <div className="p-4 flex-1 overflow-y-auto space-y-1 custom-scrollbar-sidebar">
+                    <p className="px-5 text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mb-4 mt-6 opacity-50">Operations Hub</p>
 
-                    {navItems.map((item) => {
-                        const Icon = item.icon;
-                        const isActive = pathname === item.href;
-
-                        return (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                onClick={() => setIsSidebarOpen(false)}
-                                className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all group ${isActive
-                                    ? 'bg-[#2dd4bf] text-[#1e293b] font-black shadow-xl shadow-teal-500/30'
-                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                                    }`}
-                            >
-                                <Icon className={`w-5 h-5 transition-colors ${isActive ? 'text-[#1e293b]' : `group-hover:${item.color}`}`} />
-                                <span className={isActive ? 'font-black' : 'font-bold'}>{item.label}</span>
-                            </Link>
-                        );
-                    })}
+                    {navItems.map((item) => (
+                        <NavLink
+                            key={item.href}
+                            item={item}
+                            isActive={pathname === item.href}
+                            onClick={() => setIsSidebarOpen(false)}
+                        />
+                    ))}
                 </div>
 
                 <div className="p-6 border-t border-gray-700/50">
@@ -137,21 +152,17 @@ export default function AdminLayout({
                     </div>
 
                     <div className="flex items-center gap-3 md:gap-6">
+                        <AdminNotificationWrapper />
                         <div className="text-right hidden sm:block">
-                            <p className="text-sm font-black text-gray-900 leading-none mb-1">Deepak Srinivasan</p>
-                            <p className="text-[10px] font-black text-[#2dd4bf] uppercase tracking-widest bg-teal-50 px-2 py-0.5 rounded">Owner / Admin</p>
-                        </div>
-                        <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 rounded-xl md:rounded-2xl border-2 border-white shadow-xl flex items-center justify-center text-gray-400 group cursor-pointer hover:border-[#2dd4bf] transition-all overflow-hidden">
-                            <Users className="w-5 h-5 md:w-6 md:h-6 group-hover:scale-110 transition-transform" />
                         </div>
                     </div>
                 </header>
 
                 {/* Page Content */}
-                <main className="p-6 md:p-10 lg:p-12 animate-in fade-in slide-in-from-bottom-2 duration-300 gpu overflow-x-hidden">
-                    <div className="w-full">
+                <main className="p-6 md:p-10 lg:p-12 gpu overflow-x-hidden">
+                    <PageTransition>
                         {children}
-                    </div>
+                    </PageTransition>
                 </main>
             </div>
         </div>
