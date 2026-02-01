@@ -44,14 +44,14 @@ export default function UserMenu({ session }: { session: any }) {
     };
 
     return (
-        <div className="flex items-center gap-1 sm:gap-3">
+        <div className="flex items-center gap-0.5 sm:gap-3">
             {/* Cart Icon */}
-            <Link id="cart-icon-desktop" href="/cart" className="relative p-2.5 sm:p-3.5 hover:bg-gray-50 rounded-xl sm:rounded-2xl transition-all group active:scale-95">
+            <Link id="cart-icon-desktop" href="/cart" className="relative p-2 sm:p-3.5 hover:bg-gray-50 rounded-xl sm:rounded-2xl transition-all group active:scale-95">
                 <ShoppingBag className="w-5 h-5 sm:w-7 sm:h-7 text-gray-700 group-hover:text-orange-600 transition-colors" />
             </Link>
 
-            {/* Wishlist Icon - Hidden on very small screens */}
-            <Link href="/wishlist" className="relative p-2.5 sm:p-3.5 hover:bg-gray-50 rounded-xl sm:rounded-2xl transition-all group hidden xxs:block active:scale-95">
+            {/* Wishlist Icon - Hidden on mobile, show on md+ */}
+            <Link href="/wishlist" className="relative p-2.5 sm:p-3.5 hover:bg-gray-50 rounded-xl sm:rounded-2xl transition-all group hidden md:block active:scale-95">
                 <Heart className="w-5 h-5 sm:w-7 sm:h-7 text-gray-700 group-hover:text-orange-600 transition-colors" />
                 {wishlistCount > 0 && (
                     <span className="absolute top-1 right-1 w-4 h-4 bg-orange-600 text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-white">
@@ -64,16 +64,16 @@ export default function UserMenu({ session }: { session: any }) {
             <div className="relative">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="flex items-center gap-1 sm:gap-4 px-3 sm:px-5 py-2 sm:py-2.5 bg-gray-50 hover:bg-white border-2 border-gray-100 rounded-full transition-all group shadow-sm hover:shadow-md"
+                    className="flex items-center gap-1 sm:gap-4 px-2 sm:px-5 py-1.5 sm:py-2.5 bg-gray-50 hover:bg-white border-2 border-gray-100 rounded-full transition-all group shadow-sm hover:shadow-md"
                 >
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-extrabold text-[11px] sm:text-sm shrink-0 ring-2 ring-white shadow-inner">
+                    <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-extrabold text-[10px] sm:text-sm shrink-0 ring-2 ring-white shadow-inner">
                         {user.name?.[0].toUpperCase()}
                     </div>
                     <div className="text-left hidden md:block">
                         <p className="text-[11px] font-black text-gray-900 uppercase tracking-widest leading-none">{user.name}</p>
                         <p className="text-[8px] font-bold text-orange-600 leading-none mt-1.5 uppercase tracking-wider">Premium Member</p>
                     </div>
-                    <ChevronDown className={`w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 text-gray-300 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3 h-3 sm:w-4.5 sm:h-4.5 text-gray-300 transition-transform hidden sm:block ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {isOpen && (

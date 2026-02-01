@@ -23,7 +23,7 @@ export default function AnnouncementTicker({ banners }: AnnouncementTickerProps)
                 color: banner.textColor || '#ffffff'
             }}
         >
-            <div className="flex items-center gap-12 animate-marquee whitespace-nowrap px-4 font-black uppercase tracking-[0.2em] text-[10px] md:text-xs italic w-max">
+            <div className="flex items-center gap-12 animate-marquee whitespace-nowrap px-4 font-black uppercase tracking-normal md:tracking-[0.2em] text-[10px] md:text-xs w-max">
                 {/* Original Set */}
                 <div className="flex items-center gap-12">
                     <span>{banner.title}</span>

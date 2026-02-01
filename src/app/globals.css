@@ -38,6 +38,9 @@
 html {
   scroll-padding-top: 100px;
   -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  min-width: 100%;
+  overflow-x: clip;
 }
 
 body {
@@ -47,7 +50,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
+  position: relative;
 }
 
 h1,
@@ -57,6 +64,32 @@ h4,
 h5,
 h6 {
   font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Global Mobile Letter-Spacing Fix - Prevent text overflow on small screens */
+@media (max-width: 768px) {
+
+  /* Override excessive tracking classes on mobile */
+  [class*="tracking-widest"],
+  [class*="tracking-[0.3"],
+  [class*="tracking-[0.4"],
+  [class*="tracking-[0.5"],
+  [class*="tracking-[0.6"],
+  [class*="tracking-[0.7"],
+  [class*="tracking-[0.8"],
+  [class*="tracking-[0.9"],
+  [class*="tracking-[1"] {
+    letter-spacing: 0.05em !important;
+  }
+
+  /* Uppercase text with wide tracking needs even tighter spacing */
+  .uppercase[class*="tracking-widest"],
+  .uppercase[class*="tracking-[0.3"],
+  .uppercase[class*="tracking-[0.4"],
+  .uppercase[class*="tracking-[0.5"],
+  .uppercase[class*="tracking-[0.6"] {
+    letter-spacing: 0.02em !important;
+  }
 }
 
 /* --- Optimized Custom Scrollbar (Desktop Only) --- */

@@ -29,13 +29,13 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
 
     return (
         <section className="py-8 md:py-12 bg-[#F2F2F2]">
-            <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20">
+            <div className="max-w-[1700px] mx-auto px-6 sm:px-8 md:px-12 lg:px-20">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                     <div className="space-y-4">
-                        <p className="text-orange-600 font-black uppercase tracking-[0.5em] text-[10px] md:text-xs">
+                        <p className="text-orange-600 font-black uppercase tracking-normal md:tracking-[0.3em] text-[10px] md:text-xs">
                             Discovery
                         </p>
-                        <h2 className="text-4xl md:text-7xl font-serif italic text-gray-900 leading-none tracking-tighter">
+                        <h2 className="text-3xl md:text-7xl font-black text-gray-900 leading-tight tracking-tight uppercase">
                             Browse <span className="text-orange-600">The Collections</span>
                         </h2>
                     </div>

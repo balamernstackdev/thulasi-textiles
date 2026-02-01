@@ -94,9 +94,9 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
             {/* Dynamic Announcement Bar - Absolute Top */}
             {announcements.length > 0 && <AnnouncementTicker banners={announcements} />}
 
-            <div className="max-w-[1700px] mx-auto px-4 md:px-12 lg:px-16">
+            <div className="max-w-[1700px] mx-auto px-5 md:px-12 lg:px-16">
                 {/* Top Row: Logo, Search, Actions */}
-                <div className="flex items-center justify-between py-6 md:py-8 gap-4 md:gap-10 min-h-[60px] md:min-h-[80px]">
+                <div className="flex items-center justify-between py-3 md:py-8 gap-3 md:gap-10 min-h-[56px] md:min-h-[80px]">
 
                     {/* Logo & Mobile Menu Button */}
                     <div className="flex items-center gap-2 md:gap-5 shrink-0">
@@ -106,8 +106,8 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                         >
                             <Icon name="menu" className="w-6 h-6" />
                         </button>
-                        <Link href="/" className="flex items-center gap-4 group transition-all">
-                            <div className="w-10 h-10 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center shadow-lg overflow-hidden p-1.5 ring-4 ring-gray-50 group-hover:ring-orange-100 transition-all">
+                        <Link href="/" className="flex items-center gap-2 md:gap-4 group transition-all">
+                            <div className="w-8 h-8 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center shadow-md md:shadow-lg overflow-hidden p-1 md:p-1.5 ring-2 md:ring-4 ring-gray-50 group-hover:ring-orange-100 transition-all">
                                 <NextImage
                                     src="/logo.png"
                                     alt="Thulasi Textiles Logo"
@@ -117,12 +117,12 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                                 />
                             </div>
                             <div className="flex flex-col leading-none">
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-lg md:text-2xl font-black tracking-tighter uppercase italic">
+                                <div className="flex items-baseline gap-1 md:gap-2">
+                                    <span className="text-xs xs:text-sm md:text-2xl font-black tracking-tighter uppercase">
                                         <span className="text-gray-900">Thulasi</span> <span className="text-orange-600">Textiles</span>
                                     </span>
                                 </div>
-                                <span className="text-[6px] md:text-[9px] font-black text-orange-600 tracking-[0.3em] md:tracking-[0.5em] uppercase mt-1 whitespace-nowrap hidden xs:block">Women's World</span>
+                                <span className="text-[5px] md:text-[9px] font-black text-orange-600 tracking-[0.2em] md:tracking-[0.5em] uppercase mt-0.5 md:mt-1 whitespace-nowrap hidden xs:block">Women's World</span>
                             </div>
                         </Link>
                     </div>
@@ -170,8 +170,8 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                         </div>
                     </div>
 
-                    {/* Right Actions */}
-                    <div className="flex items-center gap-2">
+                    {/* Right Actions - Compact for mobile */}
+                    <div className="flex items-center gap-0.5 sm:gap-2 shrink-0">
                         {session?.user?.id && <NotificationBell userId={session.user.id} />}
                         <UserMenu session={session} />
                     </div>

@@ -134,7 +134,7 @@ export default async function CategoryPage({
                 </div>
             </div>
 
-            <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-8">
+            <div className="max-w-[1700px] mx-auto px-5 sm:px-8 md:px-12 lg:px-20 py-6 md:py-8">
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Sidebar / Filters (Desktop) */}
                     <aside className="hidden lg:block w-72 shrink-0 space-y-10">
@@ -144,22 +144,22 @@ export default async function CategoryPage({
                     {/* Main Content */}
                     <div className="flex-1">
                         {/* Title & Sorting */}
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 md:mb-8">
                             <div>
-                                <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase italic leading-none mb-4">
-                                    {(category?.name || 'Category').split(' ')[0]} <span className="text-orange-600">{(category?.name || 'Category').split(' ').slice(1).join(' ')}</span>
+                                <h1 className="text-2xl md:text-5xl font-black text-gray-900 tracking-tight uppercase leading-tight mb-3 md:mb-4">
+                                    {category?.name || 'Category'}
                                 </h1>
                                 {(category && 'description' in category && category.description) && (
-                                    <p className="text-gray-500 font-bold uppercase tracking-[0.3em] text-[10px] mb-2">
+                                    <p className="text-gray-500 font-bold uppercase tracking-[0.1em] md:tracking-[0.3em] text-[10px] mb-2">
                                         {category.description as string}
                                     </p>
                                 )}
-                                <p className="text-sm text-gray-500 mt-1">
+                                <p className="text-sm text-gray-500 mt-1 font-medium">
                                     {pagination?.total || 0} Products found
                                 </p>
                             </div>
 
-                            <div className="flex items-center gap-3 self-end md:self-auto">
+                            <div className="flex items-center gap-2 md:gap-3 self-end md:self-auto mt-4 md:mt-0">
                                 <FilterToggle categories={categoriesTree?.data || []} filterAttributes={filterAttributes} />
                                 <ProductSort />
                             </div>
