@@ -197,7 +197,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                             )}
 
                             {/* Dynamic Technical Details & Care */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 lg:gap-12 items-stretch">
                                 {/* Technical Specs */}
                                 <div className="bg-white rounded-sm p-6 border border-gray-200 shadow-sm flex flex-col h-full">
                                     <div className="flex items-center gap-4 mb-10 pb-6 border-b border-gray-50">
@@ -271,7 +271,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                         </div>
 
                         {/* Artisan Traceability & Loom Details */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 pt-4 md:pt-8">
                             <ArtisanPreview artisan={product.artisan} />
 
                             <div className="bg-gray-900 rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group">
@@ -309,7 +309,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                         </div>
 
                         {/* Marketplace Strategy Sections */}
-                        <div className="pt-16">
+                        <div className="pt-8 md:pt-16">
                             <ProductDetailedFeatures product={product} />
                         </div>
 

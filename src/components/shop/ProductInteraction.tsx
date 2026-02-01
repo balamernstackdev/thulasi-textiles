@@ -176,18 +176,22 @@ export default function ProductInteraction({ product, isWishlisted: initialWishl
     return (
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
             {/* Image Gallery */}
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
                 <div
-                    className="relative aspect-[4/5] bg-gray-50 rounded-[3rem] overflow-hidden group shadow-2xl shadow-gray-200 cursor-crosshair"
-                    onMouseMove={handleMouseMove}
-                    onMouseEnter={() => setShowMagnifier(true)}
+                    className="relative aspect-[4/5] md:aspect-square lg:aspect-[4/5] bg-gray-50 rounded-[2rem] md:rounded-[3rem] overflow-hidden group shadow-2xl shadow-gray-200 cursor-crosshair"
+                    onMouseMove={(e) => {
+                        if (window.innerWidth >= 1024) handleMouseMove(e);
+                    }}
+                    onMouseEnter={() => {
+                        if (window.innerWidth >= 1024) setShowMagnifier(true);
+                    }}
                     onMouseLeave={() => setShowMagnifier(false)}
                 >
                     <Image
                         src={activeImage}
                         alt={product.name}
                         fill
-                        className={`object-cover transition-transform duration-1000 ${showMagnifier ? 'scale-105 opacity-40' : 'scale-110'}`}
+                        className={`object-cover transition-transform duration-1000 ${showMagnifier ? 'scale-105 opacity-40' : 'scale-100 md:scale-110'}`}
                         priority
                     />
 
@@ -255,7 +259,7 @@ export default function ProductInteraction({ product, isWishlisted: initialWishl
             </div>
 
             {/* Product Info */}
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-6 md:gap-8">
                 <div>
                     <div className="flex items-center gap-2 mb-4">
                         <span className="bg-orange-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
@@ -267,21 +271,21 @@ export default function ProductInteraction({ product, isWishlisted: initialWishl
                             </span>
                         )}
                     </div>
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 tracking-tighter uppercase italic leading-[0.9]">
+                    <h1 className="text-2xl xs:text-[22px] sm:text-3xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight uppercase leading-none">
                         {product.name}
                     </h1>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                     <div className="space-y-1">
-                        <p className="text-xs font-black text-gray-400 uppercase tracking-widest leading-none">Starting from</p>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Starting from</p>
                         <div className="flex items-baseline gap-3">
-                            <span className="text-4xl font-black text-gray-900 tracking-tighter truncate">₹{currentPrice.toLocaleString()}</span>
-                            <span className="text-lg font-bold text-gray-400 line-through">₹{originalPrice.toLocaleString()}</span>
+                            <span className="text-2xl md:text-4xl font-extrabold text-gray-900 tracking-tight truncate">₹{currentPrice.toLocaleString()}</span>
+                            <span className="text-sm md:text-lg font-bold text-gray-400 line-through">₹{originalPrice.toLocaleString()}</span>
                         </div>
                     </div>
-                    <div className="h-10 w-px bg-gray-100" />
-                    <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-2xl border border-emerald-100">
+                    <div className="hidden sm:block h-10 w-px bg-gray-100" />
+                    <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-2xl border border-emerald-100 w-fit">
                         <p className="text-[10px] font-black uppercase tracking-widest">Limited Availability</p>
                         <p className="text-xs font-bold">{isOutOfStock ? 'Sold Out' : 'Ready to Ship'}</p>
                     </div>
@@ -322,37 +326,39 @@ export default function ProductInteraction({ product, isWishlisted: initialWishl
                 }
 
                 {/* Actions */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <button
-                        onClick={handleAddToCart}
-                        disabled={isOutOfStock}
-                        className="flex-1 h-16 bg-white border-4 border-gray-900 text-gray-900 rounded-[2rem] font-black uppercase text-xs tracking-[0.2em] shadow-xl hover:bg-gray-900 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 active:scale-95"
-                    >
-                        <Icon name="shopping-bag" className="w-5 h-5" />
-                        Add to Cart
-                    </button>
+                <div className="flex flex-col gap-3 md:gap-4 mt-2">
+                    <div className="flex gap-3">
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={isOutOfStock}
+                            className="flex-1 h-14 md:h-16 bg-white border-2 md:border-4 border-gray-900 text-gray-900 rounded-2xl md:rounded-[2rem] font-bold md:font-black uppercase text-[10px] md:text-xs tracking-wider md:tracking-[0.2em] shadow-xl hover:bg-gray-900 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 md:gap-3 active:scale-95"
+                        >
+                            <Icon name="shopping-bag" className="w-5 h-5" />
+                            Add to Cart
+                        </button>
+                        <button
+                            onClick={toggleWishlist}
+                            disabled={isWishlisting}
+                            className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl md:rounded-[2rem] border-2 md:border-4 flex items-center justify-center transition-all active:scale-90 ${isWishlisted
+                                ? 'bg-rose-50 border-rose-600 text-rose-600'
+                                : 'bg-gray-50 border-gray-100 text-gray-900 hover:border-gray-300'
+                                }`}
+                        >
+                            <Icon name="heart" className={`w-6 h-6 md:w-8 md:h-8 ${isWishlisted ? 'fill-current' : ''}`} />
+                        </button>
+                    </div>
                     <button
                         onClick={handleBuyNow}
                         disabled={isOutOfStock}
-                        className="flex-[1.5] h-16 bg-orange-600 text-white rounded-[2rem] font-black uppercase text-sm tracking-[0.2em] shadow-2xl shadow-orange-200 hover:bg-orange-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 active:scale-95 group"
+                        className="w-full h-14 md:h-16 bg-orange-600 text-white rounded-2xl md:rounded-[2rem] font-bold md:font-black uppercase text-xs md:text-sm tracking-wider md:tracking-[0.2em] shadow-2xl shadow-orange-200 hover:bg-orange-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 active:scale-95 group"
                     >
                         Buy Now
                         <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                     </button>
-                    <button
-                        onClick={toggleWishlist}
-                        disabled={isWishlisting}
-                        className={`w-16 h-16 rounded-[2rem] border-4 flex items-center justify-center transition-all active:scale-90 ${isWishlisted
-                            ? 'bg-rose-50 border-rose-600 text-rose-600'
-                            : 'bg-gray-50 border-gray-100 text-gray-900 hover:border-gray-300'
-                            }`}
-                    >
-                        <Icon name="heart" className={`w-8 h-8 ${isWishlisted ? 'fill-current' : ''}`} />
-                    </button>
                 </div>
 
                 {/* Trust Badges */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mt-2 md:mt-4">
                     <div className="p-4 bg-gray-50 rounded-3xl border border-gray-100 flex flex-col items-center text-center gap-2 group">
                         <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center text-gray-400 group-hover:bg-orange-600 group-hover:text-white transition-all">
                             <Icon name="shield-check" className="w-5 h-5" />

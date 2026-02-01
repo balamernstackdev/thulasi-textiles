@@ -53,12 +53,12 @@ export default function ProductCarousel({ products, title, session }: ProductCar
     if (!products.length) return null;
 
     return (
-        <div className="relative group/carousel py-8">
+        <div className="relative group/carousel py-2 md:py-8">
             {/* Header Removed */}
 
 
-            {/* Navigation Arrows */}
-            <div className="absolute top-1/2 -translate-y-1/2 left-0 z-20">
+            {/* Navigation Arrows - Hidden on Mobile */}
+            <div className="hidden md:block absolute top-1/2 -translate-y-1/2 left-0 z-20">
                 {showLeftArrow && (
                     <button
                         onClick={() => scroll('left')}
@@ -70,7 +70,7 @@ export default function ProductCarousel({ products, title, session }: ProductCar
                 )}
             </div>
 
-            <div className="absolute top-1/2 -translate-y-1/2 right-0 z-20">
+            <div className="hidden md:block absolute top-1/2 -translate-y-1/2 right-0 z-20">
                 {showRightArrow && (
                     <button
                         onClick={() => scroll('right')}
@@ -85,13 +85,13 @@ export default function ProductCarousel({ products, title, session }: ProductCar
             {/* Scrollable Container */}
             <div
                 ref={scrollContainerRef}
-                className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory touch-pan-x py-6 px-4 md:px-0"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className="flex gap-4 md:gap-6 overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory touch-pan-x py-2 md:py-6 px-4 md:px-0"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
             >
                 {products.map((product) => (
                     <div
                         key={product.id}
-                        className="min-w-[220px] xs:min-w-[260px] md:min-w-[280px] lg:min-w-[320px] snap-start"
+                        className="min-w-[calc(50%-8px)] xs:min-w-[260px] md:min-w-[280px] lg:min-w-[320px] snap-start"
                     >
                         <ProductCard product={product} session={session} />
                     </div>

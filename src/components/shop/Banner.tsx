@@ -69,7 +69,8 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
     });
 
     const yImg = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-    const yText = useTransform(scrollYProgress, [0, 1], ["0%", "-40%"]);
+    const yTextRange = typeof window !== 'undefined' && window.innerWidth < 768 ? ["0%", "-15%"] : ["0%", "-40%"];
+    const yText = useTransform(scrollYProgress, [0, 1], yTextRange);
     const opacityVeil = useTransform(scrollYProgress, [0, 0.8], [0, 0.6]);
 
     return (
@@ -138,13 +139,13 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
                                 {banners[currentIndex].title && (
                                     <motion.div
                                         style={{ y: yText }}
-                                        className={`absolute inset-0 flex flex-col justify-center p-6 md:p-24 z-20 pointer-events-none
+                                        className={`absolute inset-0 flex flex-col justify-center p-4 xs:p-6 md:p-24 z-20 pointer-events-none
                                             ${banners[currentIndex].alignment === 'CENTER' ? 'items-center text-center' :
                                                 banners[currentIndex].alignment === 'RIGHT' ? 'items-end text-right' :
                                                     'items-start text-left'}
                                         `}
                                     >
-                                        <div className="pointer-events-auto max-w-4xl space-y-4">
+                                        <div className={`pointer-events-auto max-w-4xl ${isSection ? 'space-y-1' : 'space-y-2 md:space-y-4'}`}>
                                             <motion.p
                                                 initial={{ y: 20, opacity: 0 }}
                                                 animate={{ y: 0, opacity: 1 }}
@@ -157,7 +158,7 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
                                                 initial={{ y: 30, opacity: 0 }}
                                                 animate={{ y: 0, opacity: 1 }}
                                                 transition={{ delay: 0.4, duration: 0.8 }}
-                                                className="text-4xl md:text-8xl lg:text-[8rem] font-serif italic text-white mb-2 leading-[0.85] tracking-tighter"
+                                                className={`${isSection ? 'text-2xl xs:text-3xl' : 'text-3xl xs:text-4xl'} md:text-8xl lg:text-[8rem] font-serif italic text-white mb-2 leading-[0.85]`}
                                             >
                                                 {banners[currentIndex].title}
                                             </motion.h2>
@@ -166,7 +167,7 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
                                                     initial={{ y: 20, opacity: 0 }}
                                                     animate={{ y: 0, opacity: 1 }}
                                                     transition={{ delay: 0.6, duration: 0.8 }}
-                                                    className="text-lg md:text-2xl font-black text-white/80 uppercase tracking-widest max-w-2xl"
+                                                    className="text-[10px] xs:text-xs md:text-2xl font-black text-white/80 uppercase tracking-widest max-w-2xl"
                                                 >
                                                     {banners[currentIndex].subtitle}
                                                 </motion.p>
@@ -179,7 +180,7 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
                                             >
                                                 <Link
                                                     href={banners[currentIndex].link || '#'}
-                                                    className="group/btn relative inline-flex items-center gap-4 bg-white text-black px-12 py-5 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] overflow-hidden"
+                                                    className="group/btn relative inline-flex items-center gap-4 bg-white text-black px-6 py-3 md:px-12 md:py-5 text-[9px] md:text-xs font-black uppercase tracking-[0.3em] overflow-hidden"
                                                 >
                                                     <span className="relative z-10 transition-colors group-hover/btn:text-white">{banners[currentIndex].buttonText || "Explore Collection"}</span>
                                                     <div className="absolute inset-0 bg-orange-600 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500 ease-[0.19,1,0.22,1]" />

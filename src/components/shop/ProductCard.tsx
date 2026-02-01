@@ -200,8 +200,8 @@ export default function ProductCard({ product, session, priority = false }: Prod
                         </div>
                     )}
 
-                    {/* Quick View Button */}
-                    <div className={`absolute bottom-4 left-4 right-4 z-10 transition-all duration-500 transform ${isHovering ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                    {/* Quick View Button - Hidden on Mobile */}
+                    <div className={`hidden md:block absolute bottom-4 left-4 right-4 z-10 transition-all duration-500 transform ${isHovering ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                         <button
                             onClick={handleQuickView}
                             className="w-full bg-white/95 backdrop-blur-sm text-gray-900 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-orange-600 hover:text-white transition-all flex items-center justify-center gap-2"
@@ -213,7 +213,7 @@ export default function ProductCard({ product, session, priority = false }: Prod
 
                 {/* Content Details */}
                 <div className="flex flex-col flex-1 p-4 md:p-5 space-y-2">
-                    <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.15em] text-orange-600 block">
+                    <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-orange-600 block">
                         {product.category?.name || 'Handloom'}
                     </span>
                     <h3 className="text-sm md:text-base font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">
@@ -230,7 +230,7 @@ export default function ProductCard({ product, session, priority = false }: Prod
                     </div>
 
                     <div className="mt-auto pt-3 flex items-baseline gap-2 border-t border-gray-50">
-                        <span className="text-base md:text-xl font-black text-gray-900 italic">
+                        <span className="text-base md:text-xl font-bold text-gray-900">
                             <Price amount={priceValue} />
                         </span>
                         {originalPrice > priceValue && (
@@ -242,11 +242,10 @@ export default function ProductCard({ product, session, priority = false }: Prod
                 </div>
             </Link>
 
-            {/* Action Footer */}
-            <div className="px-4 pb-4 md:px-5 md:pb-5">
+            <div className="px-3 pb-1 md:px-5 md:pb-5">
                 <button
                     onClick={handleAddToCart}
-                    className="w-full bg-gray-900 hover:bg-black disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-3 md:py-4 rounded-xl text-[9px] md:text-xs uppercase font-black tracking-widest transition-all shadow-xl shadow-gray-200/50 flex items-center justify-center gap-2 group/btn relative overflow-hidden active:scale-95 px-2"
+                    className="w-full bg-gray-900 hover:bg-black disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2.5 md:py-4 rounded-xl text-[8px] xs:text-[9px] md:text-xs uppercase font-extrabold tracking-wide transition-all shadow-xl shadow-gray-200/50 flex items-center justify-center gap-1 md:gap-2 group/btn relative overflow-hidden active:scale-95 px-1 md:px-2"
                 >
                     {product.variants.length > 1 ? (
                         <>

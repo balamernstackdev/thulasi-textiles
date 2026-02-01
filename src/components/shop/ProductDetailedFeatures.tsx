@@ -75,14 +75,14 @@ export default function ProductDetailedFeatures({ product }: { product: any }) {
     const heritageDesc = product.artisanStory || "We don't just sell textiles; we deliver treasures. Every thread in our collection represents a commitment to ethical sourcing, premium quality, and the timeless artistry of Indian weavers.";
 
     return (
-        <section className="space-y-16 mt-16 mb-24">
+        <section className="space-y-8 md:space-y-16 mt-8 md:mt-16 mb-12 md:mb-24">
             {/* The Thulasi Promise - Visual Banner */}
-            <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gray-950 p-6 md:p-16 group">
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-gray-950 p-4 md:p-16 group">
                 {/* Background Decoration */}
                 <div className="absolute top-0 right-0 w-96 h-96 bg-orange-600/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-orange-600/20 transition-all duration-1000" />
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-600/5 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/4" />
 
-                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center">
                     <div className="space-y-6">
                         <div className="inline-flex items-center gap-2 bg-orange-600/20 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-orange-600/30">
                             <Sparkles className="w-3 md:w-3.5 h-3 md:h-3.5 text-orange-500" />
@@ -149,7 +149,7 @@ export default function ProductDetailedFeatures({ product }: { product: any }) {
             </div>
 
             {/* Quality Audit Section - Market Differentiation */}
-            <div className="bg-gray-900 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-16 text-white relative overflow-hidden group">
+            <div className="bg-gray-900 rounded-[2.5rem] p-4 md:p-16 text-white relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-orange-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-[100px] pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl pointer-events-none" />
 
@@ -232,7 +232,7 @@ export default function ProductDetailedFeatures({ product }: { product: any }) {
             </div>
 
             {/* Marketplace Strategy: Trust & Guarantee Section */}
-            <div className="bg-gray-50 rounded-[2.5rem] p-8 md:p-12">
+            <div className="bg-gray-50 rounded-[2.5rem] p-4 md:p-12">
                 <div className="flex flex-col lg:flex-row gap-12">
                     <div className="lg:w-1/3 lg:border-r border-gray-200 lg:pr-12">
                         <h3 className="text-2xl font-black text-gray-900 uppercase italic tracking-tighter mb-4">Market Strategy Details</h3>

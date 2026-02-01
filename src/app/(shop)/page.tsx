@@ -149,10 +149,8 @@ export default async function ShopHome() {
       {/* Featured Section - Full Width */}
       {/* Featured Section with Sidebar Promos */}
       {sidebarBanners.length > 0 && (
-        <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-6 space-y-12">
-          <div className="rounded-2xl overflow-hidden shadow-lg">
-            <Banner banners={sidebarBanners} type="section" />
-          </div>
+        <div className="rounded-2xl overflow-hidden shadow-lg">
+          <Banner banners={sidebarBanners} type="section" />
         </div>
       )}
 
@@ -188,21 +186,6 @@ export default async function ShopHome() {
 
       {/* Heritage Stories Blog Preview */}
       <HeritageChronicles />
-
-      {/* Newsletter / Footer Promo */}
-      <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 mt-6">
-        <section className="bg-[#E8510D] py-12 pb-16 rounded-3xl md:rounded-[5rem] overflow-hidden relative shadow-2xl">
-          <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 uppercase tracking-[-0.05em] italic leading-tight drop-shadow-sm">STAY IN THE LOOP</h2>
-            <p className="text-white/95 text-sm md:text-base font-normal mb-10 max-w-2xl mx-auto leading-relaxed">Subscribe for exclusive collection drops, artisan stories, and heritage weave updates.</p>
-            <div className="max-w-2xl mx-auto">
-              <NewsletterForm />
-            </div>
-          </div>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl opacity-20" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl opacity-20" />
-        </section>
-      </div>
     </div>
   );
 }
