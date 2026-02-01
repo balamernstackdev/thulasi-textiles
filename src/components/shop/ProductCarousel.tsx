@@ -85,21 +85,19 @@ export default function ProductCarousel({ products, title, session }: ProductCar
             {/* Scrollable Container */}
             <div
                 ref={scrollContainerRef}
-                className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory touch-pan-x py-4"
+                className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory touch-pan-x py-6 px-4 md:px-0"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {products.map((product) => (
                     <div
                         key={product.id}
-                        className="min-w-[160px] md:min-w-[240px] lg:min-w-[280px] snap-start"
+                        className="min-w-[220px] xs:min-w-[260px] md:min-w-[280px] lg:min-w-[320px] snap-start"
                     >
                         <ProductCard product={product} session={session} />
                     </div>
                 ))}
             </div>
 
-            {/* Subtle bottom gradient/line */}
-            <div className="mt-8 border-b border-gray-100" />
         </div>
     );
 }

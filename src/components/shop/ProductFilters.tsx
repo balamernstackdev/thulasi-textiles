@@ -3,7 +3,17 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Check, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Check, X, ChevronDown, ChevronUp, Sparkles, Heart, Sun, Briefcase, PartyPopper, Calendar } from 'lucide-react';
+
+const OCCASION_ICONS: Record<string, any> = {
+    'wedding': Heart,
+    'festive': Sparkles,
+    'evening': PartyPopper,
+    'office': Briefcase,
+    'casual': Sun,
+    'bridal': Heart,
+    'party': PartyPopper,
+};
 
 interface ProductFiltersProps {
     categories?: any[];
@@ -238,16 +248,26 @@ export default function ProductFilters({ categories = [], filterAttributes, isMo
                 {/* Occasions */}
                 {filterAttributes?.occasions && filterAttributes.occasions.length > 0 && (
                     <FilterGroup title="Occasion" isExpanded={expandedGroups.occasions} onToggle={() => toggleGroup('occasions')}>
-                        <div className="space-y-1 mt-4">
-                            {filterAttributes.occasions.map(occasion => (
-                                <button
-                                    key={occasion}
-                                    onClick={() => toggleAttribute(occasion, 'occasions')}
-                                    className={`w-full text-left py-2 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${localFilters.occasions.includes(occasion) ? 'text-orange-600 bg-orange-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
-                                >
-                                    {occasion}
-                                </button>
-                            ))}
+                        <div className="grid grid-cols-2 gap-3 mt-4">
+                            {filterAttributes.occasions.map(occasion => {
+                                const Icon = OCCASION_ICONS[occasion.toLowerCase()] || Calendar;
+                                const isSelected = localFilters.occasions.includes(occasion);
+                                return (
+                                    <button
+                                        key={occasion}
+                                        onClick={() => toggleAttribute(occasion, 'occasions')}
+                                        className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all gap-2 group ${isSelected
+                                            ? 'bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-100'
+                                            : 'bg-white border-gray-100 text-gray-400 hover:border-orange-200 hover:bg-orange-50/30'
+                                            }`}
+                                    >
+                                        <Icon className={`w-5 h-5 transition-colors ${isSelected ? 'text-white' : 'text-gray-300 group-hover:text-orange-500'}`} />
+                                        <span className={`text-[9px] font-black uppercase tracking-widest text-center ${isSelected ? 'text-white' : 'text-gray-500'}`}>
+                                            {occasion}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </FilterGroup>
                 )}

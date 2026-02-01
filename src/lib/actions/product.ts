@@ -919,6 +919,25 @@ export async function bulkToggleProductVisibility(productIds: string[], isActive
     }
 }
 
+export async function bulkUpdateProductCategory(productIds: string[], categoryId: string) {
+    try {
+        await prismadb.product.updateMany({
+            where: {
+                id: { in: productIds }
+            },
+            data: {
+                categoryId
+            }
+        });
+        revalidatePath('/admin/products');
+        revalidateTag('products', 'default');
+        return { success: true };
+    } catch (error) {
+        console.error('Bulk category update error:', error);
+        return { success: false, error: 'Failed to update category' };
+    }
+}
+
 export const getTrendingProducts = cache(async () => {
     return unstable_cache(
         async () => {

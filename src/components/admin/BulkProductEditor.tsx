@@ -1,20 +1,21 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { Save, Search, Filter, RefreshCw, ChevronDown, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { Save, Search, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { bulkUpdateProductPrice, bulkToggleProductVisibility } from '@/lib/actions/product';
+import { bulkUpdateProductPrice, bulkToggleProductVisibility, bulkUpdateProductCategory } from '@/lib/actions/product';
 
 export default function BulkProductEditor({ initialProducts, categories }: { initialProducts: any[], categories: any[] }) {
     const router = useRouter();
-    const [products, setProducts] = useState(initialProducts);
+    const [products] = useState(initialProducts);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(false);
     const [filterCategory, setFilterCategory] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [bulkAction, setBulkAction] = useState<'none' | 'increase_price' | 'decrease_price' | 'visibility_on' | 'visibility_off'>('none');
-    const [actionValue, setActionValue] = useState(0); // For percentage
+    const [bulkAction, setBulkAction] = useState<'none' | 'increase_price' | 'decrease_price' | 'visibility_on' | 'visibility_off' | 'change_category'>('none');
+    const [actionValue, setActionValue] = useState(0);
+    const [targetCategoryId, setTargetCategoryId] = useState('');
     const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     // Filter Logic
@@ -52,12 +53,19 @@ export default function BulkProductEditor({ initialProducts, categories }: { ini
                 result = await bulkUpdateProductPrice(ids, actionValue, bulkAction === 'increase_price' ? 'increase' : 'decrease');
             } else if (bulkAction === 'visibility_on' || bulkAction === 'visibility_off') {
                 result = await bulkToggleProductVisibility(ids, bulkAction === 'visibility_on');
+            } else if (bulkAction === 'change_category') {
+                if (!targetCategoryId) {
+                    setStatusMessage({ type: 'error', text: 'Please select a target category.' });
+                    setLoading(false);
+                    return;
+                }
+                result = await bulkUpdateProductCategory(ids, targetCategoryId);
             }
 
             if (result?.success) {
                 setStatusMessage({ type: 'success', text: `Successfully updated ${ids.length} products.` });
                 router.refresh();
-                setSelectedIds(new Set()); // Clear selection
+                setSelectedIds(new Set());
             } else {
                 setStatusMessage({ type: 'error', text: 'Failed to update products. Please try again.' });
             }
@@ -104,9 +112,10 @@ export default function BulkProductEditor({ initialProducts, categories }: { ini
                         <option value="decrease_price">Decrease Price (%)</option>
                         <option value="visibility_on">Set Active</option>
                         <option value="visibility_off">Set Inactive</option>
+                        <option value="change_category">Change Category</option>
                     </select>
 
-                    {(bulkAction.includes('price')) && (
+                    {bulkAction.includes('price') && (
                         <input
                             type="number"
                             placeholder="%"
@@ -114,6 +123,17 @@ export default function BulkProductEditor({ initialProducts, categories }: { ini
                             onChange={(e) => setActionValue(Number(e.target.value))}
                             className="w-20 px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold"
                         />
+                    )}
+
+                    {bulkAction === 'change_category' && (
+                        <select
+                            value={targetCategoryId}
+                            onChange={(e) => setTargetCategoryId(e.target.value)}
+                            className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-orange-500"
+                        >
+                            <option value="">Target...</option>
+                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
                     )}
 
                     <button
@@ -169,7 +189,7 @@ export default function BulkProductEditor({ initialProducts, categories }: { ini
                                     <td className="p-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-lg bg-gray-100 relative overflow-hidden shrink-0">
-                                                {product.images[0] && (
+                                                {product.images?.[0] && (
                                                     <Image src={product.images[0].url} alt={product.name} fill className="object-cover" />
                                                 )}
                                             </div>
@@ -188,19 +208,14 @@ export default function BulkProductEditor({ initialProducts, categories }: { ini
                                         ₹{Number(product.basePrice).toLocaleString()}
                                     </td>
                                     <td className="p-4 text-center">
-                                        <span className={`font-bold text-xs ${product.variants.reduce((acc: number, v: any) => acc + v.stock, 0) < 5 ? 'text-red-500' : 'text-gray-900'}`}>
-                                            {product.variants.reduce((acc: number, v: any) => acc + v.stock, 0)}
+                                        <span className={`font-bold text-xs ${product.variants?.reduce((acc: number, v: any) => acc + v.stock, 0) < 5 ? 'text-red-500' : 'text-gray-900'}`}>
+                                            {product.variants?.reduce((acc: number, v: any) => acc + v.stock, 0) || 0}
                                         </span>
                                     </td>
                                     <td className="p-4 text-center">
-                                        <button
-                                            onClick={() => {
-                                                // Individual toggle could go here
-                                            }}
-                                            className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${product.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}
-                                        >
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${product.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                                             {product.isActive ? 'Active' : 'Draft'}
-                                        </button>
+                                        </span>
                                     </td>
                                 </tr>
                             ))}

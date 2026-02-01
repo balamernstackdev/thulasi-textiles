@@ -22,17 +22,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     if (!product) return { title: 'Product Not Found' };
 
     const productPrice = `₹${Number(product.basePrice).toLocaleString('en-IN')}`;
-    const productDesc = product.metaDescription || product.description.slice(0, 160);
-    const heritageNote = product.weave ? `Authentic ${product.weave} weave.` : '';
+    const heritageNote = product.weave ? `${product.weave} Hand-Weave from ${product.origin || 'our clusters'}.` : '';
+    const tagline = `${product.fabric || 'Fine Textile'} Artisan Collection`;
 
-    const description = `${product.name} at ${productPrice}. ${heritageNote} ${productDesc}`;
+    const title = `${product.name} - ${tagline} | Thulasi Textiles`;
+    const description = `Exotic ${product.name} at ${productPrice}. ${heritageNote} ${product.metaDescription || product.description.slice(0, 160)}`;
     const mainImage = product.images?.[0]?.url || '/logo.png';
 
     return {
-        title: `${product.name} | Thulasi Textiles`,
+        title: title,
         description: description,
         openGraph: {
-            title: `${product.name} - Thulasi Textiles`,
+            title: `${product.name} | Thulasi Textiles Heritage`,
             description: description,
             images: [
                 {
@@ -42,17 +43,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
                     alt: product.name,
                 },
             ],
-            type: 'website',
+            type: 'article',
             siteName: 'Thulasi Textiles',
         },
         twitter: {
             card: 'summary_large_image',
-            title: product.name,
+            title: title,
             description: description,
             images: [mainImage],
             creator: '@thulasitextiles',
         },
-        keywords: [product.name, product.fabric, product.weave, 'Thulasi Textiles', 'Handcrafted', 'Artisan'].filter(Boolean) as string[],
+        keywords: [product.name, product.fabric, product.weave, product.origin, product.occasion, 'Handcrafted Saree', 'Artisan Weaves', 'Sustainability', 'Thulasi Textiles'].filter(Boolean) as string[],
     };
 }
 

@@ -55,7 +55,7 @@ export default function ProfileClient({
         { id: 'orders', icon: Package, label: 'My Orders', description: 'Track ongoing orders' },
         { id: 'addresses', icon: MapPin, label: 'Addresses', description: 'Manage delivery locations' },
         { id: 'wishlist', icon: Heart, label: 'Wishlist', description: 'Your saved items' },
-        // { id: 'rewards', icon: Star, label: 'Rewards', description: 'Your Patron Points' },
+        { id: 'rewards', icon: Star, label: 'Rewards', description: 'Your Patron Points' },
         { id: 'settings', icon: Settings, label: 'Settings', description: 'Password & Security' },
     ];
 

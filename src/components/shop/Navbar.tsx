@@ -3,7 +3,8 @@ import Link from 'next/link';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { Search, ShoppingCart, Menu, User, MapPin, X, ChevronRight, ChevronDown, Package, Loader2 } from 'lucide-react';
+import { ShoppingCart, MapPin, ChevronRight, Package, Loader2 } from 'lucide-react';
+import Icon from '@/components/ui/Icon';
 import { Category } from '@prisma/client';
 import UserMenu from './UserMenu';
 import MegaMenu from './MegaMenu';
@@ -103,7 +104,7 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                             className="lg:hidden p-1.5 -ml-1 text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                             onClick={() => setIsMenuOpen(true)}
                         >
-                            <Menu className="w-5 h-5" />
+                            <Icon name="menu" className="w-5 h-5" />
                         </button>
                         <Link href="/" className="flex flex-row md:flex-col items-center gap-2 md:gap-1 group transition-all">
                             <div className="w-8 h-8 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-md overflow-hidden p-1 ring-2 ring-gray-50 group-hover:ring-orange-50 transition-all">
@@ -156,7 +157,7 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                                 }}
                                 className="absolute right-0 top-0 bottom-0 bg-[#febd69] hover:bg-[#f3a847] text-gray-900 px-4 rounded-r-lg border border-[#febd69] hover:border-[#f3a847] transition-colors flex items-center justify-center"
                             >
-                                <Search className="w-5 h-5" />
+                                <Icon name="search" className="w-5 h-5" />
                             </button>
 
                             <SearchDropdown
@@ -191,7 +192,7 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                                 >
                                     {cat.name}
                                     {cat.children && cat.children.length > 0 && (
-                                        <ChevronDown className="w-3 h-3 transition-transform duration-300 group-hover/menu:rotate-180" />
+                                        <Icon name="chevron-down" className="w-3 h-3 transition-transform duration-300 group-hover/menu:rotate-180" />
                                     )}
                                 </Link>
 
@@ -214,7 +215,7 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                         <div className="fixed top-0 left-0 h-full w-[85%] max-w-[320px] bg-white z-[70] overflow-y-auto shadow-2xl transition-all duration-500 animate-in slide-in-from-left">
                             <div className="p-8 border-b border-gray-50 flex items-center justify-between">
                                 <span className="font-black text-xl text-gray-900 italic tracking-tighter uppercase">Menu</span>
-                                <button onClick={() => setIsMenuOpen(false)} className="bg-gray-50 p-2 rounded-xl"><X className="w-6 h-6 text-gray-500" /></button>
+                                <button onClick={() => setIsMenuOpen(false)} className="bg-gray-50 p-2 rounded-xl"><Icon name="x" className="w-6 h-6 text-gray-500" /></button>
                             </div>
 
                             <div className="p-8 space-y-8">
@@ -237,7 +238,7 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                                             }}
                                             className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
                                         >
-                                            <Search className="w-5 h-5" />
+                                            <Icon name="search" className="w-5 h-5" />
                                         </button>
                                     </div>
 
@@ -339,7 +340,7 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                                                             {cat.name}
                                                         </span>
                                                         {hasChildren && (
-                                                            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180 text-orange-600' : 'text-gray-300'}`} />
+                                                            <Icon name="chevron-down" className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180 text-orange-600' : 'text-gray-300'}`} />
                                                         )}
                                                     </div>
 

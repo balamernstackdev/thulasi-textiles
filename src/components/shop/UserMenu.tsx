@@ -46,7 +46,7 @@ export default function UserMenu({ session }: { session: any }) {
     return (
         <div className="flex items-center gap-1 sm:gap-3">
             {/* Cart Icon */}
-            <Link href="/cart" className="relative p-1.5 sm:p-2 hover:bg-gray-50 rounded-lg sm:rounded-xl transition-colors group">
+            <Link id="cart-icon-desktop" href="/cart" className="relative p-1.5 sm:p-2 hover:bg-gray-50 rounded-lg sm:rounded-xl transition-colors group">
                 <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-orange-600 transition-colors" />
             </Link>
 

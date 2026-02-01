@@ -16,6 +16,7 @@ import CountdownBanner from '@/components/shop/CountdownBanner';
 import HeritageQuiz from '@/components/shop/HeritageQuiz';
 import HeritageChronicles from '@/components/shop/HeritageChronicles';
 import ThulasiWomenGallery from '@/components/shop/ThulasiWomenGallery';
+import ShoppingErrorBoundary from '@/components/shop/ErrorBoundary';
 
 // export const revalidate = 3600;
 
@@ -136,8 +137,10 @@ export default async function ShopHome() {
       {/* Flash Sale / Countdown - Dynamic Positioning */}
       {countdownBanners.length > 0 && <CountdownBanner banner={countdownBanners[0]} />}
 
-      {/* Visual Category Grid - Dynamic */}
-      <CategoryGrid categories={topCategories} />
+      {/* Visual Category Grid - Unified Gap */}
+      <div className="relative z-20">
+        <CategoryGrid categories={topCategories} />
+      </div>
 
       {/* Modern Style Quiz - Find Your Weave (Hidden for later) */}
       {/* <HeritageQuiz /> */}
@@ -146,32 +149,38 @@ export default async function ShopHome() {
       {/* Featured Section - Full Width */}
       {/* Featured Section with Sidebar Promos */}
       {sidebarBanners.length > 0 && (
-        <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-12 space-y-12">
+        <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-6 space-y-12">
           <div className="rounded-2xl overflow-hidden shadow-lg">
             <Banner banners={sidebarBanners} type="section" />
           </div>
         </div>
       )}
 
-      {/* Latest Products - Full Width */}
+      {/* Latest Products - Unified Gap */}
       {latestProducts.length > 0 && (
-        <LatestProducts products={latestProducts} session={session} />
+        <div className="relative z-20 mb-8">
+          <LatestProducts products={latestProducts} session={session} />
+        </div>
       )}
 
 
       {/* Streaming Category Sections */}
       <Suspense fallback={<><ProductSectionSkeleton /><ProductSectionSkeleton /></>}>
-        <CategoryProductSections
-          topCategories={topCategories}
-          session={session}
-          bestSellerBanners={bestSellerBanners}
-          offerBanners={offerBanners}
-        />
+        <ShoppingErrorBoundary fallbackTitle="Collection Temporarily Unavailable">
+          <CategoryProductSections
+            topCategories={topCategories}
+            session={session}
+            bestSellerBanners={bestSellerBanners}
+            offerBanners={offerBanners}
+          />
+        </ShoppingErrorBoundary>
       </Suspense>
 
       {/* Streaming Offers */}
       <Suspense fallback={<ProductSectionSkeleton />}>
-        <OfferSection session={session} />
+        <ShoppingErrorBoundary fallbackTitle="Exclusive Offers Currently Unavailable">
+          <OfferSection session={session} />
+        </ShoppingErrorBoundary>
       </Suspense>
 
       {/* Social Proof Gallery */}
@@ -181,8 +190,8 @@ export default async function ShopHome() {
       <HeritageChronicles />
 
       {/* Newsletter / Footer Promo */}
-      <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 mt-12">
-        <section className="bg-[#E8510D] py-20 pb-24 rounded-[3rem] md:rounded-[5rem] overflow-hidden relative shadow-2xl">
+      <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20 mt-6">
+        <section className="bg-[#E8510D] py-12 pb-16 rounded-3xl md:rounded-[5rem] overflow-hidden relative shadow-2xl">
           <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
             <h2 className="text-3xl md:text-5xl font-black text-white mb-6 uppercase tracking-[-0.05em] italic leading-tight drop-shadow-sm">STAY IN THE LOOP</h2>
             <p className="text-white/95 text-sm md:text-base font-normal mb-10 max-w-2xl mx-auto leading-relaxed">Subscribe for exclusive collection drops, artisan stories, and heritage weave updates.</p>

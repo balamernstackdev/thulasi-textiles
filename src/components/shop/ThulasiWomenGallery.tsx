@@ -8,7 +8,7 @@ export default async function ThulasiWomenGallery() {
     if (!reviews || reviews.length === 0) return null;
 
     return (
-        <section className="py-24 bg-white overflow-hidden">
+        <section className="py-12 md:py-16 bg-white overflow-hidden">
             <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">

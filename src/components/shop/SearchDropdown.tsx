@@ -83,8 +83,11 @@ export default function SearchDropdown({ isOpen, query, onClose }: SearchDropdow
                         </div>
 
                         {isLoading ? (
-                            <div className="flex justify-center py-8">
-                                <Loader2 className="w-5 h-5 animate-spin text-orange-500" />
+                            <div className="flex justify-center py-12">
+                                <div className="flex flex-col items-center gap-4">
+                                    <Loader2 className="w-6 h-6 animate-spin text-orange-600" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Curating...</span>
+                                </div>
                             </div>
                         ) : results.length > 0 ? (
                             <div className="flex flex-col gap-0">
@@ -93,15 +96,28 @@ export default function SearchDropdown({ isOpen, query, onClose }: SearchDropdow
                                         key={product.id}
                                         href={`/product/${product.slug}`}
                                         onClick={onClose}
-                                        className="group flex items-center gap-3 py-1.5 px-3 hover:bg-gray-100 transition-colors cursor-pointer"
+                                        className="group flex items-center gap-4 py-3 px-4 hover:bg-orange-50/30 transition-all cursor-pointer border-b border-gray-50 last:border-0"
                                     >
-                                        <Search className="w-4 h-4 text-gray-400 shrink-0" />
-                                        <div className="min-w-0 flex-1">
-                                            {/* bold query match logic could go here, for now just text */}
-                                            <span className="text-sm font-bold text-gray-900 truncate block">
+                                        <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden bg-gray-100 border border-gray-100 group-hover:shadow-md transition-shadow">
+                                            <Image
+                                                src={product.images[0]?.url || '/placeholder-product.png'}
+                                                alt={product.name}
+                                                fill
+                                                className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <span className="text-sm font-black text-gray-900 truncate block uppercase italic tracking-tight group-hover:text-orange-600">
                                                 {product.name}
                                             </span>
+                                            <div className="flex items-center gap-2 mt-0.5">
+                                                <span className="text-xs font-bold text-gray-900">
+                                                    ₹{product.basePrice.toLocaleString()}
+                                                </span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 px-1.5 py-0.5 bg-gray-50 rounded">In Stock</span>
+                                            </div>
                                         </div>
+                                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-orange-600 group-hover:translate-x-1 transition-all" />
                                     </Link>
                                 ))}
                                 <button
@@ -109,12 +125,9 @@ export default function SearchDropdown({ isOpen, query, onClose }: SearchDropdow
                                         onClose();
                                         router.push(`/search?q=${encodeURIComponent(query)}`);
                                     }}
-                                    className="w-full text-left flex items-center gap-3 py-1.5 px-3 hover:bg-gray-100 transition-colors cursor-pointer text-blue-600 border-t border-gray-50"
+                                    className="w-full text-center flex items-center justify-center gap-2 py-4 px-4 hover:bg-orange-50/50 transition-colors cursor-pointer text-orange-600 font-black text-[10px] uppercase tracking-[0.2em] border-t border-gray-100"
                                 >
-                                    <Search className="w-4 h-4 text-gray-400 shrink-0" />
-                                    <span className="text-sm font-medium">
-                                        Search for <span className="font-bold">"{query}"</span>
-                                    </span>
+                                    View All results for "{query}" <ArrowRight className="w-4 h-4" />
                                 </button>
                             </div>
                         ) : (
@@ -156,18 +169,28 @@ export default function SearchDropdown({ isOpen, query, onClose }: SearchDropdow
                                 <TrendingUp className="w-3.5 h-3.5 text-orange-500" />
                                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Trending Now</span>
                             </div>
-                            <div className="flex flex-col gap-0">
+                            <div className="grid grid-cols-2 gap-2 p-2">
                                 {trending.map((product) => (
                                     <Link
                                         key={product.id}
                                         href={`/product/${product.slug}`}
                                         onClick={onClose}
-                                        className="group flex items-center gap-3 py-1.5 px-3 hover:bg-gray-100 transition-colors"
+                                        className="group flex items-center gap-3 p-2 hover:bg-orange-50/30 rounded-xl transition-all border border-transparent hover:border-orange-100"
                                     >
-                                        <TrendingUp className="w-4 h-4 text-gray-400 shrink-0" />
-                                        <span className="text-sm font-bold text-gray-900 truncate">
-                                            {product.name}
-                                        </span>
+                                        <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-gray-50">
+                                            <Image
+                                                src={product.images[0]?.url || '/placeholder-product.png'}
+                                                alt={product.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <span className="text-[11px] font-black text-gray-900 truncate block uppercase leading-tight group-hover:text-orange-600">
+                                                {product.name}
+                                            </span>
+                                            <span className="text-[10px] font-bold text-gray-400">₹{product.basePrice.toLocaleString()}</span>
+                                        </div>
                                     </Link>
                                 ))}
                             </div>

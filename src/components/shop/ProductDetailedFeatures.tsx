@@ -16,6 +16,7 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import Image from 'next/image';
+import CertificatePreviewDialog from './CertificatePreviewDialog';
 
 const FEATURES = [
     {
@@ -148,26 +149,69 @@ export default function ProductDetailedFeatures({ product }: { product: any }) {
             </div>
 
             {/* Quality Audit Section - Market Differentiation */}
-            <div className="bg-orange-600 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-16 text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+            <div className="bg-gray-900 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-16 text-white relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-orange-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-[100px] pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl pointer-events-none" />
 
-                <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 md:gap-12">
-                    <div className="lg:max-w-xl space-y-4 md:space-y-6 text-center lg:text-left">
-                        <h3 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter leading-none">
-                            Our 5-Point <br /> <span className="text-black">Quality Audit</span>
+                <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20">
+                    <div className="lg:max-w-md space-y-6 text-center lg:text-left">
+                        <div className="inline-flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full border border-white/10">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                            <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Master Audit v2.1</span>
+                        </div>
+                        <h3 className="text-4xl md:text-5xl font-black uppercase italic tracking-tighter leading-[0.85]">
+                            The <span className="text-orange-600">Premium</span> <br /> Heritage Audit
                         </h3>
-                        <p className="font-bold opacity-90 leading-relaxed text-sm">
-                            Before any Thulasi textile reaches your doorstep, it undergoes a rigorous inspection process to ensure perfection in every stitch and weave.
+                        <p className="font-bold text-gray-400 leading-relaxed text-sm md:text-base">
+                            Every Thulasi textile undergoes a rigorous 5-point inspection. Trace your garment's journey from the artisan's loom to your wardrobe.
                         </p>
+                        <div className="pt-4 flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start">
+                            <div className="flex -space-x-3">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="w-10 h-10 rounded-full border-2 border-gray-900 bg-gray-800 flex items-center justify-center overflow-hidden">
+                                        <Image src={`/artisan-thumb-${i}.png`} alt="Artisan" width={40} height={40} className="object-cover opacity-80" onError={(e) => (e.currentTarget.src = "/placeholder-user.png")} />
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Verified by <span className="text-white">Master Weavers</span></p>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 md:gap-4 justify-center w-full lg:w-auto">
-                        {auditData.map((audit: any, i: number) => (
-                            <div key={i} className="bg-black/20 backdrop-blur-xl border border-white/20 p-3 md:p-4 rounded-xl md:rounded-2xl min-w-[100px] md:min-w-[120px] text-center last:col-span-2 last:md:col-span-1">
-                                <p className="text-[7px] md:text-[8px] font-black uppercase tracking-widest opacity-60 mb-1">{audit.label}</p>
-                                <p className="text-base md:text-lg font-black italic">{audit.val}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5 w-full lg:w-auto">
+                        {auditData.map((audit: any, i: number) => {
+                            const icons: Record<string, any> = {
+                                "Fabric Purity": Sparkles,
+                                "Color Fastness": Leaf,
+                                "Weave Density": Scissors,
+                                "Finishing": Zap,
+                                "Eco-Grade": Globe
+                            };
+                            const Icon = icons[audit.label] || ShieldCheck;
+
+                            return (
+                                <div key={i} className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-[2rem] text-center flex flex-col items-center gap-4 group/badge hover:bg-white/10 hover:border-orange-600/30 transition-all duration-500">
+                                    <div className="w-12 h-12 bg-gray-800 rounded-2xl flex items-center justify-center text-orange-600 group-hover/badge:scale-110 group-hover/badge:bg-orange-600 group-hover/badge:text-white transition-all">
+                                        <Icon className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{audit.label}</p>
+                                        <p className="text-lg md:text-xl font-black italic text-white">{audit.val}</p>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        {/* Certificate Box */}
+                        <CertificatePreviewDialog product={product}>
+                            <div className="col-span-2 md:col-span-1 bg-orange-600 p-6 md:p-8 rounded-[2rem] flex flex-col items-center justify-center text-center gap-4 shadow-2xl shadow-orange-600/20 hover:scale-[1.02] transition-transform cursor-pointer">
+                                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white">
+                                    <Lock className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-black mb-1">Authenticity</p>
+                                    <p className="text-base md:text-lg font-black italic text-white leading-tight">Digital Vault Certificate</p>
+                                </div>
                             </div>
-                        ))}
+                        </CertificatePreviewDialog>
                     </div>
                 </div>
             </div>

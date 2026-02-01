@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Bot, X, Send, MessageSquare, Sparkles, Loader2, Minus, Maximize2 } from 'lucide-react';
 import { askHeritageAssistant } from '@/lib/actions/ai';
 import { useParams } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import ChatProductCard from './ChatProductCard';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -19,7 +22,7 @@ export default function AIHeritageAssistant() {
     const [isMinimized, setIsMinimized] = useState(false);
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([
-        { role: 'assistant', content: 'Namaste! I am your Thulasi Heritage Assistant. How can I help you discover the perfect weave today?' }
+        { role: 'assistant', content: 'Namaste! I am your **Thulasi Heritage Assistant**. \n\nHow can I help you discover the perfect weave today?' }
     ]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -29,7 +32,7 @@ export default function AIHeritageAssistant() {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [messages]);
+    }, [messages, isLoading]);
 
     const handleSend = async () => {
         if (!input.trim() || isLoading) return;
@@ -51,6 +54,31 @@ export default function AIHeritageAssistant() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    // Helper to extract product slugs and render parts
+    const renderMessageContent = (content: string) => {
+        const productRegex = /\[PRODUCT:([\w-]+)\]/g;
+        const parts = content.split(productRegex);
+        const elements = [];
+
+        for (let i = 0; i < parts.length; i++) {
+            if (i % 2 === 0) {
+                // Text part
+                if (parts[i].trim()) {
+                    elements.push(
+                        <ReactMarkdown key={`text-${i}`} remarkPlugins={[remarkGfm]}>
+                            {parts[i]}
+                        </ReactMarkdown>
+                    );
+                }
+            } else {
+                // Product part
+                elements.push(<ChatProductCard key={`prod-${i}`} slug={parts[i]} />);
+            }
+        }
+
+        return elements;
     };
 
     if (!isOpen) {
@@ -97,11 +125,17 @@ export default function AIHeritageAssistant() {
                     <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide bg-gray-50/50">
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[85%] p-4 rounded-2xl text-sm font-medium leading-relaxed ${msg.role === 'user'
-                                        ? 'bg-orange-600 text-white rounded-tr-none shadow-lg'
-                                        : 'bg-white text-gray-800 rounded-tl-none border border-gray-100 shadow-sm'
+                                <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${msg.role === 'user'
+                                    ? 'bg-orange-600 text-white rounded-tr-none shadow-lg font-medium'
+                                    : 'bg-white text-gray-800 rounded-tl-none border border-gray-100 shadow-sm'
                                     }`}>
-                                    {msg.content}
+                                    {msg.role === 'assistant' ? (
+                                        <div className="prose prose-sm prose-orange max-w-none prose-p:leading-relaxed prose-headings:mb-2 prose-headings:mt-4 first:prose-headings:mt-0 font-medium">
+                                            {renderMessageContent(msg.content)}
+                                        </div>
+                                    ) : (
+                                        msg.content
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -143,3 +177,5 @@ export default function AIHeritageAssistant() {
         </div>
     );
 }
+
+

@@ -128,3 +128,59 @@ export async function getInventoryHeatmapData() {
         return [];
     }
 }
+
+export async function getHeritageAnalyticsData() {
+    try {
+        const [artisans, certificationTrend] = await Promise.all([
+            // Artisan Sales Distribution
+            prismadb.artisan.findMany({
+                select: {
+                    name: true,
+                    products: {
+                        select: {
+                            variants: {
+                                select: {
+                                    orderItems: {
+                                        where: { order: { paymentStatus: 'PAID' } },
+                                        select: { price: true, quantity: true }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }),
+            // Mocking certification trend based on order dates for now
+            prismadb.order.findMany({
+                where: { paymentStatus: 'PAID' },
+                select: { createdAt: true },
+                orderBy: { createdAt: 'asc' }
+            })
+        ]);
+
+        const artisanDistribution = artisans.map((art: any) => ({
+            name: art.name,
+            value: art.products.reduce((acc: number, p: any) =>
+                acc + p.variants.reduce((vSum: number, v: any) =>
+                    vSum + v.orderItems.reduce((sum: number, item: any) => sum + (Number(item.price) * item.quantity), 0), 0
+                ), 0
+            )
+        })).filter((a: any) => a.value > 0);
+
+        // Group by Month for trend
+        const trendGrouped = certificationTrend.reduce((acc, order) => {
+            const key = format(order.createdAt, 'MMM yy');
+            if (!acc[key]) acc[key] = { month: key, count: 0 };
+            acc[key].count += 1;
+            return acc;
+        }, {} as Record<string, any>);
+
+        return {
+            artisanDistribution,
+            certificationTrends: Object.values(trendGrouped)
+        };
+    } catch (error) {
+        console.error('Heritage Analytics Error:', error);
+        return { artisanDistribution: [], certificationTrends: [] };
+    }
+}

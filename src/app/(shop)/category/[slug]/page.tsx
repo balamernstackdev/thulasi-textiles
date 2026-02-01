@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
 }
 import ProductCard from '@/components/shop/ProductCard';
-import Pagination from '@/components/shared/Pagination';
+import InfiniteProductGrid from '@/components/shop/InfiniteProductGrid';
 import Link from 'next/link';
 import { ChevronRight, Filter, ChevronDown } from 'lucide-react';
 import { notFound } from 'next/navigation';
@@ -167,22 +167,23 @@ export default async function CategoryPage({
 
                         {/* Product Grid */}
                         {products && products.length > 0 ? (
-                            <>
-                                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                                    {products.map((product: any) => (
-                                        <ProductCard key={product.id} product={product} session={session} />
-                                    ))}
-                                </div>
-                                {pagination && (
-                                    <div className="mt-12">
-                                        <Pagination
-                                            currentPage={pagination.page}
-                                            totalPages={pagination.totalPages}
-                                            baseUrl={`/category/${slug}`}
-                                        />
-                                    </div>
-                                )}
-                            </>
+                            <InfiniteProductGrid
+                                initialProducts={products}
+                                categorySlug={isNewPage ? undefined : slug}
+                                isNew={isNewPage}
+                                initialPagination={pagination as any}
+                                searchParams={{
+                                    minPrice,
+                                    maxPrice,
+                                    sizes,
+                                    colors,
+                                    materials,
+                                    fabrics,
+                                    occasions,
+                                    sort
+                                }}
+                                session={session}
+                            />
                         ) : (
                             <div className="bg-white rounded-3xl border border-dashed border-gray-200 p-20 text-center flex flex-col items-center justify-center">
                                 <h2 className="text-xl font-bold text-gray-900 mb-2">No products match these filters</h2>

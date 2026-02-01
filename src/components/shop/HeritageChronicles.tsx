@@ -11,7 +11,7 @@ export default async function HeritageChronicles() {
     if (storyList.length === 0) return null;
 
     return (
-        <section className="py-24 bg-gray-50 border-y border-gray-100">
+        <section className="py-12 md:py-16 bg-gray-50 border-y border-gray-100">
             <div className="max-w-[1700px] mx-auto px-6 lg:px-20">
                 <div className="flex items-end justify-between mb-16 px-4">
                     <div>

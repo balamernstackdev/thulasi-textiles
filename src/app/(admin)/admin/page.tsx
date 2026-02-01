@@ -1,8 +1,10 @@
 import { Suspense } from 'react';
 import { getDashboardStats, getAdvancedAnalytics } from '@/lib/actions/order';
-import { getSalesAnalyticsData, getAdminDashboardStats, getInventoryHeatmapData } from '@/lib/actions/admin-analytics';
+import { getSalesAnalyticsData, getAdminDashboardStats, getInventoryHeatmapData, getHeritageAnalyticsData } from '@/lib/actions/admin-analytics';
 import SalesAnalytics from '@/components/admin/SalesAnalytics';
+import HeritageAnalytics from '@/components/admin/HeritageAnalytics';
 import { InventoryHeatmap } from '@/components/admin/AnalyticsCharts';
+import SearchTrendsChart from '@/components/admin/SearchTrendsChart';
 import {
   ShoppingBag,
   DollarSign,
@@ -111,32 +113,19 @@ async function IntelligenceHub() {
         <InventoryVelocityChart data={advancedData.velocity} />
       </div>
 
-      <div className="bg-[#1e293b] p-8 rounded-[3rem] shadow-2xl flex flex-col justify-between group">
+      <div className="bg-white p-8 rounded-[3rem] shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col justify-between group">
         <div>
           <div className="flex items-center gap-3 mb-8">
-            <Users className="w-5 h-5 text-teal-400" />
-            <h3 className="font-black text-white uppercase tracking-tighter text-sm">Performance Tips</h3>
+            <Zap className="w-5 h-5 text-orange-500" />
+            <h3 className="font-black text-gray-900 uppercase tracking-tighter text-sm">Category Search Trends</h3>
           </div>
-          <div className="space-y-4">
-            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-              <p className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1">Stock Tip</p>
-              <p className="text-xs text-gray-300 font-medium leading-relaxed italic line-clamp-2">
-                "{advancedData.velocity[0]?.name || 'Your top weaver'}" has the highest velocity.
-              </p>
-            </div>
-            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-              <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-1">Peak Sales</p>
-              <p className="text-xs text-gray-300 font-medium leading-relaxed italic line-clamp-2">
-                Customers are most active during weekend evenings.
-              </p>
-            </div>
-          </div>
+          <SearchTrendsChart />
         </div>
-        <Link href="/admin/inventory/fulfillment" className="mt-8">
-          <button className="w-full bg-teal-400 text-slate-900 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-white transition-all">
-            Optimize Operations
-          </button>
-        </Link>
+        <div className="mt-6 p-4 bg-orange-50 rounded-2xl border border-orange-100">
+          <p className="text-[10px] font-bold text-orange-700 leading-relaxed italic">
+            "Kanchipuram Silk" remains the most coveted weave this season.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -242,6 +231,22 @@ async function InventoryAndLedger() {
   );
 }
 
+async function HeritageInsightsRow() {
+  const heritageData = await getHeritageAnalyticsData();
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-2xl bg-orange-600 flex items-center justify-center text-white shadow-lg">
+          <Trophy className="w-5 h-5 fill-white" />
+        </div>
+        <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight italic">Heritage & Artisan Insights</h2>
+      </div>
+      <HeritageAnalytics data={heritageData} />
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   return (
     <div className="p-4 md:p-8 space-y-12 w-full pb-24">
@@ -261,6 +266,11 @@ export default function AdminDashboard() {
         {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-32 rounded-[2.5rem]" />)}
       </div>}>
         <StatsGrid />
+      </Suspense>
+
+      {/* Heritage Insights Row */}
+      <Suspense fallback={<Skeleton className="h-[400px] rounded-[3rem]" />}>
+        <HeritageInsightsRow />
       </Suspense>
 
       {/* Advanced Intelligence Hub */}
