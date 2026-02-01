@@ -1,5 +1,7 @@
 'use client';
 
+// Product Page Interaction - Responsive Optimized v1.2
+
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store/cart';
@@ -10,7 +12,7 @@ import {
 import Icon from '@/components/ui/Icon';
 import Image from 'next/image';
 import { toggleWishlist as toggleWishlistAction } from '@/lib/actions/wishlist';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
 
 const SizeAssistant = dynamic(() => import('@/components/shop/SizeAssistant'), { ssr: false });
@@ -271,7 +273,7 @@ export default function ProductInteraction({ product, isWishlisted: initialWishl
                             </span>
                         )}
                     </div>
-                    <h1 className="text-2xl xs:text-[22px] sm:text-3xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight uppercase leading-none">
+                    <h1 className="text-2xl xs:text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight uppercase leading-none">
                         {product.name}
                     </h1>
                 </div>
@@ -384,13 +386,13 @@ export default function ProductInteraction({ product, isWishlisted: initialWishl
                         <p className="text-[10px] font-black uppercase tracking-widest text-gray-900">Secure</p>
                     </div>
                 </div>
-            </div >
+            </div>
 
             <SizeAssistant
                 isOpen={isSizeAssistantOpen}
                 onClose={() => setIsSizeAssistantOpen(false)}
                 category={product.category?.name}
             />
-        </div >
+        </div>
     );
 }

@@ -212,8 +212,8 @@ export default function ProductCard({ product, session, priority = false }: Prod
                 </div>
 
                 {/* Content Details */}
-                <div className="flex flex-col flex-1 p-4 md:p-5 space-y-2">
-                    <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-orange-600 block">
+                <div className="flex flex-col flex-1 p-3 md:p-5 space-y-1 md:space-y-2">
+                    <span className="text-[9px] md:text-xs font-bold uppercase tracking-wider text-orange-600 block">
                         {product.category?.name || 'Handloom'}
                     </span>
                     <h3 className="text-sm md:text-base font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">
@@ -229,7 +229,7 @@ export default function ProductCard({ product, session, priority = false }: Prod
                         <span className="text-[9px] md:text-[11px] font-bold text-gray-400 number-font ml-0.5">(127)</span>
                     </div>
 
-                    <div className="mt-auto pt-3 flex items-baseline gap-2 border-t border-gray-50">
+                    <div className="mt-auto pt-2 flex items-baseline gap-2 border-t border-gray-50">
                         <span className="text-base md:text-xl font-bold text-gray-900">
                             <Price amount={priceValue} />
                         </span>

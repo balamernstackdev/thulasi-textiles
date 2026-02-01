@@ -20,17 +20,17 @@ export default function MobileBottomNav({ session }: { session: any }) {
 
     return (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-xl border-t border-gray-100 pb-safe-area-inset-bottom shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-            <div className="flex items-center justify-around h-20 px-4">
+            <div className="flex items-center justify-around h-16 px-4">
                 {navItems.map((item) => {
                     const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
                     return (
                         <Link
                             key={item.label}
                             href={item.href}
-                            className="flex flex-col items-center justify-center gap-1.5 relative group flex-1"
+                            className="flex flex-col items-center justify-center gap-1 relative group flex-1"
                         >
-                            <div className={`p-2 rounded-2xl transition-all duration-300 ${isActive ? 'bg-orange-600 text-white shadow-lg shadow-orange-200 -translate-y-1' : 'text-gray-400 group-hover:text-gray-900 group-hover:bg-gray-50'}`}>
-                                <item.icon className="w-5 h-5 md:w-6 md:h-6" strokeWidth={isActive ? 2.5 : 2} />
+                            <div className={`p-1.5 rounded-xl transition-all duration-300 ${isActive ? 'bg-orange-600 text-white shadow-lg shadow-orange-200 -translate-y-1' : 'text-gray-400 group-hover:text-gray-900 group-hover:bg-gray-50'}`}>
+                                <item.icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 2} />
                             </div>
 
                             {item.badge !== undefined && item.badge > 0 && (

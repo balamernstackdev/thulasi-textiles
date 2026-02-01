@@ -34,10 +34,10 @@ export default function ProductSection({
 
     return (
         <section className={`py-2 md:py-8 ${bgVariant === 'gray' ? 'bg-[#F2F2F2]' : 'bg-white'}`}>
-            <div className="max-w-[1700px] mx-auto px-0 md:px-12 lg:px-20">
+            <div className="max-w-[1700px] mx-auto px-4 md:px-12 lg:px-20">
                 <div className="bg-transparent md:bg-white md:rounded-[2.5rem] p-2 md:p-6 md:shadow-sm md:border md:border-gray-100">
-                    <div className="flex flex-col md:flex-row items-baseline justify-between mb-4 md:mb-8 gap-4">
-                        <div className="space-y-3">
+                    <div className="flex flex-col md:flex-row items-baseline justify-between mb-2 md:mb-8 gap-4">
+                        <div className="space-y-1 md:space-y-3">
                             <p className="text-orange-600 font-bold uppercase tracking-widest text-[10px] md:text-xs">
                                 {subtitle || "Surgical Selection"}
                             </p>

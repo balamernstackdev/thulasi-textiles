@@ -22,7 +22,7 @@ export default function HeritageSupport() {
     };
 
     return (
-        <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-3">
+        <div className="fixed bottom-24 md:bottom-8 right-6 md:right-8 z-[100] flex flex-col items-end gap-3">
             <AnimatePresence>
                 {showTooltip && !isOpen && (
                     <motion.div

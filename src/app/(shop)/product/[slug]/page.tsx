@@ -144,8 +144,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <div className="max-w-[1500px] mx-auto px-4 md:px-6 lg:px-8 py-1 lg:py-4">
                     <ProductInteraction product={product} isWishlisted={isWishlisted} session={session} />
 
-                    <div className="space-y-16 lg:space-y-24 mt-12 lg:mt-20">
-                        <div className="space-y-12">
+                    <div className="space-y-8 md:space-y-16 lg:space-y-24 mt-8 md:mt-12 lg:mt-20">
+                        <div className="space-y-8 md:space-y-12">
                             {(product.artisanStory || artisanImages.length > 0) && (
                                 <section className="relative h-[400px] rounded-sm overflow-hidden group shadow-sm bg-black">
                                     {product.videoUrl ? (
