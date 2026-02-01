@@ -94,39 +94,41 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
             {/* Dynamic Announcement Bar - Absolute Top */}
             {announcements.length > 0 && <AnnouncementTicker banners={announcements} />}
 
-            <div className="max-w-[1700px] mx-auto px-4 sm:px-8 md:px-12 lg:px-20">
+            <div className="max-w-[1700px] mx-auto px-4 md:px-12 lg:px-16">
                 {/* Top Row: Logo, Search, Actions */}
-                <div className="flex items-center justify-between py-1.5 md:py-3 gap-2 md:gap-8 min-h-[50px] md:min-h-[60px]">
+                <div className="flex items-center justify-between py-2 md:py-2.5 gap-4 md:gap-8 min-h-[50px] md:min-h-[56px]">
 
                     {/* Logo & Mobile Menu Button */}
-                    <div className="flex items-center gap-2 md:gap-6 shrink-0">
+                    <div className="flex items-center gap-2 md:gap-4 shrink-0">
                         <button
                             className="lg:hidden p-1.5 -ml-1 text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                             onClick={() => setIsMenuOpen(true)}
                         >
                             <Icon name="menu" className="w-5 h-5" />
                         </button>
-                        <Link href="/" className="flex flex-row md:flex-col items-center gap-2 md:gap-1 group transition-all">
-                            <div className="w-8 h-8 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-md overflow-hidden p-1 ring-2 ring-gray-50 group-hover:ring-orange-50 transition-all">
+                        <Link href="/" className="flex items-center gap-3 group transition-all">
+                            <div className="w-8 h-8 md:w-11 md:h-11 bg-white rounded-full flex items-center justify-center shadow-md overflow-hidden p-1 ring-2 ring-gray-50 group-hover:ring-orange-50 transition-all">
                                 <NextImage
                                     src="/logo.png"
                                     alt="Thulasi Textiles Logo"
-                                    width={28}
-                                    height={28}
+                                    width={26}
+                                    height={26}
                                     className="object-contain"
                                 />
                             </div>
-                            <div className="flex flex-col leading-none text-left md:text-center shrink truncate">
-                                <span className="text-[9px] md:text-sm font-black tracking-tighter uppercase italic truncate">
-                                    <span className="text-gray-400">Thulasi</span> <span className="text-orange-600">Textiles</span>
-                                </span>
-                                <span className="text-[5px] md:text-[7px] font-black text-orange-600 tracking-[0.1em] md:tracking-[0.3em] uppercase mt-0.5 whitespace-nowrap hidden xs:block">Women's World</span>
+                            <div className="flex flex-col leading-none">
+                                <div className="flex items-baseline gap-1.5">
+                                    <span className="text-sm md:text-lg font-black tracking-tighter uppercase italic">
+                                        <span className="text-gray-900">Thulasi</span> <span className="text-orange-600">Textiles</span>
+                                    </span>
+                                </div>
+                                <span className="text-[5px] md:text-[8px] font-black text-orange-600 tracking-[0.2em] md:tracking-[0.4em] uppercase mt-0.5 whitespace-nowrap hidden xs:block">Women's World</span>
                             </div>
                         </Link>
                     </div>
 
-                    <div className="hidden lg:flex flex-1 justify-center px-10 relative">
-                        <div className="relative w-full max-w-3xl group">
+                    <div className="hidden lg:flex flex-1 justify-center px-4 md:px-12 relative">
+                        <div className="relative w-full max-w-2xl group">
                             <input
                                 ref={searchRef as any}
                                 type="text"
@@ -146,7 +148,7 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                                     }
                                 }}
                                 placeholder="Search Thulasi Textiles..."
-                                className="w-full bg-white text-gray-900 border border-gray-200 rounded-lg py-2.5 pl-4 pr-14 text-sm font-medium shadow-sm outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all placeholder:text-gray-400"
+                                className="w-full bg-gray-50 text-gray-900 border border-gray-100 rounded-full py-2.5 pl-6 pr-14 text-sm font-medium shadow-inner outline-none focus:border-orange-500 focus:bg-white focus:ring-1 focus:ring-orange-500 transition-all placeholder:text-gray-400"
                             />
                             <button
                                 onClick={() => {
@@ -155,9 +157,9 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                                         setIsSearchOpen(false);
                                     }
                                 }}
-                                className="absolute right-0 top-0 bottom-0 bg-[#febd69] hover:bg-[#f3a847] text-gray-900 px-4 rounded-r-lg border border-[#febd69] hover:border-[#f3a847] transition-colors flex items-center justify-center"
+                                className="absolute right-1.5 top-1.5 bottom-1.5 bg-orange-600 hover:bg-orange-700 text-white px-4 rounded-full transition-all flex items-center justify-center shadow-lg"
                             >
-                                <Icon name="search" className="w-5 h-5" />
+                                <Icon name="search" className="w-4 h-4" />
                             </button>
 
                             <SearchDropdown
@@ -178,8 +180,8 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
 
 
                 {/* Bottom Row: Navigation Menu */}
-                <div className="hidden lg:flex justify-center pb-2">
-                    <nav className="flex items-center gap-2 text-[11px] font-black text-gray-400 uppercase tracking-widest">
+                <div className="hidden lg:flex justify-center pb-1">
+                    <nav className="flex items-center gap-1 text-[11px] font-black text-gray-400 uppercase tracking-widest">
                         <Link href="/" className="hover:text-black hover:bg-gray-50 px-5 py-3 rounded-xl transition-all">Home</Link>
                         {categories.slice(0, 7).map(cat => (
                             <div
@@ -188,7 +190,7 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                             >
                                 <Link
                                     href={`/category/${cat.slug}`}
-                                    className="px-5 py-3 rounded-xl transition-all flex items-center gap-2 font-black uppercase tracking-widest text-gray-400 hover:text-black hover:bg-gray-50 group-hover/menu:bg-black group-hover/menu:text-white"
+                                    className="px-4 py-2.5 rounded-full transition-all flex items-center gap-2 font-black uppercase tracking-widest text-gray-400 hover:text-black hover:bg-gray-50 group-hover/menu:bg-gray-900 group-hover/menu:text-white"
                                 >
                                     {cat.name}
                                     {cat.children && cat.children.length > 0 && (
