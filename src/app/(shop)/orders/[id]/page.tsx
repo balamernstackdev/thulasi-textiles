@@ -22,5 +22,5 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         redirect('/orders');
     }
 
-    return <OrderDetailClient order={order} />;
+    return <OrderDetailClient order={order as any} />;
 }

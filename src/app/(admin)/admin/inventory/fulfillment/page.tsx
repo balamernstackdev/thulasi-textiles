@@ -16,7 +16,7 @@ export default async function FulfillmentPage() {
     }
 
     const result = await getFulfillmentOrders();
-    const orders = result.success ? result.data : [];
+    const orders = result.success && result.data ? result.data : [];
 
     return <FulfillmentClient initialOrders={orders} />;
 }

@@ -18,5 +18,5 @@ export default async function OrdersPage() {
 
     const { data: orders } = await getUserOrders();
 
-    return <OrdersClient orders={orders || []} />;
+    return <OrdersClient orders={(orders as any) || []} />;
 }
