@@ -147,6 +147,8 @@ img {
 
 .animate-marquee {
   animation: marquee 25s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* --- Admin Sidebar Specialized Scrollbar --- */

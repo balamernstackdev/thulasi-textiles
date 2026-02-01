@@ -53,13 +53,15 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
     // Swipe handlers
     const handleTouchStart = (e: React.TouchEvent) => {
         touchStartX.current = e.targetTouches[0].clientX;
+        touchEndX.current = e.targetTouches[0].clientX; // Reset end to start
     };
     const handleTouchMove = (e: React.TouchEvent) => {
         touchEndX.current = e.targetTouches[0].clientX;
     };
     const handleTouchEnd = () => {
-        if (touchStartX.current - touchEndX.current > 50) nextSlide();
-        if (touchEndX.current - touchStartX.current > 50) prevSlide();
+        const deltaX = touchStartX.current - touchEndX.current;
+        if (deltaX > 70) nextSlide();
+        else if (deltaX < -70) prevSlide();
     };
 
     const slideRef = useRef(null);
@@ -88,13 +90,13 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
                 <div
                     className={`relative w-full overflow-hidden ${isSection ? 'rounded-xl shadow-lg h-[250px] md:h-[350px]' : 'h-[350px] md:h-[500px] lg:h-[600px]'}`}
                 >
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence>
                         <motion.div
                             key={currentIndex}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 1, ease: [0.19, 1, 0.22, 1] }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
                             className="absolute inset-0 w-full h-full"
                         >
                             <label className="sr-only">Slide {currentIndex + 1}</label>
@@ -107,6 +109,7 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
                                     {banners[currentIndex].videoUrl ? (
                                         <video
                                             src={banners[currentIndex].videoUrl}
+                                            poster={banners[currentIndex].imageUrl}
                                             autoPlay
                                             loop
                                             muted
@@ -114,14 +117,22 @@ export default function Banner({ banners, type = 'main' }: BannerProps) {
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
-                                        <Image
-                                            src={banners[currentIndex].imageUrl}
-                                            alt={banners[currentIndex].title || "Promotional Banner"}
-                                            fill
-                                            className="object-cover"
-                                            priority
-                                            sizes="100vw"
-                                        />
+                                        <picture className="w-full h-full">
+                                            {banners[currentIndex].mobileImageUrl && (
+                                                <source
+                                                    media="(max-width: 767px)"
+                                                    srcSet={banners[currentIndex].mobileImageUrl}
+                                                />
+                                            )}
+                                            <Image
+                                                src={banners[currentIndex].imageUrl}
+                                                alt={banners[currentIndex].title || "Promotional Banner"}
+                                                fill
+                                                className="object-cover"
+                                                priority
+                                                sizes="100vw"
+                                            />
+                                        </picture>
                                     )}
                                     {/* Subtle Veil Layer - Increased base opacity for contrast */}
                                     <div className={`absolute inset-0 pointer-events-none transition-opacity duration-1000

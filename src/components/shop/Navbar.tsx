@@ -1,10 +1,11 @@
 'use client'
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { ShoppingCart, MapPin, ChevronRight, Package, Loader2 } from 'lucide-react';
 import Icon from '@/components/ui/Icon';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Category } from '@prisma/client';
 import UserMenu from './UserMenu';
 import MegaMenu from './MegaMenu';
@@ -22,6 +23,7 @@ type CategoryWithChildren = Category & { children: Category[] };
 export default function Navbar({ categories, session, announcements = [] }: { categories: CategoryWithChildren[], session?: any, announcements?: any[] }) {
     console.log('[Navbar] Received categories:', categories?.length || 0);
     const router = useRouter();
+    const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [activeMobileCategory, setActiveMobileCategory] = useState<string | null>(null);
@@ -88,6 +90,12 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
 
         return () => clearTimeout(timer);
     }, [searchQuery]);
+
+    // Close menu on route change
+    useEffect(() => {
+        setIsMenuOpen(false);
+    }, [pathname]);
+
 
     return (
         <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100 w-full">
@@ -209,11 +217,23 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
             </div>
 
             {/* Mobile Side Menu */}
-            {
-                isMenuOpen && (
-                    <>
-                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]" onClick={() => setIsMenuOpen(false)} />
-                        <div className="fixed top-0 left-0 h-full w-[85%] max-w-[320px] bg-white z-[70] overflow-y-auto shadow-2xl transition-all duration-500 animate-in slide-in-from-left">
+            <AnimatePresence>
+                {isMenuOpen && (
+                    <div className="fixed inset-0 z-[60]">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ x: '-100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '-100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="absolute top-0 left-0 h-full w-[85%] max-w-[320px] bg-white z-[70] overflow-y-auto shadow-2xl"
+                        >
                             <div className="p-8 border-b border-gray-50 flex items-center justify-between">
                                 <span className="font-black text-xl text-gray-900 italic tracking-tighter uppercase">Menu</span>
                                 <button onClick={() => setIsMenuOpen(false)} className="bg-gray-50 p-2 rounded-xl"><Icon name="x" className="w-6 h-6 text-gray-500" /></button>
@@ -346,7 +366,12 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                                                     </div>
 
                                                     {hasChildren && isOpen && (
-                                                        <div className="ml-4 pl-4 border-l border-orange-100 space-y-1 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                        <motion.div
+                                                            initial={{ height: 0, opacity: 0 }}
+                                                            animate={{ height: 'auto', opacity: 1 }}
+                                                            exit={{ height: 0, opacity: 0 }}
+                                                            className="ml-4 pl-4 border-l border-orange-100 space-y-1 overflow-hidden"
+                                                        >
                                                             <Link
                                                                 href={`/category/${cat.slug}`}
                                                                 className="block py-3 px-4 text-xs text-orange-600 font-black uppercase tracking-widest hover:bg-orange-50 rounded-xl transition-all"
@@ -370,7 +395,7 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                                                                     {sub.name}
                                                                 </Link>
                                                             ))}
-                                                        </div>
+                                                        </motion.div>
                                                     )}
                                                 </div>
                                             );
@@ -378,10 +403,10 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </>
-                )
-            }
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </header >
     );
 }
