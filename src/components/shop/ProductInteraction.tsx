@@ -263,10 +263,20 @@ export default function ProductInteraction({ product, isWishlisted: initialWishl
             {/* Product Info */}
             <div className="flex flex-col gap-6 md:gap-8">
                 <div>
-                    <div className="flex items-center gap-2 mb-4">
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
                         <span className="bg-orange-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
                             {product.category?.name || 'Heritage'}
                         </span>
+                        {product.origin && (
+                            <span className="bg-teal-50 text-teal-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-teal-100 italic">
+                                {product.origin}
+                            </span>
+                        )}
+                        {product.fabric && (
+                            <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-purple-100 italic">
+                                {product.fabric}
+                            </span>
+                        )}
                         {product.isOffer && (
                             <span className="bg-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
                                 Exclusive Offer
@@ -280,10 +290,11 @@ export default function ProductInteraction({ product, isWishlisted: initialWishl
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                     <div className="space-y-1">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Starting from</p>
-                        <div className="flex items-baseline gap-3">
-                            <span className="text-2xl md:text-4xl font-extrabold text-gray-900 tracking-tight truncate">₹{currentPrice.toLocaleString()}</span>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Investment Value</p>
+                        <div className="flex items-baseline gap-3 flex-wrap">
+                            <span className="text-2xl md:text-5xl font-extrabold text-gray-900 tracking-tight">₹{currentPrice.toLocaleString()}</span>
                             <span className="text-sm md:text-lg font-bold text-gray-400 line-through">₹{originalPrice.toLocaleString()}</span>
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter self-end mb-1">(Incl. 18% GST)</span>
                         </div>
                     </div>
                     <div className="hidden sm:block h-10 w-px bg-gray-100" />

@@ -86,9 +86,12 @@ export default function BundleWizard({ mainProduct, complementaryProducts }: Bun
                     </p>
 
                     <div className="pt-8 border-t border-white/10 space-y-6">
-                        <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Total Bundle Value</span>
-                            <span className="text-3xl font-black text-white italic tracking-tighter">₹{totalBundlePrice.toLocaleString('en-IN')}</span>
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Total Bundle Value</span>
+                                <span className="text-3xl font-black text-white italic tracking-tighter">₹{totalBundlePrice.toLocaleString('en-IN')}</span>
+                            </div>
+                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-tighter text-right">(Incl. 18% GST)</p>
                         </div>
                         <Button
                             onClick={handleAddBundle}
@@ -139,7 +142,11 @@ export default function BundleWizard({ mainProduct, complementaryProducts }: Bun
                                         className="object-cover group-hover:scale-110 transition-transform duration-1000"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
-                                        <p className="text-orange-500 text-[10px] font-black mb-1">₹{Number(product.basePrice).toLocaleString()}</p>
+                                        <div className="flex gap-1 mb-1">
+                                            {product.origin && <span className="text-[7px] font-black uppercase text-teal-400 border border-teal-400/30 px-1 py-0.5 rounded italic whitespace-nowrap">{product.origin}</span>}
+                                            {product.fabric && <span className="text-[7px] font-black uppercase text-purple-400 border border-purple-400/30 px-1 py-0.5 rounded italic whitespace-nowrap">{product.fabric}</span>}
+                                        </div>
+                                        <p className="text-orange-500 text-[10px] font-black mb-1">₹{Number(product.basePrice).toLocaleString()} <span className="text-[8px] text-gray-500 font-normal tracking-tighter">(Incl. GST)</span></p>
                                         <h4 className="text-white font-black uppercase italic tracking-tighter truncate">{product.name}</h4>
                                     </div>
                                     <div className={`absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center transition-all ${isSelected ? 'bg-orange-600 text-white shadow-lg' : 'bg-black/40 text-white/50 border border-white/20 backdrop-blur-md'}`}>

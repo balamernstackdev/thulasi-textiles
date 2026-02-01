@@ -62,7 +62,6 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-                // Check if target is inside dropdown (which is inside searchRef wrapper now)
                 setIsSearchOpen(false);
             }
         };
@@ -70,6 +69,7 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Search suggestions logic for Mobile Menu
     useEffect(() => {
         const timer = setTimeout(async () => {
             if (searchQuery.trim().length >= 2) {
@@ -128,9 +128,8 @@ export default function Navbar({ categories, session, announcements = [] }: { ca
                     </div>
 
                     <div className="hidden lg:flex flex-1 justify-center px-4 md:px-12 relative">
-                        <div className="relative w-full max-w-2xl group">
+                        <div className="relative w-full max-w-2xl group" ref={searchRef as any}>
                             <input
-                                ref={searchRef as any}
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}

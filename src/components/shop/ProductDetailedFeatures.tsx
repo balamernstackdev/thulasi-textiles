@@ -13,7 +13,8 @@ import {
     MessageCircle,
     Globe,
     Lock,
-    CheckCircle2
+    CheckCircle2,
+    User
 } from 'lucide-react';
 import Image from 'next/image';
 import CertificatePreviewDialog from './CertificatePreviewDialog';
@@ -165,15 +166,19 @@ export default function ProductDetailedFeatures({ product }: { product: any }) {
                         <p className="font-bold text-gray-400 leading-relaxed text-sm md:text-base">
                             Every Thulasi textile undergoes a rigorous 5-point inspection. Trace your garment's journey from the artisan's loom to your wardrobe.
                         </p>
-                        <div className="pt-4 flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start">
+                        <div className="pt-4 flex flex-col items-center gap-4 justify-center lg:justify-start lg:flex-row lg:gap-6">
                             <div className="flex -space-x-3">
                                 {[1, 2, 3].map(i => (
                                     <div key={i} className="w-10 h-10 rounded-full border-2 border-gray-900 bg-gray-800 flex items-center justify-center overflow-hidden">
-                                        <Image src={`/artisan-thumb-${i}.png`} alt="Artisan" width={40} height={40} className="object-cover opacity-80" onError={(e) => (e.currentTarget.src = "/placeholder-user.png")} />
+                                        <div className="w-full h-full flex items-center justify-center bg-gray-700">
+                                            <User className="w-5 h-5 text-gray-400" />
+                                        </div>
                                     </div>
                                 ))}
                             </div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Verified by <span className="text-white">Master Weavers</span></p>
+                            <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500 text-center lg:text-left">
+                                Verified by <span className="text-white">Master Weavers</span>
+                            </p>
                         </div>
                     </div>
 
@@ -189,26 +194,26 @@ export default function ProductDetailedFeatures({ product }: { product: any }) {
                             const Icon = icons[audit.label] || ShieldCheck;
 
                             return (
-                                <div key={i} className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-[2rem] text-center flex flex-col items-center gap-4 group/badge hover:bg-white/10 hover:border-orange-600/30 transition-all duration-500">
-                                    <div className="w-12 h-12 bg-gray-800 rounded-2xl flex items-center justify-center text-orange-600 group-hover/badge:scale-110 group-hover/badge:bg-orange-600 group-hover/badge:text-white transition-all">
-                                        <Icon className="w-6 h-6" />
+                                <div key={i} className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-center flex flex-col items-center gap-2 md:gap-4 group/badge hover:bg-white/10 hover:border-orange-600/30 transition-all duration-500">
+                                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-800 rounded-xl md:rounded-2xl flex items-center justify-center text-orange-600 group-hover/badge:scale-110 group-hover/badge:bg-orange-600 group-hover/badge:text-white transition-all">
+                                        <Icon className="w-5 h-5 md:w-6 md:h-6" />
                                     </div>
                                     <div>
-                                        <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{audit.label}</p>
-                                        <p className="text-lg md:text-xl font-black italic text-white">{audit.val}</p>
+                                        <p className="text-[7px] md:text-[9px] font-black uppercase tracking-widest text-gray-500 mb-0.5 md:mb-1">{audit.label}</p>
+                                        <p className="text-sm md:text-xl font-black italic text-white">{audit.val}</p>
                                     </div>
                                 </div>
                             );
                         })}
                         {/* Certificate Box */}
                         <CertificatePreviewDialog product={product}>
-                            <div className="col-span-2 md:col-span-1 bg-orange-600 p-6 md:p-8 rounded-[2rem] flex flex-col items-center justify-center text-center gap-4 shadow-2xl shadow-orange-600/20 hover:scale-[1.02] transition-transform cursor-pointer">
-                                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white">
-                                    <Lock className="w-6 h-6" />
+                            <div className="col-span-2 md:col-span-1 bg-orange-600 p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] flex flex-col items-center justify-center text-center gap-2 md:gap-4 shadow-2xl shadow-orange-600/20 hover:scale-[1.02] transition-transform cursor-pointer">
+                                <div className="w-10 h-10 md:w-12 md:h-12 bg-black rounded-xl md:rounded-2xl flex items-center justify-center text-white">
+                                    <Lock className="w-5 h-5 md:w-6 md:h-6" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-black mb-1">Authenticity</p>
-                                    <p className="text-base md:text-lg font-black italic text-white leading-tight">Digital Vault Certificate</p>
+                                    <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-black mb-0.5 md:mb-1">Authenticity</p>
+                                    <p className="text-sm md:text-lg font-black italic text-white leading-tight">Digital Vault Certificate</p>
                                 </div>
                             </div>
                         </CertificatePreviewDialog>

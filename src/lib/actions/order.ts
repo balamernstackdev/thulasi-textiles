@@ -8,6 +8,7 @@ import { sendEmail } from '@/lib/mail';
 import { grantPointsForOrder } from '@/lib/actions/loyalty';
 import { createNotification, notifyAdmins } from '@/lib/actions/notification';
 import { WhatsappService } from '@/lib/services/whatsapp';
+import { serialize } from '@/lib/utils';
 
 
 
@@ -21,13 +22,17 @@ export async function createOrder(formData: FormData) {
     try {
         const addressId = formData.get('addressId') as string;
         const cartItems = JSON.parse(formData.get('cartItems') as string);
-        const total = parseFloat(formData.get('total') as string);
         const couponId = formData.get('couponId') as string;
         const discountAmount = parseFloat(formData.get('discountAmount') as string) || 0;
 
         if (!addressId || !cartItems || cartItems.length === 0) {
             return { success: false, error: 'Invalid order data' };
         }
+
+        // Calculate total server-side for security and consistency (Inclusive Tax model)
+        const itemsSubtotal = cartItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+        const shipping = itemsSubtotal > 2999 ? 0 : 99;
+        const total = itemsSubtotal + shipping - discountAmount;
 
         // Create order with items
         const order = await prismadb.order.create({
@@ -154,7 +159,7 @@ export async function createOrder(formData: FormData) {
 
 
         revalidatePath('/orders');
-        return { success: true, data: order };
+        return { success: true, data: serialize(order) };
     } catch (error) {
         console.error('Order creation error:', error);
         return { success: false, error: 'Failed to create order' };
@@ -188,29 +193,7 @@ export async function getUserOrders() {
             },
             orderBy: { createdAt: 'desc' },
         });
-        const orders = ordersRaw as any[];
-
-        // Serialize Decimal fields
-        const serializedOrders = orders.map((order) => ({
-            ...order,
-            total: Number(order.total),
-            discountAmount: Number(order.discountAmount || 0),
-            items: order.items.map((item: any) => ({
-                ...item,
-                price: Number(item.price),
-                variant: {
-                    ...item.variant,
-                    price: Number(item.variant.price),
-                    discount: item.variant.discount ? Number(item.variant.discount) : 0,
-                    product: {
-                        ...item.variant.product,
-                        basePrice: Number(item.variant.product.basePrice),
-                    },
-                },
-            })),
-        }));
-
-        return { success: true, data: serializedOrders };
+        return { success: true, data: serialize(ordersRaw) };
     } catch (error) {
         console.error('Fetch orders error:', error);
         return { success: false, error: 'Failed to fetch orders' };
@@ -252,28 +235,7 @@ export async function getOrderById(orderId: string) {
             return { success: false, error: 'Order not found' };
         }
 
-        // Serialize
-        const orderData = order as any;
-        const serializedOrder = {
-            ...orderData,
-            total: Number(orderData.total),
-            discountAmount: Number(orderData.discountAmount || 0),
-            items: orderData.items.map((item: any) => ({
-                ...item,
-                price: Number(item.price),
-                variant: {
-                    ...item.variant,
-                    price: Number(item.variant.price),
-                    discount: item.variant.discount ? Number(item.variant.discount) : 0,
-                    product: {
-                        ...item.variant.product,
-                        basePrice: Number(item.variant.product.basePrice),
-                    },
-                },
-            })),
-        };
-
-        return { success: true, data: serializedOrder };
+        return { success: true, data: serialize(order) };
     } catch (error) {
         console.error('Fetch order error:', error);
         return { success: false, error: 'Failed to fetch order' };
@@ -317,28 +279,9 @@ export async function getAdminOrders(options: {
             prismadb.order.count({ where })
         ]);
 
-        const serializedOrders = (orders as any[]).map((order) => ({
-            ...order,
-            total: Number(order.total),
-            discountAmount: Number(order.discountAmount || 0),
-            items: order.items.map((item: any) => ({
-                ...item,
-                price: Number(item.price),
-                variant: {
-                    ...item.variant,
-                    price: Number(item.variant.price),
-                    discount: item.variant.discount ? Number(item.variant.discount) : 0,
-                    product: {
-                        ...item.variant.product,
-                        basePrice: Number(item.variant.product.basePrice),
-                    },
-                },
-            })),
-        }));
-
         return {
             success: true,
-            data: JSON.parse(JSON.stringify(serializedOrders)),
+            data: serialize(orders),
             pagination: {
                 total,
                 page,
@@ -477,26 +420,20 @@ export async function getDashboardStats() {
 
         return {
             success: true,
-            data: {
+            data: serialize({
                 orderCount,
                 totalRevenue: Number(totalRevenueResult._sum.total || 0),
                 productCount,
                 categoryCount,
-                recentOrders: JSON.parse(JSON.stringify(recentOrders.map(o => ({
-                    ...o,
-                    total: Number(o.total)
-                })))),
+                recentOrders,
                 pendingOrdersCount,
-                lowStockProducts: JSON.parse(JSON.stringify(lowStockProducts.map(p => ({
-                    ...p,
-                    basePrice: Number(p.basePrice)
-                })))),
-                analytics: JSON.parse(JSON.stringify({
+                lowStockProducts,
+                analytics: {
                     salesTrend,
                     categoryData,
                     topSellingProducts
-                }))
-            }
+                }
+            })
         };
     } catch (error) {
         console.error('Dashboard stats error:', error);
@@ -531,27 +468,7 @@ export async function getAdminOrderById(orderId: string) {
             return { success: false, error: 'Order not found' };
         }
 
-        const orderData = order as any;
-        const serializedOrder = {
-            ...orderData,
-            total: Number(orderData.total),
-            discountAmount: Number(orderData.discountAmount || 0),
-            items: orderData.items.map((item: any) => ({
-                ...item,
-                price: Number(item.price),
-                variant: {
-                    ...item.variant,
-                    price: Number(item.variant.price),
-                    discount: item.variant.discount ? Number(item.variant.discount) : 0,
-                    product: {
-                        ...item.variant.product,
-                        basePrice: Number(item.variant.product.basePrice),
-                    },
-                },
-            })),
-        };
-
-        return { success: true, data: serializedOrder };
+        return { success: true, data: serialize(order) };
     } catch (error) {
         console.error('Admin Fetch order error:', error);
         return { success: false, error: 'Failed to fetch order' };
@@ -639,7 +556,7 @@ export async function updateOrderStatus(orderId: string, status: string) {
 
         revalidatePath('/admin/orders');
         revalidatePath(`/admin/orders/${orderId}`);
-        return { success: true, data: order };
+        return { success: true, data: serialize(order) };
     } catch (error) {
         console.error('Update order status error:', error);
         return { success: false, error: 'Failed to update order status' };
@@ -760,7 +677,11 @@ export async function getFulfillmentOrders() {
                     include: {
                         variant: {
                             include: {
-                                product: true
+                                product: {
+                                    include: {
+                                        images: true
+                                    }
+                                }
                             }
                         }
                     }
@@ -769,21 +690,7 @@ export async function getFulfillmentOrders() {
             orderBy: { createdAt: 'asc' } // Oldest first for fulfillment
         });
 
-        const serialized = (orders as any[]).map(order => ({
-            ...order,
-            total: Number(order.total),
-            daysOpen: Math.floor((new Date().getTime() - new Date(order.createdAt).getTime()) / (1000 * 3600 * 24)),
-            items: order.items.map((item: any) => ({
-                ...item,
-                price: Number(item.price),
-                variant: {
-                    ...item.variant,
-                    price: Number(item.variant.price)
-                }
-            }))
-        }));
-
-        return { success: true, data: JSON.parse(JSON.stringify(serialized)) };
+        return { success: true, data: serialize(orders) };
     } catch (error) {
         console.error('Fulfillment fetch error:', error);
         return { success: false, error: 'Failed to fetch fulfillment orders' };

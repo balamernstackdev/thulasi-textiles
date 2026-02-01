@@ -18,6 +18,7 @@ type OrderDetail = {
     status: string;
     paymentStatus: string;
     total: number;
+    discountAmount: number;
     createdAt: Date;
     address: any;
     items: any[];
@@ -181,12 +182,42 @@ export default function OrderDetailClient({ order }: { order: OrderDetail }) {
                                     <Receipt className="w-3.5 h-3.5" /> Investment
                                 </h3>
                                 <div className="space-y-4">
-                                    <div className="flex justify-between text-xs font-bold text-gray-400 uppercase tracking-widest"><span>Subtotal</span><span className="text-gray-900">₹{order.total.toLocaleString()}</span></div>
-                                    <div className="flex justify-between text-xs font-bold text-gray-400 uppercase tracking-widest"><span>Heritage Logistics</span><span className="text-emerald-600">COMPLIMENTARY</span></div>
-                                    <div className="pt-6 border-t-2 border-dashed border-gray-100 flex justify-between items-end">
-                                        <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Total</span>
-                                        <span className="text-4xl font-black text-gray-900 tracking-tighter italic">₹{order.total.toLocaleString()}</span>
-                                    </div>
+                                    {(() => {
+                                        const itemsSubtotal = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                                        const discount = order.discountAmount || 0;
+                                        const shipping = itemsSubtotal > 2999 ? 0 : 99;
+                                        // 18% inclusive GST calculation: Portion = Amount * (18 / 118)
+                                        const taxPortion = itemsSubtotal * (18 / 118);
+
+                                        return (
+                                            <>
+                                                <div className="flex justify-between text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                                    <span>Heritage Value</span>
+                                                    <span className="text-gray-900">₹{itemsSubtotal.toLocaleString()}</span>
+                                                </div>
+                                                {discount > 0 && (
+                                                    <div className="flex justify-between text-xs font-bold text-orange-600 uppercase tracking-widest">
+                                                        <span>Ancestors Bonus</span>
+                                                        <span>- ₹{discount.toLocaleString()}</span>
+                                                    </div>
+                                                )}
+                                                <div className="flex justify-between text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                                    <span>Logistics</span>
+                                                    <span className={shipping === 0 ? 'text-emerald-600' : 'text-gray-900'}>
+                                                        {shipping === 0 ? 'COMPLIMENTARY' : `₹${shipping}`}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between text-[10px] font-bold text-gray-300 uppercase tracking-widest border-t border-gray-50 pt-3">
+                                                    <span>GST Contribution</span>
+                                                    <span>₹{taxPortion.toLocaleString(undefined, { maximumFractionDigits: 2 })} (Included)</span>
+                                                </div>
+                                                <div className="pt-6 border-t-2 border-dashed border-gray-100 flex justify-between items-end">
+                                                    <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Total Investment</span>
+                                                    <span className="text-4xl font-black text-gray-900 tracking-tighter italic">₹{order.total.toLocaleString()}</span>
+                                                </div>
+                                            </>
+                                        );
+                                    })()}
                                 </div>
                             </div>
                             <div className="pt-6 flex items-center justify-center grayscale opacity-30 mt-10">

@@ -5,7 +5,7 @@ import { useCartStore } from '@/lib/store/cart';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Plus, MapPin, CreditCard, Package, Ticket, X, Loader2, ChevronDown, Lock, ShieldCheck } from 'lucide-react';
+import { Check, Plus, MapPin, CreditCard, Package, Ticket, X, Loader2, ChevronDown, Lock, ShieldCheck, AlertCircle } from 'lucide-react';
 import { createOrder } from '@/lib/actions/order';
 import { createAddress } from '@/lib/actions/address';
 import { validateCoupon } from '@/lib/actions/coupon';
@@ -28,17 +28,20 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
     const [selectedAddressId, setSelectedAddressId] = useState(addresses.find(a => a.isDefault)?.id || addresses[0]?.id || '');
     const [paymentMethod, setPaymentMethod] = useState('COD');
     const [isProcessing, setIsProcessing] = useState(false);
-    const [showAddressForm, setShowAddressForm] = useState(false);
     const [couponCode, setCouponCode] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
     const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
     const [couponError, setCouponError] = useState<string | null>(null);
 
+    const [showAddressForm, setShowAddressForm] = useState(false);
+    const [isSubmittingAddress, setIsSubmittingAddress] = useState(false);
+    const [addressError, setAddressError] = useState<string | null>(null);
+
     const totalPrice = getTotalPrice();
     const shipping = totalPrice > 2999 ? 0 : 99;
-    const tax = totalPrice * 0.18;
+    const tax = 0; // Tax is now inclusive in the product price
     const discount = appliedCoupon ? appliedCoupon.discountAmount : 0;
-    const finalTotal = totalPrice + shipping + tax - discount;
+    const finalTotal = totalPrice + shipping - discount;
 
     useEffect(() => {
         if (items.length === 0) {
@@ -47,6 +50,28 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
     }, [items.length, router]);
 
     if (items.length === 0) return null;
+
+    const handleAddressSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsSubmittingAddress(true);
+        setAddressError(null);
+
+        try {
+            const formData = new FormData(e.currentTarget);
+            const res = await createAddress(formData);
+            if (res.success && res.data) {
+                setSelectedAddressId(res.data.id);
+                setShowAddressForm(false);
+                router.refresh(); // Refresh to get updated addresses list
+            } else {
+                setAddressError(res.error || 'Failed to create address');
+            }
+        } catch (err) {
+            setAddressError('An unexpected error occurred');
+        } finally {
+            setIsSubmittingAddress(false);
+        }
+    };
 
     const loadRazorpayScript = () => {
         return new Promise((resolve) => {
@@ -121,6 +146,7 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
     const handleApplyCoupon = async () => {
         if (!couponCode.trim()) return;
         setIsValidatingCoupon(true);
+        setCouponError(null);
         try {
             const res = await validateCoupon(couponCode, totalPrice);
             if (res.success) { setAppliedCoupon(res.data); setCouponCode(''); }
@@ -140,6 +166,90 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                         <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700">Environment Secure</span>
                     </div>
                 </div>
+
+                {/* Address Form Modal */}
+                <AnimatePresence>
+                    {showAddressForm && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setShowAddressForm(false)}
+                                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                            />
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                className="relative bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden"
+                            >
+                                <div className="p-8 md:p-12">
+                                    <div className="flex items-center justify-between mb-8">
+                                        <div>
+                                            <h2 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Add Address</h2>
+                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Register your heritage destination</p>
+                                        </div>
+                                        <button onClick={() => setShowAddressForm(false)} className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-black transition-colors">
+                                            <X className="w-5 h-5" />
+                                        </button>
+                                    </div>
+
+                                    {addressError && (
+                                        <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600">
+                                            <AlertCircle className="w-5 h-5 shrink-0" />
+                                            <p className="text-xs font-bold uppercase tracking-widest">{addressError}</p>
+                                        </div>
+                                    )}
+
+                                    <form onSubmit={handleAddressSubmit} className="space-y-4">
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Full Name</label>
+                                                <input name="name" required placeholder="John Doe" className="w-full bg-gray-50 border-0 focus:ring-2 focus:ring-orange-600 rounded-2xl px-6 h-14 text-sm font-bold" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Phone Number</label>
+                                                <input name="phone" required placeholder="+91 00000 00000" className="w-full bg-gray-50 border-0 focus:ring-2 focus:ring-orange-600 rounded-2xl px-6 h-14 text-sm font-bold" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Street Address</label>
+                                            <input name="street" required placeholder="123 Heritage Lane" className="w-full bg-gray-50 border-0 focus:ring-2 focus:ring-orange-600 rounded-2xl px-6 h-14 text-sm font-bold" />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">City</label>
+                                                <input name="city" required placeholder="Kanchipuram" className="w-full bg-gray-50 border-0 focus:ring-2 focus:ring-orange-600 rounded-2xl px-6 h-14 text-sm font-bold" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">State</label>
+                                                <input name="state" required placeholder="Tamil Nadu" className="w-full bg-gray-50 border-0 focus:ring-2 focus:ring-orange-600 rounded-2xl px-6 h-14 text-sm font-bold" />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Pincode</label>
+                                                <input name="zip" required placeholder="631501" className="w-full bg-gray-50 border-0 focus:ring-2 focus:ring-orange-600 rounded-2xl px-6 h-14 text-sm font-bold" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Country</label>
+                                                <input name="country" required defaultValue="India" className="w-full bg-gray-50 border-0 focus:ring-2 focus:ring-orange-600 rounded-2xl px-6 h-14 text-sm font-bold" />
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 px-4 py-2">
+                                            <input type="checkbox" name="isDefault" id="isDefault" value="true" className="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600" />
+                                            <label htmlFor="isDefault" className="text-[10px] font-black text-gray-500 uppercase tracking-widest cursor-pointer">Set as default address</label>
+                                        </div>
+                                        <button disabled={isSubmittingAddress} className="w-full bg-black text-white h-16 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-orange-600 transition-all disabled:opacity-50 mt-4 flex items-center justify-center gap-2">
+                                            {isSubmittingAddress ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Register Address'}
+                                        </button>
+                                    </form>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
 
                 <div className="grid lg:grid-cols-12 gap-12 items-start">
                     {/* Sections */}
@@ -284,7 +394,10 @@ export default function CheckoutClient({ session, addresses }: { session: any; a
                                     <div className="flex justify-between text-xs font-bold text-gray-400 uppercase tracking-widest"><span>Heritage Value</span><span className="text-gray-900">₹{totalPrice.toLocaleString()}</span></div>
                                     {discount > 0 && <div className="flex justify-between text-xs font-bold text-orange-600 uppercase tracking-widest"><span>Ancestors Bonus</span><span>- ₹{discount.toLocaleString()}</span></div>}
                                     <div className="flex justify-between text-xs font-bold text-gray-400 uppercase tracking-widest"><span>Logistics</span><span className={shipping === 0 ? 'text-green-600' : 'text-gray-900'}>{shipping === 0 ? 'COMPLIMENTARY' : `₹${shipping}`}</span></div>
-                                    <div className="flex justify-between text-xs font-bold text-gray-400 uppercase tracking-widest"><span>GST Contribution</span><span className="text-gray-900">₹{tax.toLocaleString()}</span></div>
+                                    <div className="flex justify-between text-[10px] font-bold text-gray-300 uppercase tracking-widest border-t border-gray-50 pt-3">
+                                        <span>GST Contribution</span>
+                                        <span>₹{(totalPrice * (18 / 118)).toLocaleString(undefined, { maximumFractionDigits: 2 })} (Included)</span>
+                                    </div>
                                 </div>
 
                                 <div className="pt-6 border-t-2 border-dashed border-gray-100">

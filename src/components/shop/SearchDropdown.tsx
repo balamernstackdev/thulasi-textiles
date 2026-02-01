@@ -95,7 +95,10 @@ export default function SearchDropdown({ isOpen, query, onClose }: SearchDropdow
                                     <Link
                                         key={product.id}
                                         href={`/product/${product.slug}`}
-                                        onClick={onClose}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onClose();
+                                        }}
                                         className="group flex items-center gap-4 py-3 px-4 hover:bg-orange-50/30 transition-all cursor-pointer border-b border-gray-50 last:border-0"
                                     >
                                         <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden bg-gray-100 border border-gray-100 group-hover:shadow-md transition-shadow">
@@ -110,11 +113,21 @@ export default function SearchDropdown({ isOpen, query, onClose }: SearchDropdow
                                             <span className="text-sm font-black text-gray-900 truncate block uppercase italic tracking-tight group-hover:text-orange-600">
                                                 {product.name}
                                             </span>
-                                            <div className="flex items-center gap-2 mt-0.5">
+                                            <div className="flex flex-wrap items-center gap-2 mt-0.5">
                                                 <span className="text-xs font-bold text-gray-900">
                                                     ₹{product.basePrice.toLocaleString()}
                                                 </span>
                                                 <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 px-1.5 py-0.5 bg-gray-50 rounded">In Stock</span>
+                                                {product.fabric && (
+                                                    <span className="text-[8px] font-black uppercase tracking-widest text-purple-600 px-1.5 py-0.5 bg-purple-50 rounded italic">
+                                                        {product.fabric}
+                                                    </span>
+                                                )}
+                                                {product.origin && (
+                                                    <span className="text-[8px] font-black uppercase tracking-widest text-teal-600 px-1.5 py-0.5 bg-teal-50 rounded italic">
+                                                        {product.origin}
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                         <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-orange-600 group-hover:translate-x-1 transition-all" />
@@ -174,7 +187,10 @@ export default function SearchDropdown({ isOpen, query, onClose }: SearchDropdow
                                     <Link
                                         key={product.id}
                                         href={`/product/${product.slug}`}
-                                        onClick={onClose}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onClose();
+                                        }}
                                         className="group flex items-center gap-3 p-2 hover:bg-orange-50/30 rounded-xl transition-all border border-transparent hover:border-orange-100"
                                     >
                                         <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-gray-50">

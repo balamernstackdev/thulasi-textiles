@@ -45,10 +45,10 @@ export async function getAdminDashboardStats() {
             totalCustomers,
             recentOrders: recentOrders.map(o => ({
                 id: o.id,
-                customer: o.user?.name || 'Guest',
+                user: { name: o.user?.name || 'Guest' },
                 total: Number(o.total),
                 status: o.status,
-                date: o.createdAt
+                createdAt: o.createdAt
             })),
             lowStockProducts: lowStockProducts.map(v => ({
                 id: v.id,

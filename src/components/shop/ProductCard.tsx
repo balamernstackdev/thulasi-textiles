@@ -26,6 +26,8 @@ interface ProductCardProps {
         isNew?: boolean;
         isBestSeller?: boolean;
         isFeatured?: boolean;
+        fabric?: string;
+        origin?: string;
     };
     session?: any;
     priority?: boolean;
@@ -213,10 +215,26 @@ export default function ProductCard({ product, session, priority = false }: Prod
 
                 {/* Content Details */}
                 <div className="flex flex-col flex-1 p-3 md:p-5 space-y-1 md:space-y-2">
-                    <span className="text-[9px] md:text-xs font-bold uppercase tracking-wider text-orange-600 block">
-                        {product.category?.name || 'Handloom'}
-                    </span>
-                    <h3 className="text-sm md:text-base font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">
+                    <div className="flex items-center justify-between gap-2">
+                        <span className="text-[9px] md:text-xs font-bold uppercase tracking-wider text-orange-600">
+                            {product.category?.name || 'Handloom'}
+                        </span>
+                        {(product.origin || product.fabric) && (
+                            <div className="flex gap-1.5">
+                                {product.origin && (
+                                    <span className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded italic">
+                                        {product.origin}
+                                    </span>
+                                )}
+                                {product.fabric && (
+                                    <span className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded italic">
+                                        {product.fabric}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    <h3 className="text-sm md:text-base font-bold text-gray-900 line-clamp-1 leading-snug group-hover:text-orange-600 transition-colors">
                         {product.name}
                     </h3>
 
@@ -231,7 +249,7 @@ export default function ProductCard({ product, session, priority = false }: Prod
 
                     <div className="mt-auto pt-2 flex items-baseline gap-2 border-t border-gray-50">
                         <span className="text-base md:text-xl font-bold text-gray-900">
-                            <Price amount={priceValue} />
+                            <Price amount={priceValue} showGst={true} />
                         </span>
                         {originalPrice > priceValue && (
                             <span className="text-[10px] md:text-sm text-gray-400 line-through decoration-gray-300">

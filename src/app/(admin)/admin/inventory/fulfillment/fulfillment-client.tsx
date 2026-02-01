@@ -62,14 +62,14 @@ export default function FulfillmentClient({ initialOrders }: { initialOrders: an
         setTimeout(() => {
             window.print();
             setIsPrinting(false);
-        }, 500);
+        }, 1200);
     };
 
     // If printing, render only the packing slips
     if (isPrinting) {
         const ordersToPrint = orders.filter(o => selectedOrderIds.includes(o.id));
         return (
-            <div className="fixed inset-0 bg-white z-[9999] overflow-auto p-0 m-0">
+            <div className="fixed inset-0 bg-white z-[9999] overflow-auto p-0 m-0 print:static print:bg-transparent print:z-auto print:overflow-visible">
                 {ordersToPrint.map(order => (
                     <PackingSlip key={order.id} order={order} />
                 ))}
@@ -201,9 +201,9 @@ export default function FulfillmentClient({ initialOrders }: { initialOrders: an
                                     )}
                                 </div>
                                 <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2">
-                                    <p className="text-xs font-bold text-gray-500">Customer: <span className="text-gray-900">{order.user.name || order.user.email}</span></p>
-                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-tighter">Placed: <span className="text-gray-900">{format(new Date(order.createdAt), 'MMM dd, p')}</span></p>
-                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-tighter">Items: <span className="text-gray-900">{order.items.length}</span></p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Customer: <span className="text-gray-900">{order.user.name || order.user.email}</span></p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Placed: <span className="text-gray-900">{format(new Date(order.createdAt), 'MMM dd, p')}</span></p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Items: <span className="text-gray-900">{order.items.length}</span></p>
                                 </div>
                             </div>
 
@@ -225,7 +225,7 @@ export default function FulfillmentClient({ initialOrders }: { initialOrders: an
 
                             {/* Actions Right */}
                             <div className="flex items-center gap-4 shrink-0 md:border-l border-gray-100 md:pl-6">
-                                <span className="text-lg font-black text-gray-900">₹{order.total.toLocaleString()}</span>
+                                <span className="text-lg font-black text-gray-900">₹{Math.round(Number(order.total)).toLocaleString()}</span>
                                 <button className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-400">
                                     <ChevronRight className="w-5 h-5" />
                                 </button>

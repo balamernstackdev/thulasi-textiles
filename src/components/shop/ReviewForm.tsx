@@ -111,12 +111,13 @@ export default function ReviewForm({ productId, onReviewAdded }: { productId: st
 
                     <div className="flex gap-2">
                         <CldUploadWidget
-                            uploadPreset="thulasi_preset"
+                            signatureEndpoint="/api/cloudinary/sign"
+                            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'our-products'}
                             options={{
                                 maxFiles: 3,
                                 sources: ['local', 'camera'],
                                 clientAllowedFormats: ['image'],
-                                maxFileSize: 5000000, // 5MB
+                                maxFileSize: 10000000, // 10MB
                             }}
                             onSuccess={(result: any) => {
                                 if (result?.info?.secure_url) {

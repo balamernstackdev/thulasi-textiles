@@ -83,7 +83,7 @@ export default function AdminLayout({
             )}
 
             {/* Sidebar */}
-            <aside className={`fixed inset-y-0 left-0 w-72 bg-[#1e293b] text-white flex flex-col z-[40] transition-transform duration-300 shadow-2xl lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            <aside className={`fixed inset-y-0 left-0 w-72 bg-[#1e293b] text-white flex flex-col z-[40] transition-transform duration-300 shadow-2xl lg:translate-x-0 print:hidden ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}>
                 <div className="p-8 flex flex-col items-center gap-4 border-b border-gray-700/50 relative">
                     <button
@@ -136,9 +136,9 @@ export default function AdminLayout({
             </aside>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col min-h-screen transition-all duration-300 bg-gray-50/50 lg:ml-72">
+            <div className="flex-1 flex flex-col min-h-screen transition-all duration-300 bg-gray-50/50 lg:ml-72 print:ml-0">
                 {/* Header */}
-                <header className="bg-white/80 backdrop-blur-md h-20 shadow-sm border-b px-6 md:px-10 lg:px-12 flex items-center justify-between sticky top-0 z-20 antialiased gpu">
+                <header className="bg-white/80 backdrop-blur-md h-20 shadow-sm border-b px-6 md:px-10 lg:px-12 flex items-center justify-between sticky top-0 z-20 antialiased gpu print:hidden">
                     <div className="flex items-center gap-4">
                         <button
                             className="lg:hidden p-2 text-gray-900 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
@@ -159,7 +159,7 @@ export default function AdminLayout({
                 </header>
 
                 {/* Page Content */}
-                <main className="p-6 md:p-10 lg:p-12 gpu overflow-x-hidden">
+                <main className="p-6 md:p-10 lg:p-12 gpu overflow-x-hidden print:p-0">
                     <PageTransition>
                         {children}
                     </PageTransition>

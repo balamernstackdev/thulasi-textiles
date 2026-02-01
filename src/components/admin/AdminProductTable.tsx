@@ -182,10 +182,10 @@ export default function AdminProductTable({ products }: { products: any[] }) {
                                     )}
                                 </button>
                             </th>
-                            <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Product</th>
+                            <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Masterpiece</th>
                             <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Category</th>
-                            <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Price</th>
-                            <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Stock</th>
+                            <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Investment</th>
+                            <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Heritage Units</th>
                             <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
                             <th className="px-6 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Actions</th>
                         </tr>
@@ -223,7 +223,19 @@ export default function AdminProductTable({ products }: { products: any[] }) {
                                         </div>
                                         <div>
                                             <p className="font-black text-gray-900 group-hover:text-teal-600 transition-colors text-sm">{product.name}</p>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate max-w-[150px]">{product.slug}</p>
+                                            <div className="flex flex-wrap gap-2 mt-1">
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{product.slug}</p>
+                                                {product.fabric && (
+                                                    <span className="text-[8px] font-black bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded uppercase tracking-tighter">
+                                                        {product.fabric}
+                                                    </span>
+                                                )}
+                                                {product.origin && (
+                                                    <span className="text-[8px] font-black bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded uppercase tracking-tighter">
+                                                        {product.origin}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -232,13 +244,18 @@ export default function AdminProductTable({ products }: { products: any[] }) {
                                         {product.category?.name || 'Uncategorized'}
                                     </span>
                                 </td>
-                                <td className="px-6 py-5 text-sm font-black text-gray-900 italic">₹{parseFloat(product.basePrice).toLocaleString()}</td>
                                 <td className="px-6 py-5">
                                     <div className="flex flex-col">
-                                        <span className="text-xs font-black text-gray-900">
+                                        <span className="text-sm font-black text-gray-900 italic">₹{parseFloat(product.basePrice).toLocaleString()}</span>
+                                        <span className="text-[8px] text-gray-400 font-black uppercase tracking-tighter mt-0.5">Incl. 18% GST</span>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-5">
+                                    <div className="flex flex-col">
+                                        <span className={`text-xs font-black ${product.variants?.reduce((sum: number, v: any) => sum + v.stock, 0) <= 5 ? 'text-rose-600' : 'text-gray-900'}`}>
                                             {product.variants?.reduce((sum: number, v: any) => sum + v.stock, 0) || 0}
                                         </span>
-                                        <span className="text-[8px] text-gray-400 font-black uppercase tracking-tighter">Units In Box</span>
+                                        <span className="text-[8px] text-gray-400 font-black uppercase tracking-tighter">Heritage Units</span>
                                     </div>
                                 </td>
                                 <td className="px-6 py-5">

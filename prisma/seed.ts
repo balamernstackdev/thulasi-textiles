@@ -212,16 +212,36 @@ async function main() {
                 // Cycle through images
                 const imgSet = images[(i - 1) % images.length] || images[0];
 
+                const isSaree = sub.includes('Saree');
+                const isKurtas = sub.includes('Kurtas');
+                const isHomeLinen = cat.name === 'Home Linen';
+
+                const fabrics = isSaree ? ['Kanchipuram Silk', 'Chanderi Cotton', 'Maheshwari Silk', 'Organza'] : isKurtas ? ['Cotton Silk', 'Linen', 'Pure Cotton', 'Georgette'] : ['Premium Cotton', 'Pure Linen'];
+                const origins = ['Tamil Nadu', 'Madhya Pradesh', 'West Bengal', 'Uttar Pradesh'];
+                const weaves = ['Hand-Woven', 'Jacquard', 'Embroidery', 'Block Print'];
+
+                const productFabric = fabrics[Math.floor(Math.random() * fabrics.length)];
+                const productOrigin = origins[Math.floor(Math.random() * origins.length)];
+                const productWeave = weaves[Math.floor(Math.random() * weaves.length)];
+
                 const product = await prisma.product.create({
                     data: {
                         name: productName.trim(),
                         slug: productSlug.trim(),
-                        description: `Experience the finest ${productName}, crafted with precision and care. Made from premium quality fabric that ensures comfort and durability. Perfect for modern lifestyles.`.trim(),
+                        description: `Experience the finest ${productName}, crafted with precision and care. Made from premium quality ${productFabric} that ensures comfort and durability. Perfect for modern lifestyles.`.trim(),
                         basePrice: price,
                         categoryId: subCategory.id,
                         isActive: true,
                         isBestSeller: i === 1,
                         isNew: i === 2,
+                        fabric: productFabric,
+                        origin: productOrigin,
+                        weave: productWeave,
+                        occasion: isSaree ? 'Wedding & Festive' : 'Casual Elegance',
+                        artisanStory: `Each piece of ${productName} is a testament to the skill of our master artisans in ${productOrigin}. Weaving this masterpiece takes approximately 48 hours of dedicated hand-work on a traditional loom.`,
+                        careInstructions: "Professional Dry Clean Recommended\nStore in a soft cotton bag\nIron on low heat",
+                        loomType: "Traditional Pit Loom",
+                        weavingHours: 48 + (i * 12),
                         images: {
                             create: [
                                 {

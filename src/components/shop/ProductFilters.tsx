@@ -46,9 +46,9 @@ export default function ProductFilters({ categories = [], filterAttributes, isMo
         price: true,
         sizes: true,
         colors: true,
-        materials: false,
-        fabrics: false,
-        occasions: false
+        materials: true,
+        fabrics: true,
+        occasions: true
     });
 
     useEffect(() => {

@@ -130,7 +130,7 @@ export default function QuickViewModal() {
                         <div className="p-8 md:p-12 flex flex-col">
                             <div className="space-y-8">
                                 <div>
-                                    <div className="flex items-center gap-3 mb-4">
+                                    <div className="flex flex-wrap items-center gap-3 mb-4">
                                         <span className="text-orange-600 text-[10px] font-black uppercase tracking-[0.2em]">
                                             {displayProduct.category?.name || 'Heritage'}
                                         </span>
@@ -139,21 +139,28 @@ export default function QuickViewModal() {
                                                 Best Seller
                                             </span>
                                         )}
+                                        {displayProduct.origin && (
+                                            <span className="bg-teal-50 text-teal-700 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-teal-100 italic">
+                                                {displayProduct.origin}
+                                            </span>
+                                        )}
+                                        {displayProduct.fabric && (
+                                            <span className="bg-purple-50 text-purple-700 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-purple-100 italic">
+                                                {displayProduct.fabric}
+                                            </span>
+                                        )}
                                     </div>
 
                                     <h2 className="text-3xl md:text-4xl font-serif font-medium text-gray-900 mb-4 leading-tight">
                                         {displayProduct.name}
                                     </h2>
 
-                                    <div className="flex items-center gap-6 mb-6">
+                                    <div className="flex items-center gap-6 mb-6 flex-wrap">
                                         <div className="flex items-baseline gap-3">
                                             <span className="text-3xl font-bold text-gray-900 font-product">₹{currentPrice.toLocaleString()}</span>
                                             <span className="text-sm text-gray-400 line-through font-medium">₹{originalPrice.toLocaleString()}</span>
                                         </div>
-                                        <div className="flex items-center gap-1.5">
-                                            <Star className="w-4 h-4 fill-orange-500 text-orange-500" />
-                                            <span className="text-sm font-bold text-gray-900">4.8</span>
-                                        </div>
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter self-end mb-1">(Incl. 18% GST)</span>
                                     </div>
 
                                     <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">

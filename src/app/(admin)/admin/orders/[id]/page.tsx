@@ -109,18 +109,45 @@ export default async function AdminOrderDetailPage({
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-8 pt-8 border-t border-gray-100 flex justify-between items-center">
-                            <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Grand Total</span>
-                            <span className="text-3xl font-black text-gray-900 italic tracking-tighter">₹{order.total.toLocaleString()}</span>
+                        <div className="mt-8 pt-8 border-t border-gray-100 space-y-4">
+                            {(() => {
+                                const itemsSubtotal = order.items.reduce((sum: number, item: any) => sum + (Number(item.price) * item.quantity), 0);
+                                const discount = Number(order.discountAmount) || 0;
+                                const shipping = itemsSubtotal > 2999 ? 0 : 99;
+                                // 18% inclusive GST calculation: Portion = Amount * (18 / 118)
+                                const taxPortion = itemsSubtotal * (18 / 118);
+
+                                return (
+                                    <>
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="font-bold text-gray-500 uppercase tracking-widest">Subtotal</span>
+                                            <span className="font-black text-gray-900 italic">₹{itemsSubtotal.toLocaleString()}</span>
+                                        </div>
+                                        {discount > 0 && (
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="font-bold text-orange-600 uppercase tracking-widest">Discount</span>
+                                                <span className="font-black text-orange-600 italic">- ₹{discount.toLocaleString()}</span>
+                                            </div>
+                                        )}
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="font-bold text-gray-500 uppercase tracking-widest">Shipping</span>
+                                            <span className="font-black text-gray-900 italic">{shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-[11px] border-t border-gray-50 pt-3 opacity-60">
+                                            <span className="font-bold text-gray-400 uppercase tracking-widest">Tax (18% Included)</span>
+                                            <span className="font-black text-gray-900 italic">₹{taxPortion.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                                        </div>
+                                        <div className="pt-4 border-t border-dashed border-gray-100 flex justify-between items-center">
+                                            <span className="text-sm font-black text-gray-900 uppercase tracking-widest">Grand Total</span>
+                                            <span className="text-3xl font-black text-gray-900 italic tracking-tighter">₹{order.total.toLocaleString()}</span>
+                                        </div>
+                                    </>
+                                );
+                            })()}
                         </div>
                     </div>
                 </div>
 
-                import TrackingForm from '@/components/admin/TrackingForm';
-
-                // ... existing imports
-
-                // Inside the component return, sidebar div:
                 {/* Sidebar - Details */}
                 <div className="space-y-6">
                     {/* Fulfillment / Tracking */}

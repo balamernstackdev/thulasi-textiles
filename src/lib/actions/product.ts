@@ -5,6 +5,7 @@ import prismadb from '@/lib/prisma';
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { cache } from 'react';
+import { serialize } from '@/lib/utils';
 
 export async function createProduct(formData: FormData) {
     const name = formData.get('name') as string;
@@ -246,7 +247,7 @@ export const getProducts = cache(async (options: {
 
                 return {
                     success: true,
-                    data: processedProducts,
+                    data: serialize(processedProducts),
                     pagination: {
                         total,
                         page: options.page || 1,
@@ -389,14 +390,7 @@ export const getRelatedProducts = cache(async (productId: string, categoryId: st
 
                 return {
                     success: true,
-                    data: products.map(p => ({
-                        ...p,
-                        basePrice: Number(p.basePrice),
-                        variants: p.variants.map(v => ({
-                            ...v,
-                            price: Number(v.price)
-                        }))
-                    }))
+                    data: serialize(products)
                 };
             } catch (error) {
                 console.error('Related products fetch error:', error);
@@ -458,35 +452,7 @@ export const getProductBySlug = cache(async (slug: string) => {
                 });
                 if (!product) return { success: true, data: null };
 
-                const reviewCount = product.reviews.length;
-                const averageRating = reviewCount > 0
-                    ? product.reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviewCount
-                    : 0;
-
-                const serializedProduct = {
-                    ...product,
-                    basePrice: Number(product.basePrice),
-                    reviewCount,
-                    averageRating,
-                    variants: product.variants.map((v: any) => ({
-                        ...v,
-                        price: Number(v.price),
-                        discount: v.discount ? Number(v.discount) : 0
-                    })),
-                    complementaryProducts: product.complementaryProducts.map((cp: any) => {
-                        const p = cp.complementary;
-                        return {
-                            ...p,
-                            basePrice: Number(p.basePrice),
-                            variants: p.variants?.map((v: any) => ({
-                                ...v,
-                                price: Number(v.price)
-                            })) || []
-                        };
-                    })
-                };
-
-                return { success: true, data: serializedProduct as any };
+                return { success: true, data: serialize(product) as any };
             } catch (error) {
                 console.error('Error fetching product:', error);
                 return { success: false, error: 'Failed to load product' };
@@ -525,25 +491,7 @@ export const getProductById = cache(async (id: string) => {
                 });
                 if (!product) return { success: true, data: null };
 
-                const reviewCount = product.reviews.length;
-                const averageRating = reviewCount > 0
-                    ? product.reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviewCount
-                    : 0;
-
-                const serializedProduct = {
-                    ...product,
-                    basePrice: Number(product.basePrice),
-                    reviewCount,
-                    averageRating,
-                    variants: product.variants.map((v: any) => ({
-                        ...v,
-                        price: Number(v.price),
-                        discount: v.discount ? Number(v.discount) : 0
-                    })),
-                    complementaryProducts: product.complementaryProducts.map((cp: any) => cp.complementary)
-                };
-
-                return { success: true, data: serializedProduct as any };
+                return { success: true, data: serialize(product) as any };
             } catch (error) {
                 console.error('Error fetching product:', error);
                 return { success: false, error: 'Failed to load product' };
@@ -728,10 +676,10 @@ export async function getProductWithRelated(slug: string) {
 
         return {
             success: true,
-            data: {
+            data: serialize({
                 ...product,
                 complementaryProducts: product.complementaryProducts.map(cp => cp.complementary)
-            }
+            })
         };
     } catch (error) {
         console.error('Failed to fetch product with related:', error);

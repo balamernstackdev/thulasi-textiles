@@ -9,8 +9,9 @@ export default function HeritageSupport() {
     const [showTooltip, setShowTooltip] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => setShowTooltip(true), 3000);
-        return () => clearTimeout(timer);
+        // Disabled tooltip as per user request
+        // const timer = setTimeout(() => setShowTooltip(true), 3000);
+        // return () => clearTimeout(timer);
     }, []);
 
     const whatsappNumber = "+910000000000"; // Placeholder
